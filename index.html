@@ -1239,42 +1239,67 @@ You will earn 5% of the revenue from every referral you bring through ads!
         /**
          * Renders tasks list into the task screen, keeping the original card appearance.
          * Each task button now both selects the task and immediately opens the link.
+         *
+         * NOTE: ensuring a persistent fallback card with the main "Join & Claim" button is present
+         * so after opening a task link the user can come back and see the Claim button.
          */
         function renderTasksList(tasks) {
             const container = document.getElementById('taskListContainer');
             if (!container) return;
 
+            // Build HTML for tasks (if any)
+            let tasksHtml = '';
             if (!Array.isArray(tasks) || tasks.length === 0) {
-                container.innerHTML = `
+                tasksHtml = `
                     <div class="task-item-card">
                         <span class="task-text-info">No tasks available right now.</span>
                         <button class="task-action-btn-new" disabled>Unavailable</button>
                     </div>
                 `;
-                return;
+            } else {
+                tasksHtml = tasks.map(t => {
+                    const completed = t.is_completed;
+                    const rewardText = `Reward: ${t.reward} SHIB`;
+                    const btnText = completed ? 'Claimed' : 'Open';
+                    const btnClass = `task-action-btn-new ${completed ? 'completed' : ''}`;
+                    const disabledAttr = completed ? 'disabled' : '';
+
+                    // Add data-link attribute so we can open on click
+                    const safeLink = (t.link || '').replace(/"/g, '&quot;');
+                    return `
+                        <div class="task-item-card" data-task-id="${t.task_id}">
+                            <span class="task-text-info">${t.name} — ${rewardText}</span>
+                            <button class="${btnClass}" ${disabledAttr} data-task-link="${safeLink}" data-task-id="${t.task_id}" onclick="onTaskButtonClick(event)">
+                                ${btnText}
+                            </button>
+                        </div>
+                    `;
+                }).join('');
             }
 
-            // Build HTML for each task (preserve original styling)
-            const html = tasks.map(t => {
-                const completed = t.is_completed;
-                const rewardText = `Reward: ${t.reward} SHIB`;
-                const btnText = completed ? 'Claimed' : 'Open';
-                const btnClass = `task-action-btn-new ${completed ? 'completed' : ''}`;
-                const disabledAttr = completed ? 'disabled' : '';
+            // Persistent fallback card (ensures taskActionBtn exists after rendering the list)
+            const fallbackCardHTML = `
+                <div class="task-item-card" id="fallbackTaskCard">
+                    <span class="task-text-info" id="fallbackTaskText">Select a task to see details and claim rewards.</span>
+                    <button class="task-action-btn-new" id="taskActionBtn" onclick="handleTaskAction()">Join & Claim</button>
+                </div>
+            `;
 
-                // Add data-link attribute so we can open on click
-                const safeLink = (t.link || '').replace(/"/g, '&quot;');
-                return `
-                    <div class="task-item-card" data-task-id="${t.task_id}">
-                        <span class="task-text-info">${t.name} — ${rewardText}</span>
-                        <button class="${btnClass}" ${disabledAttr} data-task-link="${safeLink}" data-task-id="${t.task_id}" onclick="onTaskButtonClick(event)">
-                            ${btnText}
-                        </button>
-                    </div>
-                `;
-            }).join('');
+            container.innerHTML = tasksHtml + fallbackCardHTML;
 
-            container.innerHTML = html;
+            // If a task is already selected (currentTask) reflect its state in the fallback card
+            const taskBtn = document.getElementById('taskActionBtn');
+            const fallbackText = document.getElementById('fallbackTaskText');
+            if (currentTask) {
+                if (fallbackText) fallbackText.textContent = `${currentTask.name} — Reward: ${currentTask.reward} SHIB`;
+                if (currentTask.is_completed) {
+                    if (taskBtn) { taskBtn.disabled = true; taskBtn.textContent = 'Claimed'; taskBtn.classList.add('completed'); }
+                } else {
+                    if (taskBtn) { taskBtn.disabled = false; taskBtn.classList.remove('completed'); taskActionState = 'JOIN_OR_CLAIM'; taskBtn.textContent = 'Join'; }
+                }
+            } else {
+                if (taskBtn) { taskBtn.disabled = false; taskBtn.classList.remove('completed'); taskBtn.textContent = 'Join & Claim'; }
+            }
         }
 
         /**
@@ -1383,9 +1408,9 @@ You will earn 5% of the revenue from every referral you bring through ads!
                     taskBtn.classList.add('completed');
                 } else {
                     taskBtn.disabled = false;
+                    taskBtn.textContent = 'Join';
                     taskBtn.classList.remove('completed');
                     taskActionState = 'JOIN_OR_CLAIM';
-                    taskBtn.textContent = 'Join';
                 }
             }
 
