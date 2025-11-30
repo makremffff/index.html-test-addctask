@@ -331,6 +331,14 @@
             box-shadow:0 0 0 10px #eee, 0 15px 35px rgba(0,0,0,0.4); 
             background-color: #fefefe; 
             border: 2px solid #ccc; 
+            transform-origin: center center;
+            transition: transform 4s cubic-bezier(0.22,0,0.2,1);
+            will-change: transform;
+        }
+        /* Extra visual effect while spinning (glow) */
+        #wheelCanvas.spinning {
+            box-shadow: 0 0 40px rgba(255, 102, 136, 0.25), 0 15px 35px rgba(0,0,0,0.4);
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25));
         }
         .arrow{
             position:absolute;top:-16px;left:50%;transform:translateX(-50%);
@@ -668,11 +676,7 @@
         <div class="task-content-container" id="taskContentContainer">
             <!-- Tasks list will be injected here dynamically -->
             <div id="taskListContainer">
-                <!-- fallback single card (kept for compatibility) -->
-                <div class="task-item-card" id="fallbackTaskCard">
-                    <span class="task-text-info"></span>
-                    <button class="task-action-btn-new" id="taskActionBtn" onclick="handleTaskAction()">Join & Claim</button>
-                </div>
+                <!-- tasks will be injected here -->
             </div>
         </div>
 
@@ -1103,35 +1107,32 @@ You will earn 5% of the revenue from every referral you bring through ads!
 
             document.getElementById('referralsCountDisplay').textContent = referralsCount.toLocaleString();
             
-            // Task Button State Update 
-            const taskBtn = document.getElementById('taskActionBtn');
-            if (taskBtn) {
-                // Clear any existing interval text if UI update is called externally
+            // Attempt to find per-task button for the selected task if exists
+            const perTaskBtn = currentTask ? document.querySelector(`button[data-task-id="${currentTask.id}"]`) : null;
+
+            if (perTaskBtn) {
                 if (!isProcessingTask && countdownInterval) {
                     clearInterval(countdownInterval);
                     countdownInterval = null;
                 }
-                
+
                 if (currentTask && currentTask.is_completed) {
-                    // State: COMPLETED for the selected task
-                    taskBtn.disabled = true;
-                    taskBtn.textContent = 'Claimed';
-                    taskBtn.classList.add('completed');
-                } else if (taskBtn) {
-                    // State: NOT COMPLETED or no currentTask selected
-                    taskBtn.disabled = isProcessingTask; // Respect the processing flag
-                    taskBtn.classList.remove('completed');
-                    
+                    perTaskBtn.disabled = true;
+                    perTaskBtn.textContent = 'Claimed';
+                    perTaskBtn.classList.add('completed');
+                } else {
+                    perTaskBtn.disabled = isProcessingTask;
+                    perTaskBtn.classList.remove('completed');
+
                     if (isProcessingTask) {
-                        // Text will be set by the countdown timer in claimTaskReward
+                        // text managed by claimTaskReward countdown
                     } else if (taskActionState === 'CLAIM') {
-                        taskBtn.textContent = 'Claim'; 
+                        perTaskBtn.textContent = 'Claim';
                     } else {
-                        taskBtn.textContent = currentTask ? 'Join' : 'Join & Claim'; 
+                        perTaskBtn.textContent = 'Open';
                     }
                 }
             }
-
 
             const adButton = document.querySelector('button[onclick="watchAds()"]');
             if (adButton) {
@@ -1312,74 +1313,46 @@ You will earn 5% of the revenue from every referral you bring through ads!
          * Renders tasks list into the task screen, keeping the original card appearance.
          * Each task button now both selects the task and immediately opens the link.
          *
-         * NOTE: ensuring a persistent fallback card with the main "Join & Claim" button is present
-         * so after opening a task link the user can come back and see the Claim button.
+         * NOTE: Tasks that are already completed are not shown (they disappear).
          */
         function renderTasksList(tasks) {
             const container = document.getElementById('taskListContainer');
             if (!container) return;
 
-            // Build HTML for tasks (if any)
-            let tasksHtml = '';
-            if (!Array.isArray(tasks) || tasks.length === 0) {
-                tasksHtml = `
+            // Filter out completed tasks so they do not appear to the user
+            const availableTasks = Array.isArray(tasks) ? tasks.filter(t => !t.is_completed) : [];
+
+            if (!Array.isArray(availableTasks) || availableTasks.length === 0) {
+                container.innerHTML = `
                     <div class="task-item-card">
                         <span class="task-text-info">No tasks available right now.</span>
                         <button class="task-action-btn-new" disabled>Unavailable</button>
                     </div>
                 `;
-            } else {
-                tasksHtml = tasks.map(t => {
-                    const completed = t.is_completed;
-                    const rewardText = `Reward: ${t.reward} SHIB`;
-                    const btnText = completed ? 'Claimed' : 'Open';
-                    const btnClass = `task-action-btn-new ${completed ? 'completed' : ''}`;
-                    const disabledAttr = completed ? 'disabled' : '';
-
-                    // Add data-link attribute so we can open on click
-                    const safeLink = (t.link || '').replace(/"/g, '&quot;');
-                    return `
-                        <div class="task-item-card" data-task-id="${t.task_id}">
-                            <span class="task-text-info">${t.name} — ${rewardText}</span>
-                            <button class="${btnClass}" ${disabledAttr} data-task-link="${safeLink}" data-task-id="${t.task_id}" onclick="onTaskButtonClick(event)">
-                                ${btnText}
-                            </button>
-                        </div>
-                    `;
-                }).join('');
+                return;
             }
 
-            // Persistent fallback card (ensures taskActionBtn exists after rendering the list)
-            const fallbackCardHTML = `
-                <div class="task-item-card" id="fallbackTaskCard">
-                    <span class="task-text-info" id="fallbackTaskText"></span>
-                    <button class="task-action-btn-new" id="taskActionBtn" onclick="handleTaskAction()">Join & Claim</button>
-                </div>
-            `;
+            const html = availableTasks.map(t => {
+                const rewardText = `Reward: ${t.reward} SHIB`;
+                const safeLink = (t.link || '').replace(/"/g, '&quot;');
+                return `
+                    <div class="task-item-card" data-task-id="${t.task_id}">
+                        <span class="task-text-info">${t.name} — ${rewardText}</span>
+                        <button class="task-action-btn-new" data-task-link="${safeLink}" data-task-id="${t.task_id}" onclick="onTaskButtonClick(event)">
+                            Open
+                        </button>
+                    </div>
+                `;
+            }).join('');
 
-            container.innerHTML = tasksHtml + fallbackCardHTML;
-
-            // If a task is already selected (currentTask) reflect its state in the fallback card
-            const taskBtn = document.getElementById('taskActionBtn');
-            const fallbackText = document.getElementById('fallbackTaskText');
-            if (currentTask) {
-                if (fallbackText) fallbackText.textContent = `${currentTask.name} — Reward: ${currentTask.reward} SHIB`;
-                if (currentTask.is_completed) {
-                    if (taskBtn) { taskBtn.disabled = true; taskBtn.textContent = 'Claimed'; taskBtn.classList.add('completed'); }
-                } else {
-                    if (taskBtn) { taskBtn.disabled = false; taskBtn.classList.remove('completed'); taskActionState = 'JOIN_OR_CLAIM'; taskBtn.textContent = 'Join'; }
-                }
-            } else {
-                if (taskBtn) { taskBtn.disabled = false; taskBtn.classList.remove('completed'); taskBtn.textContent = 'Join & Claim'; }
-            }
+            container.innerHTML = html;
         }
 
         /**
          * onTaskButtonClick - handles clicks on the per-task button.
-         * It will:
-         *  - select the task (set currentTask)
-         *  - try to open the task link immediately
-         *  - switch the fallback action button into CLAIM state after opening
+         * Dual behaviour on the same button:
+         * - First click: open the external link (if present) and switch the button to "Claim".
+         * - Second click (when button shows "Claim"): start the verification & claim flow for that task.
          */
         async function onTaskButtonClick(event) {
             event = event || window.event;
@@ -1387,13 +1360,42 @@ You will earn 5% of the revenue from every referral you bring through ads!
             const taskId = btn.getAttribute('data-task-id');
             const taskLink = btn.getAttribute('data-task-link') || '';
 
-            // Guard
             if (!taskId) {
                 showCustomAlert('Task Error', 'Task id not found on this button.', 'error');
                 return;
             }
 
-            // Select the task (load info)
+            // If user clicked a button already switched to "Claim", start claim flow
+            const btnText = (btn.textContent || '').trim().toLowerCase();
+            if (btnText === 'claim') {
+                // Set currentTask and trigger claim flow
+                const task = await fetchTask(taskId);
+                if (!task) {
+                    showCustomAlert('Task Error', 'Selected task not found. Please refresh the tasks list.', 'error');
+                    return;
+                }
+                currentTask = {
+                    id: parseInt(task.task_id),
+                    name: task.name,
+                    link: task.link,
+                    reward: task.reward,
+                    is_completed: !!task.is_completed
+                };
+
+                if (currentTask.is_completed) {
+                    // If already completed server-side, remove element and notify
+                    const el = document.querySelector(`div[data-task-id="${taskId}"]`);
+                    if (el) el.remove();
+                    showCustomAlert('Task Completed!', 'Reward already claimed for this task.', 'warning');
+                    return;
+                }
+
+                // Begin the claim flow using the normal function (which uses currentTask)
+                claimTaskReward();
+                return;
+            }
+
+            // Otherwise treat as first click: select task and open link
             const task = await fetchTask(taskId);
             if (!task) {
                 showCustomAlert('Task Error', 'Selected task not found. Please refresh the tasks list.', 'error');
@@ -1408,54 +1410,42 @@ You will earn 5% of the revenue from every referral you bring through ads!
                 is_completed: !!task.is_completed
             };
 
-            // Update fallback UI
-            const fallbackCard = document.getElementById('fallbackTaskCard');
-            const taskBtn = document.getElementById('taskActionBtn');
-
-            if (fallbackCard && taskBtn) {
-                const rewardSpan = fallbackCard.querySelector('.task-text-info');
-                rewardSpan.textContent = `${currentTask.name} — Reward: ${currentTask.reward} SHIB`;
-
-                if (currentTask.is_completed) {
-                    taskBtn.disabled = true;
-                    taskBtn.textContent = 'Claimed';
-                    taskBtn.classList.add('completed');
-                } else {
-                    taskBtn.disabled = false;
-                    taskBtn.classList.remove('completed');
-                    taskActionState = 'CLAIM';
-                    taskBtn.textContent = 'Claim';
-                }
+            if (currentTask.is_completed) {
+                // If already completed server-side, remove the task card from UI
+                const el = document.querySelector(`div[data-task-id="${taskId}"]`);
+                if (el) el.remove();
+                showCustomAlert('Task Completed!', 'Reward already claimed for this task.', 'warning');
+                return;
             }
 
             // Try to open link immediately
             if (taskLink && taskLink.trim() !== '') {
                 const opened = openExternalLink(taskLink);
                 if (opened) {
-                    // Inform user that link was opened and they can claim after join
+                    // Switch this button to "Claim" (second click will start verification)
+                    btn.textContent = 'Claim';
+                    // Provide guidance
                     showCustomAlert('Opened Task', 'The task has been opened. After joining press "Claim" to receive the reward.', 'warning');
                 } else {
                     showCustomAlert('Open Link Failed', 'Unable to open the link. Please try manually.', 'error');
                 }
             } else {
-                // No link provided, instruct user to press Claim to verify
+                // No link: allow user to attempt direct verification by changing to Claim
+                btn.textContent = 'Claim';
                 showCustomAlert('No Link', 'This task has no join link. Press Claim to attempt verification.', 'warning');
             }
         }
 
         /**
          * selectTask kept for backward compatibility if you want to call directly.
-         * It will now delegate to onTaskButtonClick by finding the button in DOM (if exists).
+         * It will now click the matching per-task button if present.
          */
         async function selectTask(taskId) {
-            // Try to find matching button in DOM and simulate click, otherwise fetch & set currentTask
             const btn = document.querySelector(`#taskListContainer button[data-task-id="${taskId}"]`);
             if (btn) {
-                // Simulate click to reuse logic
-                onTaskButtonClick({ currentTarget: btn });
+                btn.click();
                 return;
             }
-            // fallback: fetch task and set currentTask without opening
             const task = await fetchTask(taskId);
             if (!task) {
                 showCustomAlert('Task Error', 'Selected task not found. Please refresh the tasks list.', 'error');
@@ -1468,24 +1458,6 @@ You will earn 5% of the revenue from every referral you bring through ads!
                 reward: task.reward,
                 is_completed: !!task.is_completed
             };
-            // update fallback UI
-            const fallbackCard = document.getElementById('fallbackTaskCard');
-            const taskBtn = document.getElementById('taskActionBtn');
-            if (fallbackCard && taskBtn) {
-                const rewardSpan = fallbackCard.querySelector('.task-text-info');
-                rewardSpan.textContent = `${currentTask.name} — Reward: ${currentTask.reward} SHIB`;
-                if (currentTask.is_completed) {
-                    taskBtn.disabled = true;
-                    taskBtn.textContent = 'Claimed';
-                    taskBtn.classList.add('completed');
-                } else {
-                    taskBtn.disabled = false;
-                    taskBtn.textContent = 'Join';
-                    taskBtn.classList.remove('completed');
-                    taskActionState = 'JOIN_OR_CLAIM';
-                }
-            }
-
             showCustomAlert('Task Selected', `Selected: ${currentTask.name}\nReward: ${currentTask.reward} SHIB`, 'warning');
         }
 
@@ -1523,7 +1495,9 @@ You will earn 5% of the revenue from every referral you bring through ads!
 
         // Renamed and modified the old completeTask function to use currentTask
         async function claimTaskReward(){
-            const taskBtn = document.getElementById('taskActionBtn');
+            // Find per-task button for currentTask if available
+            const taskBtn = currentTask ? document.querySelector(`button[data-task-id="${currentTask.id}"]`) : null;
+
             if (isBanned) {
                  showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                  return;
@@ -1540,13 +1514,13 @@ You will earn 5% of the revenue from every referral you bring through ads!
             const countdownTime = 5; 
             let countdown = countdownTime; 
             
-            // Start the countdown on the button text
-            taskBtn.textContent = countdown;
+            // Start the countdown on the button text (use per-task button if present)
+            if (taskBtn) taskBtn.textContent = countdown;
             
             countdownInterval = setInterval(() => {
                 countdown--;
                 if (countdown >= 0) {
-                    taskBtn.textContent = countdown;
+                    if (taskBtn) taskBtn.textContent = countdown;
                     if(countdownTime - countdown > 1){ // Only show alert after 1 second delay
                         // Show the processing alert (PENCIL STYLE)
                          showCustomAlert('Verifying Membership...', `Please wait ${countdown} seconds for channel membership verification.`, 'warning');
@@ -1555,7 +1529,7 @@ You will earn 5% of the revenue from every referral you bring through ads!
                     // Stop the timer
                     clearInterval(countdownInterval);
                     countdownInterval = null;
-                    taskBtn.textContent = 'Verifying...';
+                    if (taskBtn) taskBtn.textContent = 'Verifying...';
                     showCustomAlert('Verifying...', 'Contacting server to confirm membership and claim reward.', 'warning');
 
                     // Proceed to server verification
@@ -1566,7 +1540,9 @@ You will earn 5% of the revenue from every referral you bring through ads!
         }
 
         async function verifyAndClaim() {
-            const taskBtn = document.getElementById('taskActionBtn');
+            // Find per-task button for currentTask if available
+            const taskBtn = currentTask ? document.querySelector(`button[data-task-id="${currentTask.id}"]`) : null;
+
             if (!currentTask) {
                 isProcessingTask = false;
                 showCustomAlert('No Task Selected', 'Select a task before claiming.', 'warning');
@@ -1599,10 +1575,14 @@ You will earn 5% of the revenue from every referral you bring through ads!
                     balance: result.data.new_balance
                 });
 
-                // Mark currentTask as completed locally and re-render tasks list to reflect
+                // Mark currentTask as completed locally
                 if (currentTask) currentTask.is_completed = true;
 
-                // Refresh tasks list to show new completion state
+                // Remove task card from DOM so it disappears for the user immediately
+                const el = document.querySelector(`div[data-task-id="${taskId}"]`);
+                if (el) el.remove();
+
+                // Optionally refresh tasks from server (keeps UI consistent)
                 const tasks = await fetchTasks();
                 renderTasksList(tasks);
 
@@ -1615,12 +1595,12 @@ You will earn 5% of the revenue from every referral you bring through ads!
                 const tasks = await fetchTasks();
                 renderTasksList(tasks);
                 taskActionState = 'JOIN_OR_CLAIM'; // Force restart the process
-                if (taskBtn) taskBtn.textContent = 'Join';
+                if (taskBtn) taskBtn.textContent = 'Open';
             }
             updateUI();
         }
 
-        // NEW function to handle the two-step action using currentTask
+        // handleTaskAction left in place but no longer required for fallback button
         function handleTaskAction() {
             const taskBtn = document.getElementById('taskActionBtn');
 
@@ -1639,33 +1619,28 @@ You will earn 5% of the revenue from every referral you bring through ads!
             const channelLink = currentTask.link || '';
 
             if (taskActionState === 'JOIN_OR_CLAIM') {
-                // First click: Redirect to the task link (assumed to be telegram t.me link)
-                taskBtn.disabled = true; // Disable temporarily while opening link
-                taskBtn.textContent = 'Joining...';
-                
-                // Use Telegram WebApp function if available, otherwise fallback
+                // This function may not be used now since per-task buttons manage flow
                 if (channelLink && typeof Telegram.WebApp.openTelegramLink === 'function') {
                      Telegram.WebApp.openTelegramLink(channelLink);
                 } else if (channelLink) {
                      window.open(channelLink, '_blank');
                 } else {
-                     // If no link is provided, warn and allow claiming (some tasks may be external)
                      showCustomAlert('No Link', 'This task has no join link. Click Claim to verify.', 'warning');
                 }
                 
-                // Update state and UI to prompt for the second click (claim)
                 setTimeout(() => {
                     taskActionState = 'CLAIM'; 
-                    taskBtn.disabled = false;
-                    taskBtn.textContent = 'Claim'; 
-                    // Show an instruction alert (PENCIL STYLE)
+                    if (taskBtn) {
+                        taskBtn.disabled = false;
+                        taskBtn.textContent = 'Claim';
+                    }
                     showCustomAlert('Action Required', 'Please ensure you joined the channel. Click the button again to start the reward verification.', 'warning');
                 }, 1500);
 
 
             } else if (taskActionState === 'CLAIM') {
-                // Second click: Start the 5-second delay and server verification
-                claimTaskReward(); // This starts the 5-second timer and server process
+                // Start the claim flow
+                claimTaskReward();
             }
         }
 
@@ -1725,7 +1700,7 @@ You will earn 5% of the revenue from every referral you bring through ads!
         /* ===== End of Invite Screen Functions ===== */
 
 
-        /* ===== Spin Wheel (Wheel Code) (No changes needed) ===== */
+        /* ===== Spin Wheel (Wheel Code) (Modified to show two ads before spin and nicer effect) ===== */
         const colors = ['#00bfff', '#ff8c00', '#28a745', '#ff4500', '#00f2fe'];
         const prizeValues = sectors; 
         const canvas = document.getElementById('wheelCanvas');
@@ -1841,13 +1816,18 @@ You will earn 5% of the revenue from every referral you bring through ads!
                 return;
             }
             
-            // 4. Call Ad SDK (libtl.com)
+            // 4. Call Ad SDK twice in sequence (no intermediate alerts) - user will see two ads like watchAds
             show_10245709()
+                .then(() => {
+                    return show_10245709();
+                })
                 .then(async () => {
+                    // Start spinning visual
                     spinning = true;
                     spinBtn.disabled = true;
                     spinResult.textContent = 'Spinning...'; 
-                    
+                    canvas.classList.add('spinning');
+
                     // 5. Request spin result and prize addition (Server runs limits, Rate Limit, and validates Action ID)
                     const spinResultRes = await fetchApi({ 
                         type: 'spinResult',
@@ -1869,11 +1849,11 @@ You will earn 5% of the revenue from every referral you bring through ads!
                         
                         currentAngle += rotationToApply;
 
-                        canvas.style.transition = 'transform 4s cubic-bezier(0.22,0,0.2,1)';
                         canvas.style.transform = `rotate(${currentAngle}rad)`;
                         
                         setTimeout(async ()=>{
                             canvas.style.transition = 'none'; 
+                            canvas.classList.remove('spinning');
                             
                             // 6. Update balance and spin count with trusted server values 
                             updateState({ 
@@ -1890,6 +1870,7 @@ You will earn 5% of the revenue from every referral you bring through ads!
                         },4000); 
 
                     } else {
+                        canvas.classList.remove('spinning');
                         spinResult.textContent = `❌ ERROR ❌\n\n[STATUS] Error receiving prize. Please try again.`;
                         // Custom Alert for spin result error is handled by fetchApi, but we ensure it here too:
                         if (!spinResultRes.error.includes('SECURITY ERROR')) { 
