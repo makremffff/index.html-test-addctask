@@ -784,9 +784,12 @@ You will earn 5% of the revenue from every referral you bring through ads!
 
         document.addEventListener('DOMContentLoaded',()=>{
             // Simulating a brief loading time for the spinner to be visible
-            setTimeout(()=>{ 
+            setTimeout(async ()=>{ 
+                // Wait for init (register + loadUserData) to complete before hiding loading screen
+                // This prevents abrupt immediate transition when loading finishes and ensures UI is ready
+                await initDailyProgress(); 
+                // hide with existing CSS fade
                 loadingScreen.classList.add('hidden');
-                initDailyProgress(); 
                 playBGAudio(); 
             }, 7000); 
         });
@@ -1849,10 +1852,15 @@ You will earn 5% of the revenue from every referral you bring through ads!
                         
                         currentAngle += rotationToApply;
 
-                        canvas.style.transform = `rotate(${currentAngle}rad)`;
+                        // Ensure transition is applied and trigger layout so animation runs reliably
+                        canvas.style.transition = 'transform 4s cubic-bezier(0.22,0,0.2,1)';
+                        requestAnimationFrame(() => {
+                            canvas.style.transform = `rotate(${currentAngle}rad)`;
+                        });
                         
                         setTimeout(async ()=>{
-                            canvas.style.transition = 'none'; 
+                            // After animation completes, clear inline transition so future changes use CSS default
+                            canvas.style.transition = '';
                             canvas.classList.remove('spinning');
                             
                             // 6. Update balance and spin count with trusted server values 
