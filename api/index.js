@@ -829,4 +829,167 @@ async function handleCompleteTask(req, res, body) {
             { user_id: id, task_id: taskId, reward_amount: reward }, 
             '?select=user_id');
 
-        // 11. Commission Call
+        // 11. Commission Call (اختياري)
+        if (referrerId) {
+            processCommission(referrerId, id, reward).catch(e => {
+                console.error(`Task Completion Commission failed silently for referrer ${referrerId}:`, e.message);
+            });
+        }
+          
+        // 12. Success
+        sendSuccess(res, { new_balance: newBalance, actual_reward: reward, message: 'Task completed successfully.' });
+
+    } catch (error) {
+        console.error('CompleteTask failed:', error.message);
+        sendError(res, `Failed to complete task: ${error.message}`, 500);
+    }
+}
+
+
+/**
+ * 6) type: "withdraw" (No change, only uses last_activity for rate limit check in checkRateLimit)
+ */
+async function handleWithdraw(req, res, body) {
+    const { user_id, binanceId, amount, action_id } = body;
+    const id = parseInt(user_id);
+    const withdrawalAmount = parseFloat(amount);
+    const MIN_WITHDRAW = 400;
+
+    // 1. Check and Consume Action ID (Security Check)
+    if (!await validateAndUseActionId(res, id, action_id, 'withdraw')) return;
+
+    if (withdrawalAmount < MIN_WITHDRAW) {
+        return sendError(res, `Minimum withdrawal amount is ${MIN_WITHDRAW} SHIB.`, 400);
+    }
+
+    try {
+        // 2. Fetch current user balance and banned status
+        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=balance,is_banned`);
+        if (!Array.isArray(users) || users.length === 0) {
+            return sendError(res, 'User not found.', 404);
+        }
+
+        const user = users[0];
+
+        // 3. Banned Check
+        if (user.is_banned) {
+            return sendError(res, 'User is banned.', 403);
+        }
+        
+        // 4. Check sufficient balance
+        if (user.balance < withdrawalAmount) {
+            return sendError(res, 'Insufficient balance.', 400);
+        }
+
+        // 5. Calculate new balance
+        const newBalance = user.balance - withdrawalAmount;
+
+        // 6. Update user balance
+        await supabaseFetch('users', 'PATCH',
+          { 
+              balance: newBalance,
+              last_activity: new Date().toISOString() // ⬅️ تحديث لـ Rate Limit
+          },
+          `?id=eq.${id}`);
+
+        // 7. Record the withdrawal request
+        await supabaseFetch('withdrawals', 'POST',
+          { user_id: id, amount: withdrawalAmount, binance_id: binanceId, status: 'pending' },
+          '?select=user_id');
+
+        // 8. Success
+        sendSuccess(res, { new_balance: newBalance });
+
+    } catch (error) {
+        console.error('Withdrawal failed:', error.message);
+        sendError(res, `Withdrawal failed: ${error.message}`, 500);
+    }
+}
+
+
+// --- Main Handler for Vercel/Serverless ---
+module.exports = async (req, res) => {
+  // CORS configuration
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return sendSuccess(res);
+  }
+
+  if (req.method !== 'POST') {
+    return sendError(res, `Method ${req.method} not allowed. Only POST is supported.`, 405);
+  }
+
+  let body;
+  try {
+    body = await new Promise((resolve, reject) => {
+      let data = '';
+      req.on('data', chunk => {
+        data += chunk.toString();
+      });
+      req.on('end', () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch (e) {
+          reject(new Error('Invalid JSON payload.'));
+        }
+      });
+      req.on('error', reject);
+    });
+
+  } catch (error) {
+    return sendError(res, error.message, 400);
+  }
+
+  if (!body || !body.type) {
+    return sendError(res, 'Missing "type" field in the request body.', 400);
+  }
+
+  // ⬅️ initData Security Check
+  if (body.type !== 'commission' && (!body.initData || !validateInitData(body.initData))) {
+      return sendError(res, 'Invalid or expired initData. Security check failed.', 401);
+  }
+
+  if (!body.user_id && body.type !== 'commission') {
+      return sendError(res, 'Missing user_id in the request body.', 400);
+  }
+
+  // Route the request based on the 'type' field
+  switch (body.type) {
+    case 'getUserData':
+      await handleGetUserData(req, res, body);
+      break;
+    case 'getTasks': // ⬅️ NEW: Added handler to get tasks list
+      await handleGetTasks(req, res, body);
+      break;
+    case 'register':
+      await handleRegister(req, res, body);
+      break;
+    case 'watchAd':
+      await handleWatchAd(req, res, body);
+      break;
+    case 'commission':
+      await handleCommission(req, res, body);
+      break;
+    case 'preSpin': 
+      await handlePreSpin(req, res, body);
+      break;
+    case 'spinResult': 
+      await handleSpinResult(req, res, body);
+      break;
+    case 'withdraw':
+      await handleWithdraw(req, res, body);
+      break;
+    case 'completeTask':
+      await handleCompleteTask(req, res, body);
+      break;
+    case 'generateActionId': 
+      await handleGenerateActionId(req, res, body);
+      break;
+    default:
+      sendError(res, `Unknown request type: ${body.type}`, 400);
+      break;
+  }
+};
