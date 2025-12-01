@@ -16,14 +16,14 @@ const BOT_TOKEN = process.env.BOT_TOKEN;
 // ------------------------------------------------------------------
 // Fully secured and defined server-side constants
 // ------------------------------------------------------------------
-const REWARD_PER_AD = 3;
-const REFERRAL_COMMISSION_RATE = 0.05;
-const DAILY_MAX_ADS = 100; // Max ads limit
-const DAILY_MAX_SPINS = 15; // Max spins limit
+const REWARD_PER_AD = 6;
+const REFERRAL_COMMISSION_RATE = 40;
+const DAILY_MAX_ADS = 200; // Max ads limit
+const DAILY_MAX_SPINS = 25; // Max spins limit
 const RESET_INTERVAL_MS = 6 * 60 * 60 * 1000; // ⬅️ 6 hours in milliseconds
 const MIN_TIME_BETWEEN_ACTIONS_MS = 3000; // 3 seconds minimum time between watchAd/spin requests
 const ACTION_ID_EXPIRY_MS = 60000; // 60 seconds for Action ID to be valid
-const SPIN_SECTORS = [5, 10, 15, 20, 5];
+const SPIN_SECTORS = [5, 10, 15, 20, 30];
 
 // ------------------------------------------------------------------
 // Task Constants (القيم الثابتة للمهام تم حذفها - يتم جلبها من قاعدة البيانات)
