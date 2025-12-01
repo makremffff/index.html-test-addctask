@@ -1,10 +1,6 @@
 // /api/index.js (Final and Secure Version with Limit-Based Reset and GetTasks)
+// Modified: added Task Link click handler and task-link limit fields
 
-/**
- * SHIB Ads WebApp Backend API
- * Handles all POST requests from the Telegram Mini App frontend.
- * Uses the Supabase REST API for persistence.
- */
 const crypto = require('crypto');
 
 // Load environment variables for Supabase connection
@@ -24,6 +20,10 @@ const RESET_INTERVAL_MS = 6 * 60 * 60 * 1000; // ⬅️ 6 hours in milliseconds
 const MIN_TIME_BETWEEN_ACTIONS_MS = 3000; // 3 seconds minimum time between watchAd/spin requests
 const ACTION_ID_EXPIRY_MS = 60000; // 60 seconds for Action ID to be valid
 const SPIN_SECTORS = [5, 10, 15, 20, 5];
+
+// ===== Task Link Constants =====
+const TASK_LINK_REWARD = 5; // 5 SHIB per task-link click
+const TASK_LINK_DAILY_MAX = 200; // daily max clicks tracked server-side
 
 // ------------------------------------------------------------------
 // Task Constants (القيم الثابتة للمهام تم حذفها - يتم جلبها من قاعدة البيانات)
@@ -148,7 +148,7 @@ async function resetDailyLimitsIfExpired(userId) {
 
     try {
         // 1. Fetch current limits and the time they were reached
-        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${userId}&select=ads_watched_today,spins_today,ads_limit_reached_at,spins_limit_reached_at`);
+        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${userId}&select=ads_watched_today,spins_today,ads_limit_reached_at,spins_limit_reached_at,task_link_clicks_today,task_link_limit_reached_at`);
         if (!Array.isArray(users) || users.length === 0) {
             return;
         }
@@ -178,7 +178,17 @@ async function resetDailyLimitsIfExpired(userId) {
             }
         }
 
-        // 4. Perform the database update if any limits were reset
+        // 4. Check Task Link Limit Reset
+        if (user.task_link_limit_reached_at && user.task_link_clicks_today >= TASK_LINK_DAILY_MAX) {
+            const tlLimitTime = new Date(user.task_link_limit_reached_at).getTime();
+            if (now - tlLimitTime > RESET_INTERVAL_MS) {
+                updatePayload.task_link_clicks_today = 0;
+                updatePayload.task_link_limit_reached_at = null;
+                console.log(`Task-link limit reset for user ${userId}.`);
+            }
+        }
+
+        // 5. Perform the database update if any limits were reset
         if (Object.keys(updatePayload).length > 0) {
             await supabaseFetch('users', 'PATCH',
                 updatePayload,
@@ -427,11 +437,11 @@ async function handleGetUserData(req, res, body) {
         await resetDailyLimitsIfExpired(id);
 
         // 2. Fetch user data (including new limit columns AND task_completed)
-        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=balance,ads_watched_today,spins_today,is_banned,ref_by,ads_limit_reached_at,spins_limit_reached_at,task_completed`);
+        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=balance,ads_watched_today,spins_today,is_banned,ref_by,ads_limit_reached_at,spins_limit_reached_at,task_completed,task_link_clicks_today,task_link_limit_reached_at`);
 
         if (!users || users.length === 0 || users.success) {
             return sendSuccess(res, {
-                balance: 0, ads_watched_today: 0, spins_today: 0, referrals_count: 0, withdrawal_history: [], is_banned: false, task_completed: false
+                balance: 0, ads_watched_today: 0, spins_today: 0, referrals_count: 0, withdrawal_history: [], is_banned: false, task_completed: false, task_link_clicks_today: 0
             });
         }
 
@@ -509,7 +519,7 @@ async function handleGetTasks(req, res, body) {
 
 /**
  * 1) type: "register"
- * ⚠️ Fix: Includes task_completed: false for new users.
+ * ⚠️ Fix: Includes task_completed: false for new users and initializes task_link fields.
  */
 async function handleRegister(req, res, body) {
   const { user_id, ref_by } = body;
@@ -530,6 +540,9 @@ async function handleRegister(req, res, body) {
         last_activity: new Date().toISOString(), // ⬅️ يبقى هنا للـ Rate Limit فقط
         is_banned: false,
         task_completed: false, // ⬅️ Default value for the original task (can be safely ignored by dynamic logic)
+        // Task-link fields initialization
+        task_link_clicks_today: 0,
+        task_link_limit_reached_at: null,
         // الأعمدة الجديدة ستحتوي على NULL بشكل افتراضي
       };
       await supabaseFetch('users', 'POST', newUser, '?select=id');
@@ -744,6 +757,90 @@ async function handleSpinResult(req, res, body) {
         sendError(res, `Failed to process spin result: ${error.message}`, 500);
     }
 }
+
+/**
+ * NEW HANDLER: type: "taskLinkClick"
+ * Handles secure server-side counting and awarding for instant task-link clicks.
+ * Uses action_type 'taskLink' for Action ID validation.
+ */
+async function handleTaskLinkClick(req, res, body) {
+    const { user_id, action_id, url } = body;
+    const id = parseInt(user_id);
+
+    // 1. Validate action id
+    if (!await validateAndUseActionId(res, id, action_id, 'taskLink')) return;
+
+    try {
+        // 2. Reset limits if expired
+        await resetDailyLimitsIfExpired(id);
+
+        // 3. Fetch user
+        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=balance,task_link_clicks_today,is_banned,ref_by`);
+        if (!Array.isArray(users) || users.length === 0) {
+            return sendError(res, 'User not found.', 404);
+        }
+        const user = users[0];
+
+        // 4. Banned check
+        if (user.is_banned) {
+            return sendError(res, 'User is banned.', 403);
+        }
+
+        // 5. Rate limit check
+        const rateLimitResult = await checkRateLimit(id);
+        if (!rateLimitResult.ok) {
+            return sendError(res, rateLimitResult.message, 429);
+        }
+
+        // 6. Check daily task-link limit
+        const currentCount = user.task_link_clicks_today || 0;
+        if (currentCount >= TASK_LINK_DAILY_MAX) {
+            return sendError(res, `Daily task-link limit (${TASK_LINK_DAILY_MAX}) reached.`, 403);
+        }
+
+        // 7. Compute new balance and count
+        const reward = TASK_LINK_REWARD;
+        const newBalance = user.balance + reward;
+        const newCount = currentCount + 1;
+
+        const updatePayload = {
+            balance: newBalance,
+            task_link_clicks_today: newCount,
+            last_activity: new Date().toISOString()
+        };
+
+        // 8. If reached limit, set timestamp
+        if (newCount >= TASK_LINK_DAILY_MAX) {
+            updatePayload.task_link_limit_reached_at = new Date().toISOString();
+        }
+
+        // 9. Update user record
+        await supabaseFetch('users', 'PATCH', updatePayload, `?id=eq.${id}`);
+
+        // 10. Optionally record the click to a table for audit (non-mandatory)
+        try {
+            await supabaseFetch('task_link_clicks', 'POST', { user_id: id, url: url || null, reward, created_at: new Date().toISOString() }, '?select=user_id');
+        } catch (e) {
+            // non-fatal: auditing failed
+            console.warn('Failed to record task_link click audit:', e.message);
+        }
+
+        // 11. Commission for referrer if exists
+        if (user.ref_by) {
+            processCommission(user.ref_by, id, reward).catch(e => {
+                console.error(`TaskLink Commission failed silently for referrer ${user.ref_by}:`, e.message);
+            });
+        }
+
+        // 12. Success
+        sendSuccess(res, { new_balance: newBalance, actual_reward: reward, new_count: newCount });
+
+    } catch (error) {
+        console.error('TaskLinkClick failed:', error.message);
+        sendError(res, `Failed to process task link click: ${error.message}`, 500);
+    }
+}
+
 
 /**
  * 7) NEW HANDLER: type: "completeTask"
@@ -987,6 +1084,9 @@ module.exports = async (req, res) => {
       break;
     case 'generateActionId': 
       await handleGenerateActionId(req, res, body);
+      break;
+    case 'taskLinkClick': // NEW handler for task-link clicks
+      await handleTaskLinkClick(req, res, body);
       break;
     default:
       sendError(res, `Unknown request type: ${body.type}`, 400);
