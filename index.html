@@ -155,7 +155,7 @@
             border-left: 5px solid #ff8c00; 
         }
         .daily-progress-text, .spin-progress-text {font-size:14px;color:#333;margin-bottom:4px; font-weight: bold;}
-        .daily-progress-bar, .spin-progress-bar {Width:100%;height:12px;background:rgba(0,0,0,.1);border-radius:10px;overflow:hidden;margin-top:6px}
+        .daily-progress-bar, .spin-progress-bar {width:100%;height:12px;background:rgba(0,0,0,.1);border-radius:10px;overflow:hidden;margin-top:6px}
         .daily-progress-fill {height:100%;background:linear-gradient(90deg,#00f2fe,#4facfe);border-radius:10px;width:0%;transition:width .4s ease}
         .spin-progress-fill {height:100%;background:linear-gradient(90deg,#ff8c00, #ff4500);border-radius:10px;width:0%;transition:width .4s ease}
 
@@ -589,6 +589,80 @@
         .custom-alert-box.warning .alert-title { color: #8B4513; } /* Brown */
         .custom-alert-box.warning .alert-icon::before { content: '✍️'; } /* Pencil/Writing Icon */
 
+        /* ===== Task Link Progress (NEW) ===== */
+        .task-link-container {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            border: 1px solid #e6e6e6;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .task-link-title {
+            font-size: 16px;
+            color: #333;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-link-progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(0,0,0,0.06);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .task-link-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg,#ff9a00,#ff5a5a);
+            border-radius: 8px;
+            transition: width .4s ease;
+        }
+
+        /* 3D push button style for task link */
+        .task-link-button {
+            margin-top: 8px;
+            align-self: center;
+            background: linear-gradient(145deg,#ff7a7a,#ff3b3b);
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #b02323, 0 18px 40px rgba(0,0,0,0.15);
+            transform: translateY(0);
+            transition: all .12s ease;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+        }
+        .task-link-button:active {
+            transform: translateY(6px);
+            box-shadow: 0 4px 0 #b02323, 0 12px 30px rgba(0,0,0,0.12);
+        }
+        .task-link-button[disabled] {
+            background: #ddd;
+            color: #888;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* small helper text */
+        .task-link-small {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -637,13 +711,13 @@
         
         <div class="progress-group-container">
             <div class="daily-progress-container">
-                <div class="daily-progress-text">Ads today: <span id="adsCount">0</span> / 200</div>
+                <div class="daily-progress-text">Ads today: <span id="adsCount">0</span> / 100</div>
                 <div class="daily-progress-bar">
                     <div class="daily-progress-fill" id="dailyProgressFill"></div>
                 </div>
             </div>
             <div class="spin-progress-container">
-                <div class="spin-progress-text">Spins today: <span id="spinsCount">0</span> / 25</div>
+                <div class="spin-progress-text">Spins today: <span id="spinsCount">0</span> / 15</div>
                 <div class="spin-progress-bar">
                     <div class="spin-progress-fill" id="spinProgressFill"></div>
                 </div>
@@ -673,7 +747,20 @@
             <h2 class="task-title">Daily Tasks</h2>
         </div>
         
+        <!-- NEW: Task Link Progress block -->
         <div class="task-content-container" id="taskContentContainer">
+            <div id="taskLinkArea" class="task-link-container" style="display:none;">
+                <div class="task-link-title">
+                    <span>Task Link (Instant Reward)</span>
+                    <span id="taskLinkCountDisplay">0 / 200</span>
+                </div>
+                <div class="task-link-progress-bar">
+                    <div class="task-link-progress-fill" id="taskLinkProgressFill" style="width:0%"></div>
+                </div>
+                <div class="task-link-small">Click the button to open the link and earn 5 SHIB per click (daily limit 200). Stored locally.</div>
+                <button class="task-link-button" id="taskLinkBtn" onclick="handleTaskLinkClick()">Open Link & Earn</button>
+            </div>
+
             <!-- Tasks list will be injected here dynamically -->
             <div id="taskListContainer">
                 <!-- tasks will be injected here -->
@@ -1005,8 +1092,8 @@ You will earn 5% of the revenue from every referral you bring through ads!
 
 
         /* ===== Rewards, Limits, and Anti-Cheat (Limits here are for display only) ===== */
-        const DAILY_MAX = 200;
-        const DAILY_MAX_SPINS = 25;
+        const DAILY_MAX = 100;
+        const DAILY_MAX_SPINS = 15;
         
         let shibBalance = 0; 
         let adsWatchedToday = 0;
@@ -1023,6 +1110,105 @@ You will earn 5% of the revenue from every referral you bring through ads!
 
         // New: currentTask holds the selected task's data (id, link, reward, is_completed)
         let currentTask = null;
+
+        // ===== Task Link Constants and state (local-storage based) =====
+        const TASK_LINK_KEY = 'taskLinkProgress_v1';
+        const TASK_LINK_DAILY_MAX = 200; // daily limit (count)
+        const TASK_LINK_REWARD = 5; // 5 SHIB per click
+        const TASK_LINK_URL = 'https://otieu.com/4/10259911';
+
+        let taskLinkState = { date: null, count: 0 }; // {date:'YYYY-MM-DD', count: number}
+
+        function todayDateString() {
+            const d = new Date();
+            return d.toISOString().slice(0,10);
+        }
+
+        function loadTaskLinkProgressFromStorage() {
+            try {
+                const raw = localStorage.getItem(TASK_LINK_KEY);
+                if (!raw) {
+                    taskLinkState = { date: todayDateString(), count: 0 };
+                    localStorage.setItem(TASK_LINK_KEY, JSON.stringify(taskLinkState));
+                    return;
+                }
+                const parsed = JSON.parse(raw);
+                if (!parsed || parsed.date !== todayDateString()) {
+                    // reset for new day
+                    taskLinkState = { date: todayDateString(), count: 0 };
+                    localStorage.setItem(TASK_LINK_KEY, JSON.stringify(taskLinkState));
+                    return;
+                }
+                taskLinkState = parsed;
+            } catch (e) {
+                console.warn('Failed to load task link progress from localStorage:', e);
+                taskLinkState = { date: todayDateString(), count: 0 };
+            }
+        }
+
+        function saveTaskLinkProgressToStorage() {
+            try {
+                taskLinkState.date = todayDateString();
+                localStorage.setItem(TASK_LINK_KEY, JSON.stringify(taskLinkState));
+            } catch (e) {
+                console.warn('Failed to save task link progress to localStorage:', e);
+            }
+        }
+
+        function updateTaskLinkUI() {
+            const area = document.getElementById('taskLinkArea');
+            const fill = document.getElementById('taskLinkProgressFill');
+            const countDisplay = document.getElementById('taskLinkCountDisplay');
+            const btn = document.getElementById('taskLinkBtn');
+
+            if (!area || !fill || !countDisplay || !btn) return;
+
+            // show area always (we can hide in future if not needed)
+            area.style.display = 'block';
+
+            const count = taskLinkState.count || 0;
+            const percent = Math.min((count / TASK_LINK_DAILY_MAX) * 100, 100);
+            fill.style.width = percent + '%';
+            countDisplay.textContent = `${count} / ${TASK_LINK_DAILY_MAX}`;
+
+            if (count >= TASK_LINK_DAILY_MAX) {
+                btn.disabled = true;
+                btn.textContent = 'Daily Limit Reached';
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Open Link & Earn';
+            }
+        }
+
+        async function handleTaskLinkClick() {
+            if (isBanned) {
+                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
+                return;
+            }
+
+            // If reached daily max
+            if (taskLinkState.count >= TASK_LINK_DAILY_MAX) {
+                showCustomAlert('Daily Limit Reached!', `You have reached the daily limit for these instant links (${TASK_LINK_DAILY_MAX}).`, 'warning');
+                updateTaskLinkUI();
+                return;
+            }
+
+            // Attempt to open link using WebApp or fallback
+            const opened = openExternalLink(TASK_LINK_URL);
+
+            // Award immediately on click (local)
+            taskLinkState.count = (taskLinkState.count || 0) + 1;
+            saveTaskLinkProgressToStorage();
+
+            // Update local balance and UI (note: server is authoritative, this is local instant reward)
+            shibBalance = Number(shibBalance || 0) + TASK_LINK_REWARD;
+            updateState({ balance: shibBalance }); // this updates UI around the app
+            updateTaskLinkUI();
+
+            showCustomAlert('Reward Granted!', `You earned ${TASK_LINK_REWARD} SHIB for opening the link. (${taskLinkState.count}/${TASK_LINK_DAILY_MAX})`, 'success');
+        }
+
+        // ------------------------------------------------------------------
 
         function updateState(data) {
             shibBalance = data.balance !== undefined ? data.balance : shibBalance;
@@ -1150,14 +1336,19 @@ You will earn 5% of the revenue from every referral you bring through ads!
 
             const spinBtn = document.getElementById('spinBtn');
             if (spinBtn) {
-                if (isBanned || spinsToday >= DAILY_MAX_SPINS) {
-                    spinBtn.disabled = true;
-                    spinBtn.textContent = `LIMIT REACHED (${spinsToday}/${DAILY_MAX_SPINS})`;
-                } else if (!spinning) {
-                    spinBtn.disabled = false;
-                    spinBtn.textContent = 'SPIN';
+                if (spinBtn) {
+                    if (isBanned || spinsToday >= DAILY_MAX_SPINS) {
+                        spinBtn.disabled = true;
+                        spinBtn.textContent = `LIMIT REACHED (${spinsToday}/${DAILY_MAX_SPINS})`;
+                    } else if (!spinning) {
+                        spinBtn.disabled = false;
+                        spinBtn.textContent = 'SPIN';
+                    }
                 }
             }
+
+            // update task link UI as well
+            updateTaskLinkUI();
         }
         
         // ***************************************************************
@@ -1328,7 +1519,7 @@ You will earn 5% of the revenue from every referral you bring through ads!
             if (!Array.isArray(availableTasks) || availableTasks.length === 0) {
                 container.innerHTML = `
                     <div class="task-item-card">
-                        <span class="task-text-info">No tasks available right now.</span>
+                        <span class="task-text-info">Come back later.</span>
                         <button class="task-action-btn-new" disabled>Unavailable</button>
                     </div>
                 `;
@@ -1476,6 +1667,10 @@ You will earn 5% of the revenue from every referral you bring through ads!
             // Load tasks from server and render them
             const tasks = await fetchTasks();
             renderTasksList(tasks);
+
+            // Initialize and update local task-link progress
+            loadTaskLinkProgressFromStorage();
+            updateTaskLinkUI();
 
             // Clear currentTask selection
             currentTask = null;
