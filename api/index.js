@@ -1,6 +1,5 @@
 // /api/index.js (Final and Secure Version with Limit-Based Reset and GetTasks)
 // Modified: added Task Link click handler and task-link limit fields
-// Added: generateActionLink handler that returns an action link (URL) for client use.
 
 const crypto = require('crypto');
 
@@ -9,8 +8,6 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 // ⚠️ BOT_TOKEN must be set in Vercel environment variables
 const BOT_TOKEN = process.env.BOT_TOKEN;
-// Base URL for generated action links (set this to your deployed webapp origin)
-const APP_BASE_URL = process.env.APP_BASE_URL || 'https://your-app.example';
 
 // ------------------------------------------------------------------
 // Fully secured and defined server-side constants
@@ -326,7 +323,7 @@ async function processCommission(referrerId, refereeId, sourceReward) {
 
 
 // ------------------------------------------------------------------
-// 🔒 Action ID Security System (No change, plus new link generator)
+// 🔒 Action ID Security System (No change)
 // ------------------------------------------------------------------
 
 /**
@@ -381,55 +378,6 @@ async function handleGenerateActionId(req, res, body) {
     }
 }
 
-/**
- * NEW HANDLER: type: "generateActionLink"
- * Creates a new action_id (or reuses a still-valid one) and returns an actionable URL containing the token.
- * The client can open the returned URL (or copy it). The URL format:
- *   {APP_BASE_URL}/use-action?action_id=...&action_type=...&user_id=...
- *
- * Note: Make sure APP_BASE_URL is configured in env. If you want one-time clickable links that
- * directly call server endpoints, consider adding a /use-action route that consumes the token.
- */
-async function handleGenerateActionLink(req, res, body) {
-    const { user_id, action_type } = body;
-    const id = parseInt(user_id);
-
-    if (!action_type) {
-        return sendError(res, 'Missing action_type.', 400);
-    }
-
-    try {
-        // Try to reuse a still-valid token for the same user & action_type
-        try {
-            const existing = await supabaseFetch('temp_actions', 'GET', null, `?user_id=eq.${id}&action_type=eq.${action_type}&select=action_id,created_at,id`);
-            if (Array.isArray(existing) && existing.length > 0) {
-                const rec = existing[0];
-                const recTime = new Date(rec.created_at).getTime();
-                if (Date.now() - recTime < ACTION_ID_EXPIRY_MS) {
-                    const link = `${APP_BASE_URL.replace(/\/$/, '')}/use-action?action_id=${encodeURIComponent(rec.action_id)}&action_type=${encodeURIComponent(action_type)}&user_id=${encodeURIComponent(id)}`;
-                    return sendSuccess(res, { action_id: rec.action_id, action_link: link });
-                } else {
-                    // remove expired
-                    await supabaseFetch('temp_actions', 'DELETE', null, `?id=eq.${rec.id}`);
-                }
-            }
-        } catch (e) {
-            console.warn('generateActionLink: existing check failed:', e.message);
-        }
-
-        // Create a new token
-        const newActionId = generateStrongId();
-        await supabaseFetch('temp_actions', 'POST', { user_id: id, action_id: newActionId, action_type: action_type }, '?select=action_id');
-
-        const actionLink = `${APP_BASE_URL.replace(/\/$/, '')}/use-action?action_id=${encodeURIComponent(newActionId)}&action_type=${encodeURIComponent(action_type)}&user_id=${encodeURIComponent(id)}`;
-
-        sendSuccess(res, { action_id: newActionId, action_link: actionLink });
-
-    } catch (error) {
-        console.error('handleGenerateActionLink failed:', error.message);
-        sendError(res, `Failed to generate action link: ${error.message}`, 500);
-    }
-}
 
 /**
  * Middleware: Checks if the Action ID is valid and then deletes it.
@@ -472,7 +420,6 @@ async function validateAndUseActionId(res, userId, actionId, actionType) {
 }
 
 // --- API Handlers ---
-// (rest of handlers unchanged — watchAd, preSpin, spinResult, getUserData, etc.)
 
 /**
  * HANDLER: type: "getUserData"
@@ -1137,9 +1084,6 @@ module.exports = async (req, res) => {
       break;
     case 'generateActionId': 
       await handleGenerateActionId(req, res, body);
-      break;
-    case 'generateActionLink':
-      await handleGenerateActionLink(req, res, body);
       break;
     case 'taskLinkClick': // NEW handler for task-link clicks
       await handleTaskLinkClick(req, res, body);
