@@ -583,7 +583,7 @@
 
         /* Specific styles for Error/Warning */
         .custom-alert-box.error .alert-title { color: #dc3545; }
-        .custom-alert-box.error .alert-icon::before { content: '🤦'; }
+        .custom-alert-box.error .alert-icon::before { content: '🔔'; }
 
         /* Specific styles for Warning/Info - Using Yellow/Brown for Pencil/Paper Theme */
         .custom-alert-box.warning .alert-title { color: #8B4513; } /* Brown */
@@ -724,13 +724,13 @@
         
         <div class="progress-group-container">
             <div class="daily-progress-container">
-                <div class="daily-progress-text">Ads today: <span id="adsCount">0</span> / 100</div>
+                <div class="daily-progress-text">Ads today: <span id="adsCount">0</span> / 200</div>
                 <div class="daily-progress-bar">
                     <div class="daily-progress-fill" id="dailyProgressFill"></div>
                 </div>
             </div>
             <div class="spin-progress-container">
-                <div class="spin-progress-text">Spins today: <span id="spinsCount">0</span> / 15</div>
+                <div class="spin-progress-text">Spins today: <span id="spinsCount">0</span> / 25</div>
                 <div class="spin-progress-bar">
                     <div class="spin-progress-fill" id="spinProgressFill"></div>
                 </div>
@@ -803,8 +803,8 @@
                 <input type="text" id="binanceId" placeholder="Enter your Binance ID">
             </div>
             <div class="input-group">
-                <label>Amount in SHIB (Min 400)</label>
-                <input type="number" id="withdrawAmount" min="400" value="" placeholder="">
+                <label>Amount in SHIB (Min 2000)</label>
+                <input type="number" id="withdrawAmount" min="2000" value="" placeholder="">
             </div>
             <div class="withdraw-buttons">
                 <button class="withdraw-btn" onclick="confirmWithdraw()">Send Request</button>
@@ -1103,8 +1103,8 @@ You will earn 5% of the revenue from every referral you bring through ads!
 
 
         /* ===== Rewards, Limits, and Anti-Cheat (Limits here are for display only) ===== */
-        const DAILY_MAX = 100;
-        const DAILY_MAX_SPINS = 15;
+        const DAILY_MAX = 200;
+        const DAILY_MAX_SPINS = 25;
         
         let shibBalance = 0; 
         let adsWatchedToday = 0;
@@ -1376,7 +1376,7 @@ You will earn 5% of the revenue from every referral you bring through ads!
                     perTaskBtn.textContent = 'Claimed';
                     perTaskBtn.classList.add('completed');
                 } else {
-                    perTaskBtn.disabled = isProcessingTask;
+                    perTaskBtn.disabled = isProcessingTask || perTaskBtn.dataset.locked === '1';
                     perTaskBtn.classList.remove('completed');
 
                     if (isProcessingTask) {
@@ -1619,6 +1619,8 @@ You will earn 5% of the revenue from every referral you bring through ads!
          * Dual behaviour on the same button:
          * - First click: open the external link (if present) and switch the button to "Claim".
          * - Second click (when button shows "Claim"): start the verification & claim flow for that task.
+         *
+         * Added: per-button lock to prevent rapid multiple claim requests.
          */
         async function onTaskButtonClick(event) {
             event = event || window.event;
@@ -1631,12 +1633,31 @@ You will earn 5% of the revenue from every referral you bring through ads!
                 return;
             }
 
+            // Prevent multiple rapid clicks using dataset lock
+            if (btn.dataset.locked === '1') {
+                // Already processing or locked
+                return;
+            }
+
             // If user clicked a button already switched to "Claim", start claim flow
             const btnText = (btn.textContent || '').trim().toLowerCase();
             if (btnText === 'claim') {
+                // Lock the button immediately to prevent multiple claim requests
+                btn.dataset.locked = '1';
+                btn.disabled = true;
+
+                // If already processing globally, release and ignore
+                if (isProcessingTask) {
+                    btn.dataset.locked = '0';
+                    btn.disabled = false;
+                    return;
+                }
+
                 // Set currentTask and trigger claim flow
                 const task = await fetchTask(taskId);
                 if (!task) {
+                    btn.dataset.locked = '0';
+                    btn.disabled = false;
                     showCustomAlert('Task Error', 'Selected task not found. Please refresh the tasks list.', 'error');
                     return;
                 }
@@ -1652,6 +1673,8 @@ You will earn 5% of the revenue from every referral you bring through ads!
                     // If already completed server-side, remove element and notify
                     const el = document.querySelector(`div[data-task-id="${taskId}"]`);
                     if (el) el.remove();
+                    btn.dataset.locked = '0';
+                    btn.disabled = false;
                     showCustomAlert('Task Completed!', 'Reward already claimed for this task.', 'warning');
                     return;
                 }
@@ -1692,6 +1715,9 @@ You will earn 5% of the revenue from every referral you bring through ads!
                     btn.textContent = 'Claim';
                     // Provide guidance
                     showCustomAlert('Opened Task', 'The task has been opened. After joining press "Claim" to receive the reward.', 'warning');
+                    // ensure button is enabled for next click (unlock)
+                    btn.dataset.locked = '0';
+                    btn.disabled = false;
                 } else {
                     showCustomAlert('Open Link Failed', 'Unable to open the link. Please try manually.', 'error');
                 }
@@ -1699,6 +1725,8 @@ You will earn 5% of the revenue from every referral you bring through ads!
                 // No link: allow user to attempt direct verification by changing to Claim
                 btn.textContent = 'Claim';
                 showCustomAlert('No Link', 'This task has no join link. Press Claim to attempt verification.', 'warning');
+                btn.dataset.locked = '0';
+                btn.disabled = false;
             }
         }
 
@@ -1778,6 +1806,12 @@ You will earn 5% of the revenue from every referral you bring through ads!
                 return;
             }
 
+            // Lock the per-task button to avoid rapid double-submits
+            if (taskBtn) {
+                taskBtn.dataset.locked = '1';
+                taskBtn.disabled = true;
+            }
+
             isProcessingTask = true;
             updateUI(); 
 
@@ -1816,6 +1850,10 @@ You will earn 5% of the revenue from every referral you bring through ads!
             if (!currentTask) {
                 isProcessingTask = false;
                 showCustomAlert('No Task Selected', 'Select a task before claiming.', 'warning');
+                if (taskBtn) {
+                    taskBtn.dataset.locked = '0';
+                    taskBtn.disabled = false;
+                }
                 return;
             }
 
@@ -1826,6 +1864,10 @@ You will earn 5% of the revenue from every referral you bring through ads!
             if (!actionId) {
                 isProcessingTask = false;
                 taskActionState = 'JOIN_OR_CLAIM'; // Reset state on error
+                if (taskBtn) {
+                    taskBtn.dataset.locked = '0';
+                    taskBtn.disabled = false;
+                }
                 updateUI();
                 return;
             }
@@ -1867,6 +1909,13 @@ You will earn 5% of the revenue from every referral you bring through ads!
                 taskActionState = 'JOIN_OR_CLAIM'; // Force restart the process
                 if (taskBtn) taskBtn.textContent = 'Open';
             }
+
+            // Release the per-task button lock (success or failure)
+            if (taskBtn) {
+                taskBtn.dataset.locked = '0';
+                taskBtn.disabled = false;
+            }
+
             updateUI();
         }
 
@@ -2251,9 +2300,9 @@ You will earn 5% of the revenue from every referral you bring through ads!
                 showCustomAlert('Invalid Input!', 'Please enter a valid Binance User ID (minimum 8 digits).', 'warning'); 
                 return; 
             }
-            if(isNaN(amount) || amount < 400){ 
+            if(isNaN(amount) || amount < 2000){ 
                 // English translation of the Arabic alert message
-                showCustomAlert('Invalid Amount!', 'The minimum withdrawal amount is 400 SHIB.', 'warning'); 
+                showCustomAlert('Invalid Amount!', 'The minimum withdrawal amount is 2000 SHIB.', 'warning'); 
                 return; 
             }
             if(amount > shibBalance){ 
