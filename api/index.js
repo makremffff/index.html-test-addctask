@@ -1,6 +1,5 @@
 // /api/index.js (Final and Secure Version with Limit-Based Reset and GetTasks)
 // Modified: added Task Link click handler and task-link limit fields, AND dynamic task type handling
-// Modified (2025-12-06): Added support for FaucetPay / FawstPay field in withdrawals insertion and validation
 
 const crypto = require('crypto');
 
@@ -931,21 +930,9 @@ async function handleCompleteTask(req, res, body) {
 
 /**
  * 8) type: "withdraw"
- *
- * Updated to accept FaucetPay / FawstPay (email/id) in addition to Binance ID.
- * Supports:
- * - binanceId
- * - fawstpayEmail (or fawstPayEmail)
- * - or generic payment_method + payment_identifier
- *
- * Additionally inserts the appropriate columns into the 'withdrawals' table:
- * - binance_id (existing)
- * - fawstpay_email (new)
- * - payment_method (optional additional column if you added it)
  */
 async function handleWithdraw(req, res, body) {
-    // Accept multiple possible fields
-    const { user_id, binanceId, amount, action_id, fausetpayEmail, fausetPayEmail, payment_method, payment_identifier } = body;
+    const { user_id, binanceId, amount, action_id } = body;
     const id = parseInt(user_id);
     const withdrawalAmount = parseFloat(amount);
     const MIN_WITHDRAW = 400;
@@ -953,50 +940,11 @@ async function handleWithdraw(req, res, body) {
     // 1. Check and Consume Action ID (Security Check)
     if (!await validateAndUseActionId(res, id, action_id, 'withdraw')) return;
 
-    if (isNaN(withdrawalAmount) || withdrawalAmount < MIN_WITHDRAW) {
+    if (withdrawalAmount < MIN_WITHDRAW) {
         return sendError(res, `Minimum withdrawal amount is ${MIN_WITHDRAW} SHIB.`, 400);
     }
 
     try {
-        // Determine payment method and identifier (priority: explicit payment_method > dedicated fields)
-        let method = (payment_method || '').toString().trim().toLowerCase();
-        let identifier = (payment_identifier || '').toString().trim();
-
-        // fallback to dedicated fields
-        if (!method || !identifier) {
-            if (fausetPayEmail || fausetpayEmail) {
-                method = method || 'fausetpay';
-                identifier = identifier || (fausetPayEmail || fausetpayEmail);
-            } else if (binanceId) {
-                method = method || 'binance';
-                identifier = identifier || binanceId;
-            }
-        }
-
-        // Default to binance if nothing provided (legacy behavior)
-        if (!method) method = 'binance';
-
-        if (!identifier) {
-            return sendError(res, 'Payment identifier is missing. Provide Binance ID or FausetPay email (or use payment_method + payment_identifier).', 400);
-        }
-
-        // Validate identifier according to method
-        if (method === 'binance') {
-            // simple length check (existing rule in UI uses min 8 chars)
-            if (!identifier || identifier.length < 8) {
-                return sendError(res, 'Please enter a valid Binance User ID (minimum 8 characters).', 400);
-            }
-        } else if (method === 'fausetpay' || method === 'faucetpay' || method === 'fauset') {
-            // validate email pattern for FaucetPay/FausetPay
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailPattern.test(identifier)) {
-                return sendError(res, 'Please enter a valid FausetPay/FaucetPay email address.', 400);
-            }
-        } else {
-            // Unknown method: still accept but store method & identifier; optionally reject
-            // For safety, we accept and store the provided identifier
-        }
-
         // 2. Fetch current user balance and banned status
         const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=balance,is_banned`);
         if (!Array.isArray(users) || users.length === 0) {
@@ -1027,28 +975,8 @@ async function handleWithdraw(req, res, body) {
           `?id=eq.${id}`);
 
         // 7. Record the withdrawal request
-        // Build payload to include the new FaucetPay column if method indicates it
-        const withdrawalPayload = {
-            user_id: id,
-            amount: withdrawalAmount,
-            status: 'pending'
-        };
-
-        if (method === 'binance') {
-            withdrawalPayload.binance_id = identifier;
-            withdrawalPayload.payment_method = 'binance';
-        } else if (method === 'fausetpay' || method === 'faucetpay' || method === 'fauset') {
-            // new column: fausetpay_email
-            withdrawalPayload.fausetpay_email = identifier;
-            withdrawalPayload.payment_method = 'fausetpay';
-        } else {
-            // store generically
-            withdrawalPayload.payment_method = method;
-            withdrawalPayload.payment_identifier = identifier;
-        }
-
         await supabaseFetch('withdrawals', 'POST',
-          withdrawalPayload,
+          { user_id: id, amount: withdrawalAmount, binance_id: binanceId, status: 'pending' },
           '?select=user_id');
 
         // 8. Success
