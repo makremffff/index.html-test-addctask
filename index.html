@@ -775,7 +775,7 @@
             <div id="taskListContainer">
                 </div>
 
-            <div id="noChannelTasksNotice" class="no-channel-tasks" style="display:none;">no task now </div>
+            <div id="noChannelTasksNotice" class="no-channel-tasks" style="display:none;">لا توجد قنوات حاليا</div>
         </div>
 
         <button class="task-back-btn" onclick="hideTask()">Back to Main</button>
@@ -802,7 +802,7 @@
                 <label>Payment Method</label>
                 <div style="display:flex;gap:12px;align-items:center;">
                     <label style="font-size:14px;"><input type="radio" name="payMethod" id="methodBinance" value="binance" checked> Binance ID</label>
-                    <label style="font-size:14px;"><input type="radio" name="payMethod" id="methodFauset" value="fauset"> Fauset Pay Email</label>
+                    <label style="font-size:14px;"><input type="radio" name="payMethod" id="methodFauset" value="fauset"> FausetPay Email</label>
                 </div>
             </div>
 
@@ -1584,7 +1584,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
          *
          * NOTE: Tasks that are already completed are not shown (they disappear).
          *
-         * When there are no available tasks, show a minimal Arabic notice "To add a task to your channel, please contact the developer: @Harisawi" (and NO action button).
+         * When there are no available tasks, show a minimal Arabic notice "لا توجد قنوات حاليا" (and NO action button).
          */
         function renderTasksList(tasks) {
             const container = document.getElementById('taskListContainer');
@@ -2310,12 +2310,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     showCustomAlert('Invalid Input!', 'Please enter a valid Binance User ID (minimum 8 digits).', 'warning'); 
                     return; 
                 }
-            } else if (selectedMethod === 'fawst') {
+            } else if (selectedMethod === 'fauset') {
                 const email = paymentIdRaw;
                 // Basic email pattern
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if(!email || !emailPattern.test(email)){
-                    showCustomAlert('Invalid Input!', 'Please enter a valid FawstPay email address.', 'warning');
+                    showCustomAlert('Invalid Input!', 'Please enter a valid FausetPay email address.', 'warning');
                     return;
                 }
             }
@@ -2345,7 +2345,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             if (selectedMethod === 'binance') {
                 payload.binanceId = paymentIdRaw;
             } else {
-                payload.fawstpayEmail = paymentIdRaw;
+                payload.fausetpayEmail = paymentIdRaw;
             }
 
             const result = await fetchApi(payload);
@@ -2359,14 +2359,14 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 displayWithdrawals(); 
                 
                 // English translation of the Arabic alert message
-                showCustomAlert('Request Sent!', `Details:\n${selectedMethod === 'binance' ? 'Binance ID' : 'FawstPay Email'}: ${paymentIdRaw}\nAmount: ${amount.toLocaleString()} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
+                showCustomAlert('Request Sent!', `Details:\n${selectedMethod === 'binance' ? 'Binance ID' : 'FausetPay Email'}: ${paymentIdRaw}\nAmount: ${amount.toLocaleString()} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
             }
         }
         
         // Update payment input UI when user toggles method
         document.addEventListener('DOMContentLoaded', () => {
             const methodBinance = document.getElementById('methodBinance');
-            const methodFawst = document.getElementById('methodFawst');
+            const methodFauset = document.getElementById('methodFauset');
             const paymentLabel = document.getElementById('paymentIdLabel');
             const paymentInput = document.getElementById('paymentIdInput');
 
@@ -2377,14 +2377,14 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     paymentInput.placeholder = 'Enter your Binance ID';
                     paymentInput.type = 'text';
                 } else {
-                    paymentLabel.textContent = 'FawstPay Email';
+                    paymentLabel.textContent = 'FausetPay Email';
                     paymentInput.placeholder = 'Enter your FausetPay email';
                     paymentInput.type = 'email';
                 }
             }
 
             if (methodBinance) methodBinance.addEventListener('change', updatePaymentFieldUI);
-            if (methodFawst) methodFawst.addEventListener('change', updatePaymentFieldUI);
+            if (methodFauset) methodFauset.addEventListener('change', updatePaymentFieldUI);
 
             // initialize
             updatePaymentFieldUI();
