@@ -775,7 +775,7 @@
             <div id="taskListContainer">
                 </div>
 
-            <div id="noChannelTasksNotice" class="no-channel-tasks" style="display:none;">لا توجد قنوات حاليا</div>
+            <div id="noChannelTasksNotice" class="no-channel-tasks" style="display:none;">no task now </div>
         </div>
 
         <button class="task-back-btn" onclick="hideTask()">Back to Main</button>
@@ -802,7 +802,7 @@
                 <label>Payment Method</label>
                 <div style="display:flex;gap:12px;align-items:center;">
                     <label style="font-size:14px;"><input type="radio" name="payMethod" id="methodBinance" value="binance" checked> Binance ID</label>
-                    <label style="font-size:14px;"><input type="radio" name="payMethod" id="methodFawst" value="fawst"> FawstPay Email</label>
+                    <label style="font-size:14px;"><input type="radio" name="payMethod" id="methodFauset" value="fauset"> Fauset Pay Email</label>
                 </div>
             </div>
 
@@ -1584,7 +1584,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
          *
          * NOTE: Tasks that are already completed are not shown (they disappear).
          *
-         * When there are no available tasks, show a minimal Arabic notice "لا توجد قنوات حاليا" (and NO action button).
+         * When there are no available tasks, show a minimal Arabic notice "To add a task to your channel, please contact the developer: @Harisawi" (and NO action button).
          */
         function renderTasksList(tasks) {
             const container = document.getElementById('taskListContainer');
@@ -2378,7 +2378,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     paymentInput.type = 'text';
                 } else {
                     paymentLabel.textContent = 'FawstPay Email';
-                    paymentInput.placeholder = 'Enter your FawstPay email';
+                    paymentInput.placeholder = 'Enter your FausetPay email';
                     paymentInput.type = 'email';
                 }
             }
