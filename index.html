@@ -99,7 +99,7 @@
         
         /* User Circle */
         .user-circle{
-            position:absolute;top:20px;left:20px;width:70px;height:70px;border:2px dashed #ccc;
+            position:absolute;top:15px;left:15px;width:70px;height:70px;border:2px dashed #ccc;
             border-radius:50%;display:flex;flex-direction:column;justify-content:center;
             align-items:center;cursor:pointer;transition:all .3s ease;z-index:100;overflow:hidden
         }
@@ -845,7 +845,7 @@
         <div class="note">
        
 🚀 Share this link to invite new users.
-You will earn 5% of the revenue from every referral you bring through ads!
+You will earn 40% of the revenue from every referral you bring through ads!
         </div>
 
         <button class="back-btn" onclick="hideInvite()">Back to Main</button>
@@ -1042,7 +1042,7 @@ You will earn 5% of the revenue from every referral you bring through ads!
                     if (response.status === 429) {
                         alertTitle = 'Rate Limit Exceeded!';
                         alertType = 'warning';
-                        cleanMessage = 'You have exceeded the allowed request limit. Please try again later.';
+                        cleanMessage = 'You have exceeded the allowed request limit. Please try again after 5 second.';
                     } else if (errorMessage.includes('banned')) {
                         alertTitle = 'Access Denied!';
                         alertType = 'error';
@@ -1480,7 +1480,7 @@ You will earn 5% of the revenue from every referral you bring through ads!
                         if(adResult.data.new_ads_count >= DAILY_MAX){
                             alertTitle = 'Daily Task Completed!';
                             // **UPDATED MESSAGE HERE** to 'Come back in 6 hours.'
-                            alertMessage = `Congratulations! You have completed all today's ads (${DAILY_MAX}). ＣＯＭＥ ｂａｃｋ ａｆｔｅｒ 6 Ｈｏｕｒｓ!`;
+                            alertMessage = `Congratulations! You have completed all today's ads (${DAILY_MAX}). Come back after 6 hours`;
                         }
                         showCustomAlert(alertTitle, alertMessage, alertType);
 
