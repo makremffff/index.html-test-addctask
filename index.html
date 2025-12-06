@@ -775,7 +775,7 @@
             <div id="taskListContainer">
                 </div>
 
-            <div id="noChannelTasksNotice" class="no-channel-tasks" style="display:none;">No channel tasks now.</div>
+            <div id="noChannelTasksNotice" class="no-channel-tasks" style="display:none;">لا توجد قنوات حاليا</div>
         </div>
 
         <button class="task-back-btn" onclick="hideTask()">Back to Main</button>
@@ -799,9 +799,18 @@
         
         <div class="input-form-container">
             <div class="input-group">
-                <label>Binance User ID</label>
-                <input type="text" id="binanceId" placeholder="Enter your Binance ID">
+                <label>Payment Method</label>
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <label style="font-size:14px;"><input type="radio" name="payMethod" id="methodBinance" value="binance" checked> Binance ID</label>
+                    <label style="font-size:14px;"><input type="radio" name="payMethod" id="methodFawst" value="fawst"> FawstPay Email</label>
+                </div>
             </div>
+
+            <div class="input-group">
+                <label id="paymentIdLabel">Binance User ID</label>
+                <input type="text" id="paymentIdInput" placeholder="Enter your Binance ID">
+            </div>
+
             <div class="input-group">
                 <label>Amount in SHIB (Min 2000)</label>
                 <input type="number" id="withdrawAmount" min="2000" value="" placeholder="">
@@ -812,7 +821,7 @@
         </div>
         
         <div class="note">
-            ⚠️ **Important:** The withdrawal will be processed manually within **24 hours**. Ensure your Binance ID is correct.
+            ⚠️ <strong>Important:</strong> The withdrawal will be processed manually within <strong>24 hours</strong>. Ensure your payment ID or email is correct.
         </div>
         
         <div class="history-section">
@@ -1575,7 +1584,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
          *
          * NOTE: Tasks that are already completed are not shown (they disappear).
          *
-         * When there are no available tasks, show a minimal English notice "No channel tasks now."
+         * When there are no available tasks, show a minimal Arabic notice "لا توجد قنوات حاليا" (and NO action button).
          */
         function renderTasksList(tasks) {
             const container = document.getElementById('taskListContainer');
@@ -1588,8 +1597,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             if (!Array.isArray(availableTasks) || availableTasks.length === 0) {
                 container.innerHTML = `
                     <div class="task-item-card">
-                        <span class="task-text-info">No channel tasks now.</span>
-                        <button class="task-action-btn-new" disabled>Unavailable</button>
+                        <span class="task-text-info">لا توجد قنوات حاليا</span>
                     </div>
                 `;
                 if (noChannelNotice) noChannelNotice.style.display = 'block';
@@ -2292,14 +2300,26 @@ You will earn 40% of the revenue from every referral you bring through ads!
                  return;
             }
             
-            const binanceId = document.getElementById('binanceId').value.trim();
+            const selectedMethod = document.querySelector('input[name="payMethod"]:checked') ? document.querySelector('input[name="payMethod"]:checked').value : 'binance';
+            const paymentIdRaw = document.getElementById('paymentIdInput').value.trim();
             const amount = parseInt(document.getElementById('withdrawAmount').value);
             
-            if(!binanceId || binanceId.length < 8){ 
-                // English translation of the Arabic alert message
-                showCustomAlert('Invalid Input!', 'Please enter a valid Binance User ID (minimum 8 digits).', 'warning'); 
-                return; 
+            if (selectedMethod === 'binance') {
+                if(!paymentIdRaw || paymentIdRaw.length < 8){ 
+                    // English translation of the Arabic alert message
+                    showCustomAlert('Invalid Input!', 'Please enter a valid Binance User ID (minimum 8 digits).', 'warning'); 
+                    return; 
+                }
+            } else if (selectedMethod === 'fawst') {
+                const email = paymentIdRaw;
+                // Basic email pattern
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if(!email || !emailPattern.test(email)){
+                    showCustomAlert('Invalid Input!', 'Please enter a valid FawstPay email address.', 'warning');
+                    return;
+                }
             }
+
             if(isNaN(amount) || amount < 2000){ 
                 // English translation of the Arabic alert message
                 showCustomAlert('Invalid Amount!', 'The minimum withdrawal amount is 2000 SHIB.', 'warning'); 
@@ -2316,12 +2336,19 @@ You will earn 40% of the revenue from every referral you bring through ads!
             if (!actionId) return;
 
             // 2. Send withdrawal request via API
-            const result = await fetchApi({
+            const payload = {
                 type: 'withdraw',
-                binanceId: binanceId,
                 amount: amount,
                 action_id: actionId // ⬅️ إرسال Action ID
-            });
+            };
+
+            if (selectedMethod === 'binance') {
+                payload.binanceId = paymentIdRaw;
+            } else {
+                payload.fawstpayEmail = paymentIdRaw;
+            }
+
+            const result = await fetchApi(payload);
 
             if (result.ok) {
                 // 3. Update balance with trusted server value
@@ -2332,10 +2359,37 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 displayWithdrawals(); 
                 
                 // English translation of the Arabic alert message
-                showCustomAlert('Request Sent!', `Details:\nBinance ID: ${binanceId}\nAmount: ${amount.toLocaleString()} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
+                showCustomAlert('Request Sent!', `Details:\n${selectedMethod === 'binance' ? 'Binance ID' : 'FawstPay Email'}: ${paymentIdRaw}\nAmount: ${amount.toLocaleString()} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
             }
         }
         
+        // Update payment input UI when user toggles method
+        document.addEventListener('DOMContentLoaded', () => {
+            const methodBinance = document.getElementById('methodBinance');
+            const methodFawst = document.getElementById('methodFawst');
+            const paymentLabel = document.getElementById('paymentIdLabel');
+            const paymentInput = document.getElementById('paymentIdInput');
+
+            function updatePaymentFieldUI() {
+                const selected = document.querySelector('input[name="payMethod"]:checked').value;
+                if (selected === 'binance') {
+                    paymentLabel.textContent = 'Binance User ID';
+                    paymentInput.placeholder = 'Enter your Binance ID';
+                    paymentInput.type = 'text';
+                } else {
+                    paymentLabel.textContent = 'FawstPay Email';
+                    paymentInput.placeholder = 'Enter your FawstPay email';
+                    paymentInput.type = 'email';
+                }
+            }
+
+            if (methodBinance) methodBinance.addEventListener('change', updatePaymentFieldUI);
+            if (methodFawst) methodFawst.addEventListener('change', updatePaymentFieldUI);
+
+            // initialize
+            updatePaymentFieldUI();
+        });
+
         // Final event listener to ensure background audio starts on the first user interaction
         document.addEventListener('click', function handler() {
             playBGAudio();
