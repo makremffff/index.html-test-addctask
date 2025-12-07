@@ -109,7 +109,7 @@
         
         .user-username{
             position: absolute;
-            top: 65px;
+            top: 70px;
             left: 10px;
             width: 70px;
             font-size:13px;color:#555;white-space:nowrap;
@@ -860,8 +860,9 @@ You will earn 40% of the revenue from every referral you bring through ads!
         </div>
     </div>
 
-    <audio id="backgroundAudio" loop>
-        <source src="audio.mp3" type="audio/mp3">
+    <!-- Background audio player (playlist managed in JS): audio.mp3, audio2.mp3, audio3.mp3, audio4.mp3 -->
+    <audio id="bgPlayer">
+        <source id="bgSource" src="audio.mp3" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
 
@@ -894,7 +895,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         
         /* ===== Custom Alert & Audio Functions ===== */
         
-        const backgroundAudio = document.getElementById('backgroundAudio');
+        const bgPlayer = document.getElementById('bgPlayer');
         const successSFX = document.getElementById('successSFX');
         const errorSFX = document.getElementById('errorSFX');
         const customAlert = document.getElementById('customAlert');
@@ -903,15 +904,57 @@ You will earn 40% of the revenue from every referral you bring through ads!
         const alertMessageEl = document.getElementById('alertMessage');
         const alertIconEl = document.getElementById('alertIcon');
 
+        // Playlist for background: per request use these files
+        const bgPlaylist = ['audio.mp3', 'audio2.mp3', 'audio3.mp3', 'audio4.mp3'];
+        let currentBgIndex = -1;
+
+        function getRandomBgIndex(excludeIndex = -1) {
+            if (!Array.isArray(bgPlaylist) || bgPlaylist.length === 0) return -1;
+            if (bgPlaylist.length === 1) return 0;
+            let idx;
+            // Avoid immediate repeat when possible
+            do {
+                idx = Math.floor(Math.random() * bgPlaylist.length);
+            } while (idx === excludeIndex && bgPlaylist.length > 1);
+            return idx;
+        }
+
+        function playNextBg() {
+            const next = getRandomBgIndex(currentBgIndex);
+            if (next === -1) return;
+            currentBgIndex = next;
+            // set src and play
+            try {
+                // Some browsers require setting src on the audio element
+                bgPlayer.src = bgPlaylist[next];
+                bgPlayer.load();
+                bgPlayer.volume = 0.4;
+                bgPlayer.play().catch(e => {
+                    // Will often fail until user interacts; log and continue
+                    console.log("bgPlayer play failed (will wait for user interaction):", e);
+                });
+            } catch (e) {
+                console.warn("Failed to set bgPlayer source:", e);
+            }
+        }
+
+        // When a track ends, play another randomly as requested
+        bgPlayer.addEventListener('ended', () => {
+            // Play next random track
+            playNextBg();
+        });
 
         /**
          * Plays background music. Must be called after user interaction.
          */
         function playBGAudio() {
             // Attempt to play only if it's paused or not playing
-            if (backgroundAudio.paused) {
-                backgroundAudio.volume = 0.4; // Set a moderate volume
-                backgroundAudio.play().catch(e => console.log("Background audio play failed, waiting for user click:", e));
+            try {
+                if (bgPlayer.paused || !bgPlayer.currentSrc) {
+                    playNextBg();
+                }
+            } catch (e) {
+                console.log("Background audio play failed, waiting for user click:", e);
             }
         }
         
@@ -1586,13 +1629,13 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const availableTasks = Array.isArray(tasks) ? tasks.filter(t => !t.is_completed) : [];
 
             if (!Array.isArray(availableTasks) || availableTasks.length === 0) {
+                // Only show a simple "No tasks now." message as requested (remove Unavailable button)
                 container.innerHTML = `
                     <div class="task-item-card">
-                        <span class="task-text-info">No channel tasks now.</span>
-                        <button class="task-action-btn-new" disabled>Unavailable</button>
+                        <span class="task-text-info">No tasks now.</span>
                     </div>
                 `;
-                if (noChannelNotice) noChannelNotice.style.display = 'block';
+                if (noChannelNotice) noChannelNotice.style.display = 'none';
                 return;
             }
 
