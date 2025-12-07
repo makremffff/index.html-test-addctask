@@ -408,25 +408,22 @@
         .back-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #4e555b}
         .note{margin-top:15px;font-size:13px;color:#777;max-width:400px;text-align:center;background:rgba(255,140,0,0.1);padding:10px;border-radius:10px;border-left: 5px solid #ff8c00;}
 
-        /* Withdrawal History Table - make wider to show 7 entries clearly and prevent overlapping */
+        /* Withdrawal History Table - responsive: ensure all columns visible without horizontal scroll */
         .history-section{
-            width: 100%;
-            /* allow the section to use most of available width but cap on large screens */
-            max-width: 1100px; /* increased max width so text/numbers have space */
+            width: calc(100% - 40px); /* take almost full width of screen */
+            max-width: 1100px; /* cap on very large screens */
             margin-top: 30px;
             padding: 18px; /* Slightly increased padding */
             border-top: 1px solid #eee;
             background: rgba(255, 255, 255, 0.97);
             border-radius: 12px;
             box-shadow: 0 8px 28px rgba(0,0,0,0.06);
-            /* Allow horizontal scrolling on small devices rather than wrapping/stacking */
-            overflow-x: auto;
+            /* Prevent horizontal scrolling - table will wrap content */
+            overflow-x: hidden;
             overflow-y: auto;
-            /* ensure it's centered */
             margin-left: 20px;
             margin-right: 20px;
-            /* Prevent it from growing beyond the visible area */
-            max-height: 640px; /* Larger max-height to fit seven rows without scrolling on many devices */
+            max-height: 640px;
             min-height: 220px;
             margin-bottom: 24px;
         }
@@ -441,16 +438,27 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 15px; /* larger font to improve readability */
-            min-width: 800px; /* ensure table stays wide enough to not wrap columns on most screens */
+            table-layout: fixed; /* allow columns to share available width and wrap */
         }
+        /* set proportional widths for columns so they fit on screen */
+        .history-table thead th:nth-child(1),
+        .history-table tbody td:nth-child(1) { width: 18%; } /* Date */
+        .history-table thead th:nth-child(2),
+        .history-table tbody td:nth-child(2) { width: 18%; } /* Amount */
+        .history-table thead th:nth-child(3),
+        .history-table tbody td:nth-child(3) { width: 44%; } /* Destination (bigger) */
+        .history-table thead th:nth-child(4),
+        .history-table tbody td:nth-child(4) { width: 20%; } /* Status */
+
         .history-table th, .history-table td{
             padding: 12px; /* increased padding to be clearer */
             border-bottom: 1px solid #eee;
             text-align: left;
             vertical-align: middle;
             font-size: 15px; /* readable size for cells */
-            word-break: normal;
-            white-space: nowrap; /* Prevent text from breaking into multiple lines; forces horizontal scroll on small screens */
+            word-break: break-word; /* allow wrapping */
+            white-space: normal; /* allow text to wrap to next line instead of forcing horizontal scroll */
+            overflow-wrap: anywhere; /* force wrapping when needed */
         }
         .history-table th{
             background-color: #f0f4f8;
@@ -465,13 +473,21 @@
         .status-completed{color: #28a745; font-weight: bold;}
         .no-records{text-align: center; color: #999; padding: 20px; font-size: 14px;}
 
-        /* On very small screens reduce font slightly but keep nowrap to avoid stacking */
+        /* Small screens: slightly reduce font but keep all info visible */
         @media (max-width: 520px) {
             .history-table th, .history-table td {
                 font-size: 13px;
                 padding: 10px;
             }
-            .history-table { min-width: 640px; }
+            /* adjust column proportions */
+            .history-table thead th:nth-child(1),
+            .history-table tbody td:nth-child(1) { width: 20%; }
+            .history-table thead th:nth-child(2),
+            .history-table tbody td:nth-child(2) { width: 22%; }
+            .history-table thead th:nth-child(3),
+            .history-table tbody td:nth-child(3) { width: 38%; }
+            .history-table thead th:nth-child(4),
+            .history-table tbody td:nth-child(4) { width: 20%; }
         }
         
         /* ===== Invite Screen - (No changes needed) ===== */
@@ -2424,7 +2440,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
         function displayWithdrawals() {
             const container = document.getElementById('withdrawalHistoryContainer');
             if (!withdrawalHistory || withdrawalHistory.length === 0) {
-                // English translation of the Arabic alert message
                 container.innerHTML = '<div class="no-records">No withdrawal requests currently.</div>';
                 return;
             }
@@ -2433,7 +2448,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const lastSeven = withdrawalHistory.slice(-7);
 
             let tableHTML = '<table class="history-table">';
-            // English translation of the Arabic alert message
             tableHTML += '<thead><tr><th>Date</th><th>Amount (SHIB)</th><th>Destination</th><th>Status</th></tr></thead>';
             tableHTML += '<tbody>';
 
@@ -2441,7 +2455,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const rows = lastSeven.slice().reverse();
 
             rows.forEach(record => {
-                // English translation of the Arabic alert message
                 const statusText = record.status === 'pending' ? 'Pending' : 'Completed';
                 const statusClass = record.status === 'pending' ? 'status-pending' : 'status-completed';
                 const destination = record.destination ? record.destination : '—';
@@ -2449,7 +2462,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     <tr>
                         <td style="font-weight:700">${record.date}</td>
                         <td style="font-weight:700">${record.amount.toLocaleString()}</td>
-                        <td style="word-break:break-all;max-width:140px;font-size:13px">${destination}</td>
+                        <td style="font-size:15px;word-break:break-word;white-space:normal">${destination}</td>
                         <td><span class="${statusClass}">${statusText}</span></td>
                     </tr>
                 `;
