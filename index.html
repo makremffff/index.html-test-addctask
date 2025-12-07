@@ -408,6 +408,22 @@
         .back-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #4e555b}
         .note{margin-top:15px;font-size:13px;color:#777;max-width:400px;text-align:center;background:rgba(255,140,0,0.1);padding:10px;border-radius:10px;border-left: 5px solid #ff8c00;}
 
+        /* Replacement: Show a button which opens full withdrawal history screen */
+        .withdraw-history-button-container {
+            width: 100%;
+            max-width: 720px;
+            display:flex;
+            justify-content:center;
+            margin-top:14px;
+            margin-bottom:18px;
+        }
+        .view-history-btn {
+            background:linear-gradient(145deg,#00bfff,#0077b3);
+            color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;
+            box-shadow:0 5px 0 #005a8d;transition:all .1s ease;width:100%;max-width:360px;
+        }
+        .view-history-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #005a8d}
+
         /* Withdrawal History Table - responsive: ensure all columns visible without horizontal scroll */
         .history-section{
             width: calc(100% - 40px); /* take almost full width of screen */
@@ -792,6 +808,28 @@
             color: #fff;
         }
 
+        /* ===== Withdraw History Full Screen (NEW) ===== */
+        .withdraw-history-screen{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            padding:20px;
+            background: #f6f9fb;
+            overflow-y:auto;
+        }
+        .withdraw-history-header{
+            width:100%;
+            max-width:1100px;
+            text-align:center;
+            margin-bottom:18px;
+            padding:12px;
+            background:#fff;
+            border-radius:10px;
+            box-shadow:0 6px 20px rgba(0,0,0,0.06);
+        }
+        .withdraw-history-title{font-size:22px;color:#333;font-weight:800;}
+        .withdraw-history-back{margin-top:18px;background:linear-gradient(145deg,#6c757d,#5a6268);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;box-shadow:0 5px 0 #4e555b}
+        .withdraw-history-back:active{transform:translateY(3px);box-shadow:0 2px 0 #4e555b}
     </style>
 </head>
 <body>
@@ -952,13 +990,27 @@
             ⚠️ Important: The withdrawal will be processed manually within 24 hours. Ensure your selected destination (Binance ID or FaucetPay email) is correct.
         </div>
         
-        <div class="history-section">
+        <div class="withdraw-history-button-container">
+            <button class="view-history-btn" id="openFullHistoryBtn" onclick="openFullWithdrawHistory()">View Full Withdrawal History</button>
+        </div>
+
+        <div class="history-section" style="display:none;">
+            <!-- kept for backward compatibility but hidden; full history now accessed via the button above -->
             <h3 class="history-title">Withdrawal History (Last 7)</h3>
             <div id="withdrawalHistoryContainer">
                 </div>
         </div>
 
         <button class="back-btn" onclick="hideWithdraw()">Back to Main</button>
+    </div>
+
+    <!-- New Full Screen Withdraw History Screen (shows all records from first to last) -->
+    <div class="app-screen withdraw-history-screen" id="withdrawHistoryScreen">
+        <div class="withdraw-history-header">
+            <div class="withdraw-history-title">📜 Full Withdrawal History (Oldest → Newest)</div>
+        </div>
+        <div id="fullWithdrawalHistoryContainer" style="width:100%;max-width:1100px;"></div>
+        <button class="withdraw-history-back" onclick="closeFullWithdrawHistory()">Back</button>
     </div>
 
     <div class="app-screen invite-screen" id="inviteScreen">
@@ -998,7 +1050,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
     </div>
 
     <!-- Background audio player (playlist managed in JS): audio.mp3, audio2.mp3, audio3.mp3, audio4.mp3 -->
-    <audio id="bgPlayer">
+    <audio id="bgPlayer" preload="auto">
         <source id="bgSource" src="audio.mp3" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
@@ -1033,6 +1085,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         /* ===== Custom Alert & Audio Functions ===== */
         
         const bgPlayer = document.getElementById('bgPlayer');
+        const bgSourceEl = document.getElementById('bgSource');
         const successSFX = document.getElementById('successSFX');
         const errorSFX = document.getElementById('errorSFX');
         const customAlert = document.getElementById('customAlert');
@@ -1045,33 +1098,59 @@ You will earn 40% of the revenue from every referral you bring through ads!
         const bgPlaylist = ['audio.mp3', 'audio2.mp3', 'audio3.mp3', 'audio4.mp3'];
         let currentBgIndex = -1;
 
+        // Lock to prevent overlapping switches
+        let isBgSwitching = false;
+
         function getRandomBgIndex(excludeIndex = -1) {
             if (!Array.isArray(bgPlaylist) || bgPlaylist.length === 0) return -1;
             if (bgPlaylist.length === 1) return 0;
             let idx;
             // Avoid immediate repeat when possible
+            let attempts = 0;
             do {
                 idx = Math.floor(Math.random() * bgPlaylist.length);
-            } while (idx === excludeIndex && bgPlaylist.length > 1);
+                attempts++;
+            } while (idx === excludeIndex && bgPlaylist.length > 1 && attempts < 10);
             return idx;
         }
 
-        function playNextBg() {
+        async function playNextBg() {
+            if (isBgSwitching) return;
+            isBgSwitching = true;
+
             const next = getRandomBgIndex(currentBgIndex);
-            if (next === -1) return;
+            if (next === -1) {
+                isBgSwitching = false;
+                return;
+            }
+
             currentBgIndex = next;
-            // set src and play
+            const nextSrc = bgPlaylist[next];
+
             try {
-                // Some browsers require setting src on the audio element
-                bgPlayer.src = bgPlaylist[next];
+                // Ensure we stop any currently playing audio cleanly
+                try {
+                    bgPlayer.pause();
+                } catch (e) { /* ignore */ }
+                try {
+                    bgPlayer.currentTime = 0;
+                } catch (e) { /* ignore */ }
+
+                // Update source element (keeps DOM <source> consistent) and audio src
+                if (bgSourceEl) {
+                    bgSourceEl.src = nextSrc;
+                }
+                // Some browsers require setting the audio.src as well
+                bgPlayer.src = nextSrc;
                 bgPlayer.load();
                 bgPlayer.volume = 0.4;
-                bgPlayer.play().catch(e => {
-                    // Will often fail until user interacts; log and continue
-                    console.log("bgPlayer play failed (will wait for user interaction):", e);
-                });
+                await bgPlayer.play();
             } catch (e) {
-                console.warn("Failed to set bgPlayer source:", e);
+                // Will often fail until user interacts; log and continue
+                console.log("bgPlayer play failed (will wait for user interaction):", e);
+            } finally {
+                // Release switching lock after a short delay to avoid rapid consecutive changes
+                setTimeout(() => { isBgSwitching = false; }, 250);
             }
         }
 
@@ -1107,9 +1186,13 @@ You will earn 40% of the revenue from every referral you bring through ads!
             } else {
                 return;
             }
-            sfx.currentTime = 0; // Rewind to start
-            sfx.volume = 0.8;
-            sfx.play().catch(e => console.log("SFX play failed:", e));
+            try {
+                sfx.currentTime = 0; // Rewind to start
+                sfx.volume = 0.8;
+                sfx.play().catch(e => console.log("SFX play failed:", e));
+            } catch (e) {
+                console.warn("SFX playback issue:", e);
+            }
         }
 
         /**
@@ -2403,7 +2486,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 });
         }
 
-        /* ===== Navigation and Withdraw (Updated with FaucetPay option) ===== */
+        /* ===== Navigation and Withdraw (Updated with FaucetPay option and full history page) ===== */
         function showSpin(){
             if (isBanned) {
                  // English translation of the Arabic alert message
@@ -2437,38 +2520,87 @@ You will earn 40% of the revenue from every referral you bring through ads!
             mainScreen.classList.add('visible');
         }
         
+        /**
+         * displayWithdrawals:
+         * - Replaced the inline "last 7" history display with a single button that opens a full-screen
+         *   history page showing all withdrawal records from oldest to newest (first → last).
+         * - This keeps the withdraw screen cleaner and provides a dedicated full-screen view for history.
+         */
         function displayWithdrawals() {
             const container = document.getElementById('withdrawalHistoryContainer');
+            const openBtn = document.getElementById('openFullHistoryBtn');
+            if (!container) return;
+            // Provide lightweight inline notice and ensure button is enabled/disabled depending on data
             if (!withdrawalHistory || withdrawalHistory.length === 0) {
                 container.innerHTML = '<div class="no-records">No withdrawal requests currently.</div>';
+                if (openBtn) openBtn.disabled = true;
+            } else {
+                container.innerHTML = `<div class="no-records">${withdrawalHistory.length} total withdrawal(s) available. Use the button above to view full history.</div>`;
+                if (openBtn) openBtn.disabled = false;
+            }
+        }
+
+        /**
+         * openFullWithdrawHistory:
+         * - Navigates to the new full-screen history page and renders all records (from first to last).
+         */
+        function openFullWithdrawHistory() {
+            if (isBanned) {
+                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
+                return;
+            }
+            // Ensure we have the latest data
+            loadUserData().then(() => {
+                renderFullWithdrawalHistory();
+                document.getElementById('withdrawScreen').classList.remove('visible');
+                document.getElementById('withdrawHistoryScreen').classList.add('visible');
+            });
+        }
+
+        function closeFullWithdrawHistory() {
+            document.getElementById('withdrawHistoryScreen').classList.remove('visible');
+            document.getElementById('withdrawScreen').classList.add('visible');
+            displayWithdrawals();
+        }
+
+        /**
+         * renderFullWithdrawalHistory:
+         * - Shows all withdrawal records in chronological order from oldest to newest (index 0 → end).
+         * - Unlimited (no "last 7") and scrollable on the full screen.
+         */
+        function renderFullWithdrawalHistory() {
+            const container = document.getElementById('fullWithdrawalHistoryContainer');
+            if (!container) return;
+
+            if (!withdrawalHistory || withdrawalHistory.length === 0) {
+                container.innerHTML = '<div class="no-records">No withdrawal history available yet.</div>';
                 return;
             }
 
-            // Show only the last 7 withdrawals, most recent first
-            const lastSeven = withdrawalHistory.slice(-7);
-
-            let tableHTML = '<table class="history-table">';
+            // Build table with all records from FIRST to LAST (oldest -> newest)
+            let tableHTML = '<div class="history-section" style="max-width:1100px;"><h3 class="history-title">Full Withdrawal History</h3>';
+            tableHTML += '<table class="history-table">';
             tableHTML += '<thead><tr><th>Date</th><th>Amount (SHIB)</th><th>Destination</th><th>Status</th></tr></thead>';
             tableHTML += '<tbody>';
 
-            // Ensure we display newest first
-            const rows = lastSeven.slice().reverse();
-
-            rows.forEach(record => {
+            // Show oldest first: withdrawalHistory assumed already mapped in loadUserData as chronological? 
+            // To be explicit, we will render from index 0 -> N-1 (first to last).
+            for (let i = 0; i < withdrawalHistory.length; i++) {
+                const record = withdrawalHistory[i];
                 const statusText = record.status === 'pending' ? 'Pending' : 'Completed';
                 const statusClass = record.status === 'pending' ? 'status-pending' : 'status-completed';
                 const destination = record.destination ? record.destination : '—';
                 tableHTML += `
                     <tr>
                         <td style="font-weight:700">${record.date}</td>
-                        <td style="font-weight:700">${record.amount.toLocaleString()}</td>
+                        <td style="font-weight:700">${Number(record.amount).toLocaleString()}</td>
                         <td style="font-size:15px;word-break:break-word;white-space:normal">${destination}</td>
                         <td><span class="${statusClass}">${statusText}</span></td>
                     </tr>
                 `;
-            });
+            }
 
-            tableHTML += '</tbody></table>';
+            tableHTML += '</tbody></table></div>';
             container.innerHTML = tableHTML;
         }
 
@@ -2540,15 +2672,16 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 
                 // 5. Reload withdrawal history with new data
                 await loadUserData(); 
+                // If full history screen is open, re-render; otherwise update inline state
+                renderFullWithdrawalHistory();
                 displayWithdrawals(); 
                 
                 // English translation of the Arabic alert message
                 const destLabel = method === 'binance' ? binanceId : faucetpayEmail;
                 const methodLabel = method === 'binance' ? 'Binance ID' : 'FaucetPay Email';
-                showCustomAlert('Request Sent!', `Details:\nMethod: ${methodLabel}\nDestination: ${destLabel}\nAmount: ${amount.toLocaleString()} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
-            }
+                showCustomAlert('Request Sent!', `Details:\nMethod: ${methodLabel}\nDestination: ${destLabel}\nAmount: ${amount}
         }
-        
+
         // Toggle withdraw method inputs and update visual active state
         function toggleWithdrawMethod(e) {
             const val = e.target ? e.target.value : (e);
