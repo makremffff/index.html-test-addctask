@@ -1,5 +1,8 @@
-// /api/index.js (Final and Secure Version with Limit-Based Reset and GetTasks)
-// Modified: added Task Link click handler and task-link limit fields, AND dynamic task type handling
+// /api/index.js (Updated to support FaucetPay email withdrawals and include SQL-ready schema)
+// - Added handling of `faucetpay_email` in withdraw flow
+// - Updated MIN_WITHDRAW to match frontend (2000)
+// - getUserData now returns binance_id and faucetpay_email in withdrawal history records
+// - Assumes a `withdrawals` table exists (SQL migration provided separately)
 
 const crypto = require('crypto');
 
@@ -449,8 +452,8 @@ async function handleGetUserData(req, res, body) {
         const referrals = await supabaseFetch('users', 'GET', null, `?ref_by=eq.${id}&select=id`);
         const referralsCount = Array.isArray(referrals) ? referrals.length : 0;
 
-        // 5. Fetch withdrawal history
-        const history = await supabaseFetch('withdrawals', 'GET', null, `?user_id=eq.${id}&select=amount,status,created_at&order=created_at.desc`);
+        // 5. Fetch withdrawal history (include binance_id and faucetpay_email)
+        const history = await supabaseFetch('withdrawals', 'GET', null, `?user_id=eq.${id}&select=amount,status,created_at,binance_id,faucetpay_email&order=created_at.desc`);
         const withdrawalHistory = Array.isArray(history) ? history : [];
 
         // 6. Update last_activity (only for Rate Limit purposes now)
@@ -930,17 +933,24 @@ async function handleCompleteTask(req, res, body) {
 
 /**
  * 8) type: "withdraw"
+ *
+ * Supports two destination types:
+ * - binanceId (string)
+ * - faucetpay_email (string, email)
+ *
+ * The request should include action_id (validateAndUseActionId).
+ * At least one of binanceId or faucetpay_email must be provided.
  */
 async function handleWithdraw(req, res, body) {
-    const { user_id, binanceId, amount, action_id } = body;
+    const { user_id, binanceId, faucetpay_email, amount, action_id } = body;
     const id = parseInt(user_id);
     const withdrawalAmount = parseFloat(amount);
-    const MIN_WITHDRAW = 400;
+    const MIN_WITHDRAW = 2000; // Match client-side minimum
 
     // 1. Check and Consume Action ID (Security Check)
     if (!await validateAndUseActionId(res, id, action_id, 'withdraw')) return;
 
-    if (withdrawalAmount < MIN_WITHDRAW) {
+    if (isNaN(withdrawalAmount) || withdrawalAmount < MIN_WITHDRAW) {
         return sendError(res, `Minimum withdrawal amount is ${MIN_WITHDRAW} SHIB.`, 400);
     }
 
@@ -963,10 +973,27 @@ async function handleWithdraw(req, res, body) {
             return sendError(res, 'Insufficient balance.', 400);
         }
 
-        // 5. Calculate new balance
+        // 5. Validate destination: prefer faucetpay_email if provided, otherwise binanceId
+        let destinationBinance = null;
+        let destinationFaucetpay = null;
+
+        if (faucetpay_email && typeof faucetpay_email === 'string' && faucetpay_email.trim() !== '') {
+            const email = faucetpay_email.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                return sendError(res, 'Invalid FaucetPay email address.', 400);
+            }
+            destinationFaucetpay = email;
+        } else if (binanceId && typeof binanceId === 'string' && binanceId.trim() !== '') {
+            destinationBinance = binanceId.trim();
+        } else {
+            return sendError(res, 'Missing withdrawal destination. Provide binanceId or faucetpay_email.', 400);
+        }
+
+        // 6. Calculate new balance
         const newBalance = user.balance - withdrawalAmount;
 
-        // 6. Update user balance
+        // 7. Update user balance
         await supabaseFetch('users', 'PATCH',
           { 
               balance: newBalance,
@@ -974,12 +1001,19 @@ async function handleWithdraw(req, res, body) {
           },
           `?id=eq.${id}`);
 
-        // 7. Record the withdrawal request
-        await supabaseFetch('withdrawals', 'POST',
-          { user_id: id, amount: withdrawalAmount, binance_id: binanceId, status: 'pending' },
-          '?select=user_id');
+        // 8. Record the withdrawal request
+        const withdrawalPayload = {
+            user_id: id,
+            amount: withdrawalAmount,
+            binance_id: destinationBinance || null,
+            faucetpay_email: destinationFaucetpay || null,
+            status: 'pending',
+            created_at: new Date().toISOString()
+        };
 
-        // 8. Success
+        await supabaseFetch('withdrawals', 'POST', withdrawalPayload, '?select=user_id');
+
+        // 9. Success
         sendSuccess(res, { new_balance: newBalance });
 
     } catch (error) {
