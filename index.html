@@ -155,7 +155,7 @@
             border-left: 5px solid #ff8c00; 
         }
         .daily-progress-text, .spin-progress-text {font-size:14px;color:#333;margin-bottom:4px; font-weight: bold;}
-        .daily-progress-bar, .spin-progress-bar {width:100%;Height:12px;background:rgba(0,0,0,.1);border-radius:10px;overflow:hidden;margin-top:6px}
+        .daily-progress-bar, .spin-progress-bar {width:100%;height:12px;background:rgba(0,0,0,.1);border-radius:10px;overflow:hidden;margin-top:6px}
         .daily-progress-fill {height:100%;background:linear-gradient(90deg,#00f2fe,#4facfe);border-radius:10px;width:0%;transition:width .4s ease}
         .spin-progress-fill {height:100%;background:linear-gradient(90deg,#ff8c00, #ff4500);border-radius:10px;width:0%;transition:width .4s ease}
 
@@ -408,20 +408,26 @@
         .back-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #4e555b}
         .note{margin-top:15px;font-size:13px;color:#777;max-width:400px;text-align:center;background:rgba(255,140,0,0.1);padding:10px;border-radius:10px;border-left: 5px solid #ff8c00;}
 
-        /* Withdrawal History Table - increased size to show 7 entries clearly */
+        /* Withdrawal History Table - make wider to show 7 entries clearly and prevent overlapping */
         .history-section{
-            width: 95%;
-            max-width: 760px; /* Increased width so the table is clearly visible */
+            width: 100%;
+            /* allow the section to use most of available width but cap on large screens */
+            max-width: 1100px; /* increased max width so text/numbers have space */
             margin-top: 30px;
             padding: 18px; /* Slightly increased padding */
             border-top: 1px solid #eee;
             background: rgba(255, 255, 255, 0.97);
             border-radius: 12px;
             box-shadow: 0 8px 28px rgba(0,0,0,0.06);
-            /* Increased height to display up to 7 entries comfortably */
+            /* Allow horizontal scrolling on small devices rather than wrapping/stacking */
+            overflow-x: auto;
+            overflow-y: auto;
+            /* ensure it's centered */
+            margin-left: 20px;
+            margin-right: 20px;
+            /* Prevent it from growing beyond the visible area */
             max-height: 640px; /* Larger max-height to fit seven rows without scrolling on many devices */
             min-height: 220px;
-            overflow-y: auto;
             margin-bottom: 24px;
         }
         .history-title{
@@ -435,6 +441,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 15px; /* larger font to improve readability */
+            min-width: 800px; /* ensure table stays wide enough to not wrap columns on most screens */
         }
         .history-table th, .history-table td{
             padding: 12px; /* increased padding to be clearer */
@@ -442,7 +449,8 @@
             text-align: left;
             vertical-align: middle;
             font-size: 15px; /* readable size for cells */
-            word-break: break-word;
+            word-break: normal;
+            white-space: nowrap; /* Prevent text from breaking into multiple lines; forces horizontal scroll on small screens */
         }
         .history-table th{
             background-color: #f0f4f8;
@@ -456,6 +464,15 @@
         .status-pending{color: #ff8c00; font-weight: bold;}
         .status-completed{color: #28a745; font-weight: bold;}
         .no-records{text-align: center; color: #999; padding: 20px; font-size: 14px;}
+
+        /* On very small screens reduce font slightly but keep nowrap to avoid stacking */
+        @media (max-width: 520px) {
+            .history-table th, .history-table td {
+                font-size: 13px;
+                padding: 10px;
+            }
+            .history-table { min-width: 640px; }
+        }
         
         /* ===== Invite Screen - (No changes needed) ===== */
         .invite-screen{
