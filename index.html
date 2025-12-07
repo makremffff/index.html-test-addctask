@@ -410,7 +410,7 @@
         /* Withdrawal History Table */
         .history-section{
             width: 100%;
-            max-width: 400px;
+            max-width: 300px;
             margin-top: 30px;
             padding: 20px 0;
             border-top: 1px solid #eee;
@@ -677,6 +677,61 @@
             border: 1px solid rgba(0,0,0,0.04);
         }
 
+        /* ===== Withdraw Method Toggle Styling (NEW) ===== */
+        .withdraw-method-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .withdraw-method-label {
+            font-size: 14px;
+            color: #555;
+            font-weight: 700;
+            min-width: 130px;
+        }
+        .withdraw-method-toggle {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: transparent;
+        }
+        .toggle-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f4f6f8;
+            border: 1px solid #e1e6ea;
+            padding: 8px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all .12s ease;
+            position: relative;
+            user-select: none;
+        }
+        .toggle-option input {
+            /* hide native radio while keeping it accessible */
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+            left: -9999px;
+        }
+        .toggle-option .option-text {
+            font-size: 13px;
+            color: #333;
+            font-weight: 600;
+        }
+        .toggle-option.active {
+            background: linear-gradient(145deg,#00bfff,#0077b3);
+            border-color: #0077b3;
+            color: #fff;
+            box-shadow: 0 6px 0 #005a8d;
+        }
+        .toggle-option.active .option-text {
+            color: #fff;
+        }
+
     </style>
 </head>
 <body>
@@ -799,12 +854,18 @@
         </div>
         
         <div class="input-form-container">
-            <!-- New: Withdrawal Method Selection -->
-            <div class="input-group" style="display:flex;gap:10px;align-items:center;margin-bottom:18px;">
-                <label style="margin-bottom:0;font-size:14px;color:#555;font-weight:700;">Withdrawal Method</label>
-                <div style="display:flex;gap:8px;align-items:center;margin-left:auto;">
-                    <label style="font-size:13px;color:#333;"><input type="radio" name="withdrawMethod" value="binance" checked onchange="toggleWithdrawMethod(event)"> Binance ID</label>
-                    <label style="font-size:13px;color:#333;"><input type="radio" name="withdrawMethod" value="faucetpay" onchange="toggleWithdrawMethod(event)"> FaucetPay Email</label>
+            <!-- New: Withdrawal Method Selection (aligned and visually balanced on one line) -->
+            <div class="input-group withdraw-method-group" style="margin-bottom:10px;">
+                <div class="withdraw-method-label">Withdrawal Method</div>
+                <div class="withdraw-method-toggle" role="tablist" aria-label="Withdrawal Method">
+                    <label class="toggle-option active" id="toggle-binance" onclick="selectWithdrawMethod('binance')">
+                        <input type="radio" name="withdrawMethod" value="binance" checked onchange="toggleWithdrawMethod(event)" aria-checked="true" />
+                        <span class="option-text">Binance ID</span>
+                    </label>
+                    <label class="toggle-option" id="toggle-faucetpay" onclick="selectWithdrawMethod('faucetpay')">
+                        <input type="radio" name="withdrawMethod" value="faucetpay" onchange="toggleWithdrawMethod(event)" aria-checked="false" />
+                        <span class="option-text">FaucetPay Email</span>
+                    </label>
                 </div>
             </div>
 
@@ -2425,17 +2486,42 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
         }
         
-        // Toggle withdraw method inputs
+        // Toggle withdraw method inputs and update visual active state
         function toggleWithdrawMethod(e) {
-            const val = e.target ? e.target.value : e;
+            const val = e.target ? e.target.value : (e);
             const binGroup = document.getElementById('binanceGroup');
             const fpGroup = document.getElementById('faucetpayGroup');
+
+            const toggleBin = document.getElementById('toggle-binance');
+            const toggleFp = document.getElementById('toggle-faucetpay');
+
             if (val === 'faucetpay') {
                 binGroup.style.display = 'none';
                 fpGroup.style.display = 'block';
+                toggleBin.classList.remove('active');
+                toggleFp.classList.add('active');
             } else {
                 binGroup.style.display = 'block';
                 fpGroup.style.display = 'none';
+                toggleBin.classList.add('active');
+                toggleFp.classList.remove('active');
+            }
+
+            // Ensure the corresponding radio is checked (in case change came from clicking label)
+            const radio = document.querySelector(`input[name="withdrawMethod"][value="${val}"]`);
+            if (radio) radio.checked = true;
+        }
+
+        // Helper to allow clicking the styled label to select method
+        function selectWithdrawMethod(method) {
+            const radio = document.querySelector(`input[name="withdrawMethod"][value="${method}"]`);
+            if (radio) {
+                radio.checked = true;
+                const event = new Event('change', { bubbles: true });
+                radio.dispatchEvent(event);
+            } else {
+                // Fallback to toggling manually
+                toggleWithdrawMethod({ target: { value: method } });
             }
         }
         
