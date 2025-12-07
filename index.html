@@ -351,7 +351,7 @@
         .spin-back{margin-top:25px;background:#6c757d;color:#fff;border:none;padding:10px 25px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;box-shadow:0 4px 0 #5a6268}
         .spin-back:active{transform:translateY(2px);box-shadow:0 2px 0 #5a6268}
 
-        /* ===== Withdraw Screen - (No changes needed) ===== */
+        /* ===== Withdraw Screen - tweaks for smaller toggle and history overflow ===== */
         .withdraw-screen{
             display:flex;flex-direction:column;align-items:center;padding:20px 20px;
             transition:opacity .3s ease;
@@ -407,46 +407,51 @@
         .back-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #4e555b}
         .note{margin-top:15px;font-size:13px;color:#777;max-width:400px;text-align:center;background:rgba(255,140,0,0.1);padding:10px;border-radius:10px;border-left: 5px solid #ff8c00;}
 
-        /* Withdrawal History Table */
+        /* Withdrawal History Table - keep it inside screen and smaller text */
         .history-section{
             width: 100%;
-            max-width: 300px;
+            max-width: 400px;
             margin-top: 30px;
-            padding: 20px 0;
+            padding: 12px;
             border-top: 1px solid #eee;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+            /* Prevent it from growing beyond the visible area */
+            max-height: 220px;
+            overflow-y: auto;
         }
         .history-title{
-            font-size: 20px;
+            font-size: 16px;
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-weight: 700;
             text-align: center;
         }
         .history-table{
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
+            font-size: 13px; /* smaller font to avoid overflow */
         }
         .history-table th, .history-table td{
-            padding: 10px;
+            padding: 8px;
             border-bottom: 1px solid #eee;
             text-align: left;
             vertical-align: middle;
+            font-size: 12px; /* reduce text size inside */
         }
         .history-table th{
             background-color: #f0f4f8;
             color: #4a90e2;
             font-weight: 700;
+            font-size: 12px;
         }
         .history-table tr:last-child td{
             border-bottom: none;
         }
         .status-pending{color: #ff8c00; font-weight: bold;}
         .status-completed{color: #28a745; font-weight: bold;}
-        .no-records{text-align: center; color: #999; padding: 20px;}
+        .no-records{text-align: center; color: #999; padding: 20px; font-size: 13px;}
         
         /* ===== Invite Screen - (No changes needed) ===== */
         .invite-screen{
@@ -677,7 +682,7 @@
             border: 1px solid rgba(0,0,0,0.04);
         }
 
-        /* ===== Withdraw Method Toggle Styling (NEW) ===== */
+        /* ===== Withdraw Method Toggle Styling (ADJUSTED SMALLER) ===== */
         .withdraw-method-group {
             display: flex;
             align-items: center;
@@ -685,10 +690,10 @@
             margin-bottom: 18px;
         }
         .withdraw-method-label {
-            font-size: 14px;
+            font-size: 13px; /* slightly smaller */
             color: #555;
             font-weight: 700;
-            min-width: 130px;
+            min-width: 120px;
         }
         .withdraw-method-toggle {
             display: flex;
@@ -699,15 +704,16 @@
         .toggle-option {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: #f4f6f8;
             border: 1px solid #e1e6ea;
-            padding: 8px 12px;
+            padding: 6px 10px; /* reduced padding */
             border-radius: 999px;
             cursor: pointer;
             transition: all .12s ease;
             position: relative;
             user-select: none;
+            font-size: 12px; /* smaller text */
         }
         .toggle-option input {
             /* hide native radio while keeping it accessible */
@@ -718,7 +724,7 @@
             left: -9999px;
         }
         .toggle-option .option-text {
-            font-size: 13px;
+            font-size: 12px; /* smaller text */
             color: #333;
             font-weight: 600;
         }
@@ -726,7 +732,7 @@
             background: linear-gradient(145deg,#00bfff,#0077b3);
             border-color: #0077b3;
             color: #fff;
-            box-shadow: 0 6px 0 #005a8d;
+            box-shadow: 0 4px 0 #005a8d; /* smaller shadow */
         }
         .toggle-option.active .option-text {
             color: #fff;
@@ -871,7 +877,7 @@
 
             <div class="input-group" id="binanceGroup">
                 <label>Binance User ID</label>
-                <input type="text" id="binanceId" placeholder="FaucetPay or Binance ID">
+                <input type="text" id="binanceId" placeholder=" Binance ID">
             </div>
 
             <div class="input-group" id="faucetpayGroup" style="display:none;">
