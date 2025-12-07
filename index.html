@@ -418,40 +418,40 @@
             border-radius: 12px;
             box-shadow: 0 6px 18px rgba(0,0,0,0.04);
             /* Prevent it from growing beyond the visible area */
-            max-height: 220px;
+            max-height: 360px; /* Increased to better fit last 7 entries */
             overflow-y: auto;
         }
         .history-title{
-            font-size: 16px;
+            font-size: 18px; /* larger to be clear */
             color: #333;
             margin-bottom: 10px;
-            font-weight: 700;
+            font-weight: 800; /* bolder for clarity */
             text-align: center;
         }
         .history-table{
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px; /* smaller font to avoid overflow */
+            font-size: 15px; /* larger font to improve readability */
         }
         .history-table th, .history-table td{
-            padding: 8px;
+            padding: 10px; /* increased padding to be clearer */
             border-bottom: 1px solid #eee;
             text-align: left;
             vertical-align: middle;
-            font-size: 12px; /* reduce text size inside */
+            font-size: 14px; /* readable size for cells */
         }
         .history-table th{
             background-color: #f0f4f8;
             color: #4a90e2;
-            font-weight: 700;
-            font-size: 12px;
+            font-weight: 900;
+            font-size: 14px;
         }
         .history-table tr:last-child td{
             border-bottom: none;
         }
         .status-pending{color: #ff8c00; font-weight: bold;}
         .status-completed{color: #28a745; font-weight: bold;}
-        .no-records{text-align: center; color: #999; padding: 20px; font-size: 13px;}
+        .no-records{text-align: center; color: #999; padding: 20px; font-size: 14px;}
         
         /* ===== Invite Screen - (No changes needed) ===== */
         .invite-screen{
@@ -701,6 +701,23 @@
             align-items: center;
             background: transparent;
         }
+        /* Apply 15% size reduction specifically to these toggle options */
+        .withdraw-method-toggle .toggle-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f4f6f8;
+            border: 1px solid #e1e6ea;
+            padding: 5px 8px; /* reduced padding by ~15% from 6px 10px */
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all .12s ease;
+            position: relative;
+            user-select: none;
+            font-size: 10px; /* reduced font-size (~15% smaller than 12px) */
+            transform-origin: left center;
+            transform: scale(0.85); /* visually reduce size by ~15% */
+        }
         .toggle-option {
             display: inline-flex;
             align-items: center;
@@ -899,7 +916,7 @@
         </div>
         
         <div class="history-section">
-            <h3 class="history-title">Withdrawal History</h3>
+            <h3 class="history-title">Withdrawal History (Last 7)</h3>
             <div id="withdrawalHistoryContainer">
                 </div>
         </div>
@@ -2391,21 +2408,27 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
+            // Show only the last 7 withdrawals, most recent first
+            const lastSeven = withdrawalHistory.slice(-7);
+
             let tableHTML = '<table class="history-table">';
             // English translation of the Arabic alert message
             tableHTML += '<thead><tr><th>Date</th><th>Amount (SHIB)</th><th>Destination</th><th>Status</th></tr></thead>';
             tableHTML += '<tbody>';
 
-            withdrawalHistory.forEach(record => {
+            // Ensure we display newest first
+            const rows = lastSeven.slice().reverse();
+
+            rows.forEach(record => {
                 // English translation of the Arabic alert message
                 const statusText = record.status === 'pending' ? 'Pending' : 'Completed';
                 const statusClass = record.status === 'pending' ? 'status-pending' : 'status-completed';
                 const destination = record.destination ? record.destination : '—';
                 tableHTML += `
                     <tr>
-                        <td>${record.date}</td>
-                        <td>${record.amount.toLocaleString()}</td>
-                        <td style="word-break:break-all;max-width:140px">${destination}</td>
+                        <td style="font-weight:700">${record.date}</td>
+                        <td style="font-weight:700">${record.amount.toLocaleString()}</td>
+                        <td style="word-break:break-all;max-width:140px;font-size:13px">${destination}</td>
                         <td><span class="${statusClass}">${statusText}</span></td>
                     </tr>
                 `;
