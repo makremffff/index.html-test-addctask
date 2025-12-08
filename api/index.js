@@ -1,9 +1,3 @@
-// /api/index.js (Updated to support FaucetPay email withdrawals and include SQL-ready schema)
-// - Added handling of `faucetpay_email` in withdraw flow
-// - Updated MIN_WITHDRAW to match frontend (2000)
-// - getUserData now returns binance_id and faucetpay_email in withdrawal history records
-// - Assumes a `withdrawals` table exists (SQL migration provided separately)
-
 const crypto = require('crypto');
 
 // Load environment variables for Supabase connection
@@ -452,9 +446,33 @@ async function handleGetUserData(req, res, body) {
         const referrals = await supabaseFetch('users', 'GET', null, `?ref_by=eq.${id}&select=id`);
         const referralsCount = Array.isArray(referrals) ? referrals.length : 0;
 
-        // 5. Fetch withdrawal history (include binance_id and faucetpay_email)
-        const history = await supabaseFetch('withdrawals', 'GET', null, `?user_id=eq.${id}&select=amount,status,created_at,binance_id,faucetpay_email&order=created_at.desc`);
-        const withdrawalHistory = Array.isArray(history) ? history : [];
+        // 5. Fetch withdrawal history
+        //    - Binance withdrawals in 'withdrawals' table (binance_id)
+        //    - FaucetPay withdrawals in separate 'faucet_pay' table (faucetpay_email)
+        const binanceRecords = await supabaseFetch('withdrawals', 'GET', null, `?user_id=eq.${id}&select=amount,status,created_at,binance_id&order=created_at.desc`);
+        const faucetPayRecords = await supabaseFetch('faucet_pay', 'GET', null, `?user_id=eq.${id}&select=amount,status,created_at,faucetpay_email&order=created_at.desc`);
+
+        // Normalize results into a unified withdrawal history array
+        const normalizedBinance = Array.isArray(binanceRecords) ? binanceRecords.map(r => ({
+            amount: r.amount,
+            status: r.status,
+            created_at: r.created_at,
+            binance_id: r.binance_id || null,
+            faucetpay_email: null,
+            source: 'binance'
+        })) : [];
+
+        const normalizedFaucet = Array.isArray(faucetPayRecords) ? faucetPayRecords.map(r => ({
+            amount: r.amount,
+            status: r.status,
+            created_at: r.created_at,
+            binance_id: null,
+            faucetpay_email: r.faucetpay_email || null,
+            source: 'faucetpay'
+        })) : [];
+
+        // Merge and sort by created_at descending
+        const withdrawalHistory = [...normalizedBinance, ...normalizedFaucet].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
         // 6. Update last_activity (only for Rate Limit purposes now)
         await supabaseFetch('users', 'PATCH',
@@ -935,8 +953,8 @@ async function handleCompleteTask(req, res, body) {
  * 8) type: "withdraw"
  *
  * Supports two destination types:
- * - binanceId (string)
- * - faucetpay_email (string, email)
+ * - binanceId (string) -> saved into 'withdrawals' table
+ * - faucetpay_email (string, email) -> saved into separate 'faucet_pay' table
  *
  * The request should include action_id (validateAndUseActionId).
  * At least one of binanceId or faucetpay_email must be provided.
@@ -1002,16 +1020,30 @@ async function handleWithdraw(req, res, body) {
           `?id=eq.${id}`);
 
         // 8. Record the withdrawal request
-        const withdrawalPayload = {
-            user_id: id,
-            amount: withdrawalAmount,
-            binance_id: destinationBinance || null,
-            faucetpay_email: destinationFaucetpay || null,
-            status: 'pending',
-            created_at: new Date().toISOString()
-        };
+        if (destinationFaucetpay) {
+            // FaucetPay-specific table insertion
+            const faucetPayload = {
+                user_id: id,
+                amount: withdrawalAmount,
+                faucetpay_email: destinationFaucetpay,
+                status: 'pending',
+                created_at: new Date().toISOString()
+            };
 
-        await supabaseFetch('withdrawals', 'POST', withdrawalPayload, '?select=user_id');
+            await supabaseFetch('faucet_pay', 'POST', faucetPayload, '?select=user_id');
+        } else {
+            // Binance withdrawals stored in the general withdrawals table
+            const withdrawalPayload = {
+                user_id: id,
+                amount: withdrawalAmount,
+                binance_id: destinationBinance || null,
+                faucetpay_email: null,
+                status: 'pending',
+                created_at: new Date().toISOString()
+            };
+
+            await supabaseFetch('withdrawals', 'POST', withdrawalPayload, '?select=user_id');
+        }
 
         // 9. Success
         sendSuccess(res, { new_balance: newBalance });
