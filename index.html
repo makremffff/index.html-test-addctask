@@ -351,34 +351,45 @@
         .spin-back{margin-top:25px;background:#6c757d;color:#fff;border:none;padding:10px 25px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;box-shadow:0 4px 0 #5a6268}
         .spin-back:active{transform:translateY(2px);box-shadow:0 2px 0 #5a6268}
 
-        /* ===== Withdraw Screen - tweaks for smaller toggle and history overflow ===== */
+        /* ===== Withdraw Screen - (No changes needed) ===== */
         .withdraw-screen{
             display:flex;flex-direction:column;align-items:center;padding:20px 20px;
             transition:opacity .3s ease;
             overflow-y: auto;
-            padding-bottom: 40px;
         }
         .withdraw-header{
             text-align: center;
             margin-bottom: 25px;
             width: 100%;
-            max-width: 700px;
+            max-width: 400px;
             background: rgba(255, 255, 255, 0.9);
             padding: 15px;
             border-radius: 15px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            align-items:center;
+        }
+        .withdraw-header-top {
+            width:100%;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:8px;
         }
         .withdraw-title{
-            font-size:28px;color:#ff2a2a;font-weight:700; text-shadow: 0 1px 1px rgba(0,0,0,.1);
+            font-size:22px;color:#ff2a2a;font-weight:700; text-shadow: 0 1px 1px rgba(0,0,0,.1);
+            margin:0;
         }
         .current-balance-info{
             font-size: 16px;
             color: #555;
-            margin-top: 10px;
+            margin-top: 0;
             font-weight: bold;
         }
         .input-form-container {
             width: 100%;
-            max-width: 720px;
+            max-width: 420px;
             background: #fff;
             padding: 25px;
             border-radius: 15px;
@@ -392,12 +403,13 @@
         .input-group label{display:block;margin-bottom:8px;font-size:14px;color:#555;font-weight:600;}
         .input-group input{width:100%;padding:12px 15px;border:1px solid #ddd;border-radius:10px;font-size:16px;transition:border-color .3s ease, box-shadow .3s ease;outline:none;}
         .input-group input:focus{border-color:#ff8c00;box-shadow:0 0 0 3px rgba(255,140,0,0.2);}
-        .withdraw-buttons{display:flex;gap:15px;margin-top:20px;justify-content: center;}
+        .withdraw-buttons{display:flex;gap:15px;margin-top:20px;justify-content: center;flex-wrap:wrap}
         .withdraw-btn{
             background:linear-gradient(145deg, #28a745, #1e7e34);
             color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;
             box-shadow:0 5px 0 #1c6d32;transition:all .1s ease;
             width: 100%;
+            max-width: 220px;
         }
         .withdraw-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #1c6d32}
         .back-btn{
@@ -408,83 +420,45 @@
         .back-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #4e555b}
         .note{margin-top:15px;font-size:13px;color:#777;max-width:400px;text-align:center;background:rgba(255,140,0,0.1);padding:10px;border-radius:10px;border-left: 5px solid #ff8c00;}
 
-        /* Withdrawal History Table - responsive: ensure all columns visible without horizontal scroll */
+        /* Withdrawal History Table */
         .history-section{
-            width: calc(100% - 40px); /* take almost full width of screen */
-            max-width: 1100px; /* cap on very large screens */
+            width: 100%;
+            max-width: 400px;
             margin-top: 30px;
-            padding: 18px; /* Slightly increased padding */
+            padding: 20px 0;
             border-top: 1px solid #eee;
-            background: rgba(255, 255, 255, 0.97);
-            border-radius: 12px;
-            box-shadow: 0 8px 28px rgba(0,0,0,0.06);
-            /* Prevent horizontal scrolling - table will wrap content */
-            overflow-x: hidden;
-            overflow-y: auto;
-            margin-left: 20px;
-            margin-right: 20px;
-            max-height: 640px;
-            min-height: 220px;
-            margin-bottom: 24px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 15px;
         }
         .history-title{
-            font-size: 20px; /* slightly larger title for clarity */
+            font-size: 20px;
             color: #333;
-            margin-bottom: 12px;
-            font-weight: 900; /* bolder for clarity */
+            margin-bottom: 15px;
+            font-weight: 700;
             text-align: center;
         }
         .history-table{
             width: 100%;
             border-collapse: collapse;
-            font-size: 15px; /* larger font to improve readability */
-            table-layout: fixed; /* allow columns to share available width and wrap */
+            font-size: 14px;
         }
-        /* set proportional widths for columns so they fit on screen */
-        .history-table thead th:nth-child(1),
-        .history-table tbody td:nth-child(1) { width: 33%; } /* Date */
-        .history-table thead th:nth-child(2),
-        .history-table tbody td:nth-child(2) { width: 33%; } /* Amount */
-        .history-table thead th:nth-child(3),
-        .history-table tbody td:nth-child(3) { width: 34%; } /* Status */
-
         .history-table th, .history-table td{
-            padding: 12px; /* increased padding to be clearer */
+            padding: 10px;
             border-bottom: 1px solid #eee;
             text-align: left;
-            vertical-align: middle;
-            font-size: 15px; /* readable size for cells */
-            word-break: break-word; /* allow wrapping */
-            white-space: normal; /* allow text to wrap to next line instead of forcing horizontal scroll */
-            overflow-wrap: anywhere; /* force wrapping when needed */
         }
         .history-table th{
             background-color: #f0f4f8;
             color: #4a90e2;
-            font-weight: 900;
-            font-size: 15px;
+            font-weight: 700;
         }
         .history-table tr:last-child td{
             border-bottom: none;
         }
         .status-pending{color: #ff8c00; font-weight: bold;}
         .status-completed{color: #28a745; font-weight: bold;}
-        .no-records{text-align: center; color: #999; padding: 20px; font-size: 14px;}
-
-        /* Small screens: slightly reduce font but keep all info visible */
-        @media (max-width: 520px) {
-            .history-table th, .history-table td {
-                font-size: 13px;
-                padding: 10px;
-            }
-            /* adjust column proportions */
-            .history-table thead th:nth-child(1),
-            .history-table tbody td:nth-child(1) { width: 34%; }
-            .history-table thead th:nth-child(2),
-            .history-table tbody td:nth-child(2) { width: 33%; }
-            .history-table thead th:nth-child(3),
-            .history-table tbody td:nth-child(3) { width: 33%; }
-        }
+        .no-records{text-align: center; color: #999; padding: 20px;}
         
         /* ===== Invite Screen - (No changes needed) ===== */
         .invite-screen{
@@ -715,111 +689,39 @@
             border: 1px solid rgba(0,0,0,0.04);
         }
 
-        /* ===== Withdraw Method Toggle Styling (ADJUSTED SMALLER) ===== */
-        .withdraw-method-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 18px;
-        }
-        .withdraw-method-label {
-            font-size: 13px; /* slightly smaller */
-            color: #555;
-            font-weight: 700;
-            min-width: 120px;
-        }
+        /* ===== Withdraw method toggle ===== */
         .withdraw-method-toggle {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            background: transparent;
-        }
-        /* Apply 15% size reduction specifically to these toggle options */
-        .withdraw-method-toggle .toggle-option {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #f4f6f8;
-            border: 1px solid #e1e6ea;
-            padding: 5px 8px; /* reduced padding by ~15% from 6px 10px */
-            border-radius: 999px;
-            cursor: pointer;
-            transition: all .12s ease;
-            position: relative;
-            user-select: none;
-            font-size: 10px; /* reduced font-size (~15% smaller than 12px) */
-            transform-origin: left center;
-            transform: scale(0.85); /* visually reduce size by ~15% */
-        }
-        .toggle-option {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #f4f6f8;
-            border: 1px solid #e1e6ea;
-            padding: 6px 10px; /* reduced padding */
-            border-radius: 999px;
-            cursor: pointer;
-            transition: all .12s ease;
-            position: relative;
-            user-select: none;
-            font-size: 12px; /* smaller text */
-        }
-        .toggle-option input {
-            /* hide native radio while keeping it accessible */
-            position: absolute;
-            opacity: 0;
-            width: 1px;
-            height: 1px;
-            left: -9999px;
-        }
-        .toggle-option .option-text {
-            font-size: 12px; /* smaller text */
-            color: #333;
-            font-weight: 600;
-        }
-        .toggle-option.active {
-            background: linear-gradient(145deg,#00bfff,#0077b3);
-            border-color: #0077b3;
-            color: #fff;
-            box-shadow: 0 4px 0 #005a8d; /* smaller shadow */
-        }
-        .toggle-option.active .option-text {
-            color: #fff;
-        }
-
-        /* Withdraw history screen specific minor tweaks */
-        .withdraw-history-screen {
             display:flex;
-            flex-direction:column;
-            align-items:center;
-            justify-content:flex-start;
-            padding: 20px;
-            overflow-y:auto;
-            background: #f7fbff;
+            gap:8px;
+            background:#fff;padding:8px;border-radius:12px;border:1px solid #eee;
+            align-items:center;justify-content:center;width:100%;
+        }
+        .method-option {
+            display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;cursor:pointer;border:1px solid transparent;
+            transition:all .12s ease;
+            background:linear-gradient(180deg,#fafafa,#fff);
+        }
+        .method-option input{display:none}
+        .method-option.active{border-color:#ff8c00;box-shadow:0 6px 0 rgba(255,140,0,0.12)}
+        .method-option .label {font-weight:700;color:#333;font-size:14px}
+
+        /* ===== Fullscreen withdrawal history page ===== */
+        .withdraw-history-full {
+            display:flex;flex-direction:column;padding:20px 20px;overflow-y:auto;background:#fff;
         }
         .withdraw-history-header {
-            width:100%;
-            max-width: 980px;
-            margin-top: 18px;
-            margin-bottom: 12px;
-            text-align:center;
+            display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;
         }
-        .withdraw-history-title {
-            font-size: 24px;
-            color: #333;
-            font-weight: 800;
+        .history-list {
+            width:100%;max-width:720px;margin:0 auto;padding-bottom:40px;
         }
-        .history-container {
-            width: calc(100% - 40px);
-            max-width: 980px;
-            background: #fff;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-            border: 1px solid #e9eef5;
-            margin-bottom: 24px;
+        .history-item {
+            display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:#f8f8f8;margin-bottom:10px;border:1px solid #eee;
         }
+        .history-item .left {display:flex;flex-direction:column;gap:6px}
+        .history-item .right {text-align:right}
+        .history-item .amount {font-weight:800;color:#ff2a2a}
+        .history-empty {text-align:center;color:#777;padding:30px}
 
     </style>
 </head>
@@ -858,7 +760,7 @@
         </span>
         <span class="g">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 18" height="18" width="15" class="letter">
-            <path fill="currentColor" d="M14.04 13.72C13.64 14.6533 12.9933 15.44 12.1 16.08C11.22 16.72 10.1333 17.0933 8.84 17.2C8.72 17.2133 8.6 17.22 8.48 17.22C8.36 17.22 8.24 17.22 8.12 17.22C7.12 17.22 6.16667 17.0467 5.26 16.7C4.36667 16.3533 3.57333 15.8333 2.88 15.14C2.18667 14.4333 1.64 13.54 1.24 12.46C0.84 11.38 0.64 10.1 0.64 8.62C0.64 7.48667 0.78 6.42667 1.06 5.44C1.34 4.44 1.74667 3.55333 2.28 2.78C2.82667 2.00667 3.48667 1.38667 4.26 0.92C5.03333 0.453333 5.90667 0.179999 6.88 0.0999997C6.96 0.0866657 7.04 0.0799987 7.12 0.0799987C7.2 0.0799987 7.28 0.0799987 7.36 0.0799987C8.33333 0.0799987 9.28 0.299999 10.2 0.74C11.1333 1.18 11.9467 1.78 12.64 2.54C13.3467 3.3 13.8467 4.16 14.14 5.12L11.76 6.46L12.04 6.44L14.04 7.44V13.72ZM5.9 7.16V10	L8.98 9.74V11.46C8.80667 11.8067 8.52667 12.1067 8.14 12.36C7.76667 12.6 7.37333 12.7333 6.96 12.76C6.90667 12.7733 6.84667 12.78 6.78 12.78C6.72667 12.78 6.66667 12.78 6.6 12.78C5.73333 12.78 5.08 12.4333 4.64 11.74C4.2 11.0467 3.98 9.92 3.98 8.36C3.98 6.94667 4.20667 5.82 4.66 4.98C5.11333 4.14 5.84 3.68 6.84 3.6H7.06C7.60667 3.6 8.07333 3.76 8.46 4.08C8.86 4.4 9.14667 4.86667 9.32 5.48L11.9 4.02C11.6733 3.38 11.36 2.78 10.96 2.22C10.5733 1.64667 10.0867 1.18 9.5 0.819999C8.91333 0.459999 8.2 0.28 7.36 0.28C7.29333 0.28 7.22 0.28 7.14 0.28C7.06 0.28 6.98 0.286666 6.9 0.299999C5.63333 0.406666 4.54667 0.846666 3.64 1.62C2.73333 2.38 2.04 3.37333 1.56 4.6C1.08 5.81333 0.84 7.15333 0.84 8.62C0.84 10.14 1.06 11.4533 1.5 12.56C1.94 13.6667 2.56667 14.52 3.38 15.12C4.19333 15.72 5.16 16.02 6.28 16.02C6.37333 16.02 6.46 16.02 6.54 16.02C6.63333 16.02 6.72667 16.0133 6.82 16C8.07333 15.8933 9.12667 15.54 9.98 14.94C10.8467 14.3267 11.4733 13.5733 11.86 12.68V6.66L5.9 7.16ZM9.2 5.78C9.14667 5.59333 9.08667 5.42 9.02 5.26C8.95333 5.08667 8.88 4.93333 8.8 4.8C8.2 4.85333 7.70667 5.06667 7.32 5.44C6.94667 5.8 6.66667 6.29333 6.48 6.92L10.8 6.56L9.2 5.78ZM7.8 11.26L6.24 10.46C6.26667 10.9933 6.32 11.4133 6.4 11.72C6.49333 12.0133 6.62667 12.3 6.8 12.58C6.84 12.5667 6.88667 12.56 6.94 12.56C7.28667 12.5333 7.63333 12.4267 7.98 12.24C8.32667 12.04 8.59333 11.8067 8.78 11.54V11.14L7.8 11.26Z"/>
+            <path fill="currentColor" d="M14.04 13.72C13.64 14.6533 12.9933 15.44 12.1 16.08C11.22 16.72 10.1333 17.0933 8.84 17.2C8.72 17.2133 8.6 17.22 8.48 17.22C8.36 17.22 8.24 17.22 8.12 17.22C7.12 17.22 6.16667 17.0467 5.26 16.7C4.36667 16.3533 3.57333 15.8333 2.88 15.14C2.18667 14.4333 1.64 13.54 1.24 12.46C0.84 11.38 0.64 10.1 0.64 8.62C0.64 7.48667 0.78 6.42667 1.06 5.44C1.34 4.44 1.74667 3.55333 2.28 2.78C2.82667 2.00667 3.48667 1.38667 4.26 0.92C5.03333 0.453333 5.90667 0.179999 6.88 0.0999997C6.96 0.0866657 7.04 0.0799987 7.12 0.0799987C7.2 0.0799987 7.28 0.0799987 7.36 0.0799987C8.33333 0.0799987 9.28 0.299999 10.2 0.74C11.1333 1.18 11.9467 1.78 12.64 2.54C13.3467 3.3 13.8467 4.16 14.14 5.12L11.76 6.46L12.04 6.44L14.04 7.44V13.72ZM5.9 7.16V10L8.98 9.74V11.46C8.80667 11.8067 8.52667 12.1067 8.14 12.36C7.76667 12.6 7.37333 12.7333 6.96 12.76C6.90667 12.7733 6.84667 12.78 6.78 12.78C6.72667 12.78 6.66667 12.78 6.6 12.78C5.73333 12.78 5.08 12.4333 4.64 11.74C4.2 11.0467 3.98 9.92 3.98 8.36C3.98 6.94667 4.20667 5.82 4.66 4.98C5.11333 4.14 5.84 3.68 6.84 3.6H7.06C7.60667 3.6 8.07333 3.76 8.46 4.08C8.86 4.4 9.14667 4.86667 9.32 5.48L11.9 4.02C11.6733 3.38 11.36 2.78 10.96 2.22C10.5733 1.64667 10.0867 1.18 9.5 0.819999C8.91333 0.459999 8.2 0.28 7.36 0.28C7.29333 0.28 7.22 0.28 7.14 0.28C7.06 0.28 6.98 0.286666 6.9 0.299999C5.63333 0.406666 4.54667 0.846666 3.64 1.62C2.73333 2.38 2.04 3.37333 1.56 4.6C1.08 5.81333 0.84 7.15333 0.84 8.62C0.84 10.14 1.06 11.4533 1.5 12.56C1.94 13.6667 2.56667 14.52 3.38 15.12C4.19333 15.72 5.16 16.02 6.28 16.02C6.37333 16.02 6.46 16.02 6.54 16.02C6.63333 16.02 6.72667 16.0133 6.82 16C8.07333 15.8933 9.12667 15.54 9.98 14.94C10.8467 14.3267 11.4733 13.5733 11.86 12.68V6.66L5.9 7.16ZM9.2 5.78C9.14667 5.59333 9.08667 5.42 9.02 5.26C8.95333 5.08667 8.88 4.93333 8.8 4.8C8.2 4.85333 7.70667 5.06667 7.32 5.44C6.94667 5.8 6.66667 6.29333 6.48 6.92L10.8 6.56L9.2 5.78ZM7.8 11.26L6.24 10.46C6.26667 10.9933 6.32 11.4133 6.4 11.72C6.49333 12.0133 6.62667 12.3 6.8 12.58C6.84 12.5667 6.88667 12.56 6.94 12.56C7.28667 12.5333 7.63333 12.4267 7.98 12.24C8.32667 12.04 8.59333 11.8067 8.78 11.54V11.14L7.8 11.26Z"/>
           </svg>
         </span>
       </div>
@@ -938,34 +840,36 @@
 
     <div class="app-screen withdraw-screen" id="withdrawScreen">
         <div class="withdraw-header">
-            <h2 class="withdraw-title">💰 Request SHIB Withdrawal</h2>
+            <div class="withdraw-header-top">
+                <h3 class="withdraw-title">💰 Request SHIB Withdrawal</h3>
+                <button id="historyBtn" class="back-btn" style="padding:8px 14px;max-width:120px">History</button>
+            </div>
             <div class="current-balance-info">Your Balance: <span id="withdrawBalanceDisplay">0 SHIB</span></div>
         </div>
         
         <div class="input-form-container">
-            <!-- New: Withdrawal Method Selection (aligned and visually balanced on one line) -->
-            <div class="input-group withdraw-method-group" style="margin-bottom:10px;">
-                <div class="withdraw-method-label">Withdrawal Method</div>
-                <div class="withdraw-method-toggle" role="tablist" aria-label="Withdrawal Method">
-                    <label class="toggle-option active" id="toggle-binance" onclick="selectWithdrawMethod('binance')">
-                        <input type="radio" name="withdrawMethod" value="binance" checked onchange="toggleWithdrawMethod(event)" aria-checked="true" />
-                        <span class="option-text">Binance ID</span>
+            <div class="input-group">
+                <label>Choose Withdrawal Method</label>
+                <div class="withdraw-method-toggle" id="withdrawMethodToggle">
+                    <label class="method-option active" id="methodBinance">
+                        <input type="radio" name="withdrawMethod" value="binance" checked>
+                        <span class="label">Binance ID</span>
                     </label>
-                    <label class="toggle-option" id="toggle-faucetpay" onclick="selectWithdrawMethod('faucetpay')">
-                        <input type="radio" name="withdrawMethod" value="faucetpay" onchange="toggleWithdrawMethod(event)" aria-checked="false" />
-                        <span class="option-text">FaucetPay Email</span>
+                    <label class="method-option" id="methodFaucetpay">
+                        <input type="radio" name="withdrawMethod" value="faucetpay">
+                        <span class="label">FaucetPay Email</span>
                     </label>
                 </div>
             </div>
 
             <div class="input-group" id="binanceGroup">
                 <label>Binance User ID</label>
-                <input type="text" id="binanceId" placeholder=" Binance ID">
+                <input type="text" id="binanceId" placeholder="FaucetPay or Binance ID">
             </div>
 
             <div class="input-group" id="faucetpayGroup" style="display:none;">
                 <label>FaucetPay Email</label>
-                <input type="email" id="faucetpayEmail" placeholder="example@faucetpay.io">
+                <input type="email" id="faucetpayEmail" placeholder="your@email.com">
             </div>
 
             <div class="input-group">
@@ -974,34 +878,36 @@
             </div>
             <div class="withdraw-buttons">
                 <button class="withdraw-btn" onclick="confirmWithdraw()">Send Request</button>
+                <button class="back-btn" onclick="displayWithdrawalsFull()" style="max-width:220px">Open History</button>
             </div>
         </div>
         
         <div class="note">
-            ⚠️ Important: The withdrawal will be processed manually within 24 hours. Ensure your selected destination (Binance ID or FaucetPay email) is correct.
+            ⚠️ **Important:** The withdrawal will be processed manually within **24 hours**. Ensure your Binance ID or FaucetPay email is correct.
         </div>
-
-        <!-- New History Button: opens dedicated full-page history screen -->
-        <div style="width:100%;max-width:720px;display:flex;justify-content:center;margin-top:16px;margin-bottom:8px;">
-            <button class="back-btn" style="width:220px;" onclick="showWithdrawHistory()">History</button>
+        
+        <div class="history-section">
+            <h3 class="history-title">Recent Withdrawal Summary</h3>
+            <div id="withdrawalHistoryContainer">
+                </div>
         </div>
 
         <button class="back-btn" onclick="hideWithdraw()">Back to Main</button>
     </div>
 
-    <!-- New dedicated Withdraw History Screen -->
-    <div class="app-screen withdraw-history-screen" id="withdrawHistoryScreen" style="display:none;">
-        <div class="withdraw-history-header">
-            <h3 class="withdraw-history-title">Withdrawal History</h3>
-            <div style="margin-top:6px;color:#666;font-size:14px;">All your withdrawal requests (fully browsable)</div>
-        </div>
+    <!-- Fullscreen Withdrawal History (opened from History button) -->
+    <div class="app-screen withdraw-history-screen" id="withdrawHistoryScreen" style="background:#f7f7fb">
+        <div class="withdraw-history-full" id="withdrawHistoryFull">
+            <div class="withdraw-history-header">
+                <h2 style="margin:0">Withdrawal History</h2>
+                <div>
+                    <button class="back-btn" onclick="closeWithdrawHistory()">Back</button>
+                </div>
+            </div>
 
-        <div class="history-container" id="withdrawHistoryContainer">
-            <!-- Filled dynamically -->
-        </div>
-
-        <div style="width:100%;max-width:980px;display:flex;justify-content:center;margin-bottom:20px;">
-            <button class="back-btn" onclick="hideWithdrawHistory()">Back</button>
+            <div class="history-list" id="withdrawHistoryList">
+                <!-- items injected here -->
+            </div>
         </div>
     </div>
 
@@ -1122,6 +1028,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
         // When a track ends, play another randomly as requested
         bgPlayer.addEventListener('ended', () => {
             // Play next random track
+            playNextBg();
+        });
+
+        // If an error occurs, try the next track instead of stopping
+        bgPlayer.addEventListener('error', (e) => {
+            console.warn('bgPlayer error, advancing to next track', e);
             playNextBg();
         });
 
@@ -1537,8 +1449,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         amount: item.amount,
                         status: item.status,
                         date: new Date(item.created_at).toLocaleDateString('en-GB'),
-                        // Preserve destination fields if provided by server
-                        destination: item.binance_id || item.faucetpay_email || ''
+                        binance_id: item.binance_id || null,
+                        faucetpay_email: item.faucetpay_email || null
                     }))
                 });
 
@@ -1641,6 +1553,9 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
             // update task link UI as well
             updateTaskLinkUI();
+
+            // update withdrawal summary
+            displayWithdrawals();
         }
         
         // ***************************************************************
@@ -2447,7 +2362,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 });
         }
 
-        /* ===== Navigation and Withdraw (Updated with FaucetPay option) ===== */
+        /* ===== Navigation and Withdraw (No changes needed) ===== */
         function showSpin(){
             if (isBanned) {
                  // English translation of the Arabic alert message
@@ -2473,7 +2388,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             mainScreen.classList.remove('visible');
             document.getElementById('withdrawScreen').classList.add('visible');
             loadUserData();
-            // history is now on a separate screen opened via History button
+            displayWithdrawals(); 
         }
         
         function hideWithdraw(){
@@ -2481,33 +2396,28 @@ You will earn 40% of the revenue from every referral you bring through ads!
             mainScreen.classList.add('visible');
         }
         
-        /**
-         * displayWithdrawals - renders the user's full withdrawal history into the dedicated history container.
-         * This now shows all entries (not limited to 7) and displays Date, Amount and Status only (as requested).
-         */
         function displayWithdrawals() {
-            const container = document.getElementById('withdrawHistoryContainer');
-            if (!container) return;
-
+            const container = document.getElementById('withdrawalHistoryContainer');
             if (!withdrawalHistory || withdrawalHistory.length === 0) {
+                // English translation of the Arabic alert message
                 container.innerHTML = '<div class="no-records">No withdrawal requests currently.</div>';
                 return;
             }
 
-            // Show all withdrawals, most recent first
-            const rows = withdrawalHistory.slice().reverse();
-
             let tableHTML = '<table class="history-table">';
+            // English translation of the Arabic alert message
             tableHTML += '<thead><tr><th>Date</th><th>Amount (SHIB)</th><th>Status</th></tr></thead>';
             tableHTML += '<tbody>';
 
-            rows.forEach(record => {
+            withdrawalHistory.slice(0,5).forEach(record => {
+                // English translation of the Arabic alert message
                 const statusText = record.status === 'pending' ? 'Pending' : 'Completed';
                 const statusClass = record.status === 'pending' ? 'status-pending' : 'status-completed';
+                const dest = record.binance_id ? record.binance_id : (record.faucetpay_email ? record.faucetpay_email : '-');
                 tableHTML += `
                     <tr>
-                        <td style="font-weight:700">${record.date}</td>
-                        <td style="font-weight:700">${record.amount.toLocaleString()}</td>
+                        <td>${record.date}</td>
+                        <td>${record.amount.toLocaleString()}</td>
                         <td><span class="${statusClass}">${statusText}</span></td>
                     </tr>
                 `;
@@ -2515,6 +2425,44 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
             tableHTML += '</tbody></table>';
             container.innerHTML = tableHTML;
+        }
+
+        function displayWithdrawalsFull() {
+            // open the full-screen history page and populate with full records
+            mainScreen.classList.remove('visible');
+            document.getElementById('withdrawScreen').classList.remove('visible');
+            const screen = document.getElementById('withdrawHistoryScreen');
+            const list = document.getElementById('withdrawHistoryList');
+            screen.classList.add('visible');
+
+            if (!withdrawalHistory || withdrawalHistory.length === 0) {
+                list.innerHTML = `<div class="history-empty">No withdrawal records.</div>`;
+                return;
+            }
+
+            const html = withdrawalHistory.map(rec => {
+                const dest = rec.binance_id ? rec.binance_id : (rec.faucetpay_email ? rec.faucetpay_email : '-');
+                const statusText = rec.status === 'pending' ? 'Pending' : 'Completed';
+                return `
+                    <div class="history-item">
+                        <div class="left">
+                            <div><strong>Date:</strong> ${rec.date}</div>
+                            <div><strong>Dest:</strong> ${dest}</div>
+                        </div>
+                        <div class="right">
+                            <div class="amount">${rec.amount.toLocaleString()} SHIB</div>
+                            <div class="${rec.status === 'pending' ? 'status-pending' : 'status-completed'}">${statusText}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            list.innerHTML = html;
+        }
+
+        function closeWithdrawHistory(){
+            document.getElementById('withdrawHistoryScreen').classList.remove('visible');
+            document.getElementById('withdrawScreen').classList.add('visible');
+            displayWithdrawals(); 
         }
 
         async function confirmWithdraw(){
@@ -2525,27 +2473,24 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
             
             // Determine selected method
-            const selectedMethodEl = document.querySelector('input[name="withdrawMethod"]:checked');
-            const method = selectedMethodEl ? selectedMethodEl.value : 'binance';
-
+            const selectedMethod = document.querySelector('input[name="withdrawMethod"]:checked') ? document.querySelector('input[name="withdrawMethod"]:checked').value : 'binance';
             const binanceId = document.getElementById('binanceId').value.trim();
             const faucetpayEmail = document.getElementById('faucetpayEmail').value.trim();
-            const amount = parseInt(document.getElementById('withdrawAmount').value);
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
             
-            // Validate based on method
-            if (method === 'binance') {
+            if(selectedMethod === 'binance') {
                 if(!binanceId || binanceId.length < 4){ 
                     showCustomAlert('Invalid Input!', 'Please enter a valid Binance User ID.', 'warning'); 
                     return; 
                 }
-            } else if (method === 'faucetpay') {
-                // Basic email validation
+            } else {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if(!faucetpayEmail || !emailRegex.test(faucetpayEmail)){
-                    showCustomAlert('Invalid Input!', 'Please enter a valid FaucetPay email address.', 'warning');
+                    showCustomAlert('Invalid Input!', 'Please enter a valid FaucetPay email address.', 'warning'); 
                     return;
                 }
             }
+
             if(isNaN(amount) || amount < 2000){ 
                 // English translation of the Arabic alert message
                 showCustomAlert('Invalid Amount!', 'The minimum withdrawal amount is 2000 SHIB.', 'warning'); 
@@ -2561,19 +2506,16 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const actionId = await requestActionId('withdraw');
             if (!actionId) return;
 
-            // 2. Prepare payload: include either binanceId or faucetpay_email field depending on selected method
+            // 2. Prepare payload depending on selected method
             const payload = {
                 type: 'withdraw',
                 amount: amount,
                 action_id: actionId
             };
-            if (method === 'binance') {
-                payload.binanceId = binanceId;
-            } else {
-                // Use key faucetpay_email so server can identify (server may ignore unknown fields, but we send it)
+            if (selectedMethod === 'faucetpay') {
                 payload.faucetpay_email = faucetpayEmail;
-                // Also include a destination label for clarity
-                payload.binanceId = ''; // keep binanceId blank when faucetpay is used
+            } else {
+                payload.binanceId = binanceId;
             }
 
             // 3. Send withdrawal request via API
@@ -2585,75 +2527,31 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 
                 // 5. Reload withdrawal history with new data
                 await loadUserData(); 
-                
-                // Ensure the withdraw history container is refreshed when available
                 displayWithdrawals(); 
                 
                 // English translation of the Arabic alert message
-                const destLabel = method === 'binance' ? binanceId : faucetpayEmail;
-                const methodLabel = method === 'binance' ? 'Binance ID' : 'FaucetPay Email';
-                showCustomAlert('Request Sent!', `Details:\nMethod: ${methodLabel}\nDestination: ${destLabel}\nAmount: ${amount.toLocaleString()} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
+                const destText = selectedMethod === 'faucetpay' ? `FaucetPay: ${faucetpayEmail}` : `Binance ID: ${binanceId}`;
+                showCustomAlert('Request Sent!', `Details:\n${destText}\nAmount: ${amount.toLocaleString()} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
             }
         }
         
-        // Toggle withdraw method inputs and update visual active state
-        function toggleWithdrawMethod(e) {
-            const val = e.target ? e.target.value : (e);
-            const binGroup = document.getElementById('binanceGroup');
-            const fpGroup = document.getElementById('faucetpayGroup');
-
-            const toggleBin = document.getElementById('toggle-binance');
-            const toggleFp = document.getElementById('toggle-faucetpay');
-
-            if (val === 'faucetpay') {
-                binGroup.style.display = 'none';
-                fpGroup.style.display = 'block';
-                toggleBin.classList.remove('active');
-                toggleFp.classList.add('active');
-            } else {
-                binGroup.style.display = 'block';
-                fpGroup.style.display = 'none';
-                toggleBin.classList.add('active');
-                toggleFp.classList.remove('active');
+        // Method toggle behavior
+        document.addEventListener('click', (e) => {
+            const mBin = document.getElementById('methodBinance');
+            const mFaucet = document.getElementById('methodFaucetpay');
+            if (e.target.closest('#methodBinance')) {
+                mBin.classList.add('active');
+                mFaucet.classList.remove('active');
+                document.getElementById('binanceGroup').style.display = 'block';
+                document.getElementById('faucetpayGroup').style.display = 'none';
+            } else if (e.target.closest('#methodFaucetpay')) {
+                mFaucet.classList.add('active');
+                mBin.classList.remove('active');
+                document.getElementById('binanceGroup').style.display = 'none';
+                document.getElementById('faucetpayGroup').style.display = 'block';
             }
+        });
 
-            // Ensure the corresponding radio is checked (in case change came from clicking label)
-            const radio = document.querySelector(`input[name="withdrawMethod"][value="${val}"]`);
-            if (radio) radio.checked = true;
-        }
-
-        // Helper to allow clicking the styled label to select method
-        function selectWithdrawMethod(method) {
-            const radio = document.querySelector(`input[name="withdrawMethod"][value="${method}"]`);
-            if (radio) {
-                radio.checked = true;
-                const event = new Event('change', { bubbles: true });
-                radio.dispatchEvent(event);
-            } else {
-                // Fallback to toggling manually
-                toggleWithdrawMethod({ target: { value: method } });
-            }
-        }
-
-        // Show dedicated withdraw history screen
-        function showWithdrawHistory() {
-            if (isBanned) {
-                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
-                return;
-            }
-            // Ensure latest data is loaded
-            loadUserData().then(() => {
-                displayWithdrawals();
-                document.getElementById('withdrawScreen').classList.remove('visible');
-                document.getElementById('withdrawHistoryScreen').classList.add('visible');
-            });
-        }
-
-        function hideWithdrawHistory() {
-            document.getElementById('withdrawHistoryScreen').classList.remove('visible');
-            document.getElementById('withdrawScreen').classList.add('visible');
-        }
-        
         // Final event listener to ensure background audio starts on the first user interaction
         document.addEventListener('click', function handler() {
             playBGAudio();
