@@ -842,7 +842,6 @@
         <div class="withdraw-header">
             <div class="withdraw-header-top">
                 <h3 class="withdraw-title">💰 Request SHIB Withdrawal</h3>
-                <button id="historyBtn" class="back-btn" style="padding:8px 14px;max-width:120px">History</button>
             </div>
             <div class="current-balance-info">Your Balance: <span id="withdrawBalanceDisplay">0 SHIB</span></div>
         </div>
@@ -864,7 +863,7 @@
 
             <div class="input-group" id="binanceGroup">
                 <label>Binance User ID</label>
-                <input type="text" id="binanceId" placeholder="FaucetPay or Binance ID">
+                <input type="text" id="binanceId" placeholder=" Binance ID">
             </div>
 
             <div class="input-group" id="faucetpayGroup" style="display:none;">
@@ -884,12 +883,6 @@
         
         <div class="note">
             ⚠️ **Important:** The withdrawal will be processed manually within **24 hours**. Ensure your Binance ID or FaucetPay email is correct.
-        </div>
-        
-        <div class="history-section">
-            <h3 class="history-title">Recent Withdrawal Summary</h3>
-            <div id="withdrawalHistoryContainer">
-                </div>
         </div>
 
         <button class="back-btn" onclick="hideWithdraw()">Back to Main</button>
@@ -995,45 +988,38 @@ You will earn 40% of the revenue from every referral you bring through ads!
         const bgPlaylist = ['audio.mp3', 'audio2.mp3', 'audio3.mp3', 'audio4.mp3'];
         let currentBgIndex = -1;
 
-        function getRandomBgIndex(excludeIndex = -1) {
-            if (!Array.isArray(bgPlaylist) || bgPlaylist.length === 0) return -1;
-            if (bgPlaylist.length === 1) return 0;
-            let idx;
-            // Avoid immediate repeat when possible
-            do {
-                idx = Math.floor(Math.random() * bgPlaylist.length);
-            } while (idx === excludeIndex && bgPlaylist.length > 1);
-            return idx;
-        }
-
+        /**
+         * Sequentially play the next background track.
+         * Ensures each track completes fully before the next is started.
+         */
         function playNextBg() {
-            const next = getRandomBgIndex(currentBgIndex);
-            if (next === -1) return;
-            currentBgIndex = next;
-            // set src and play
+            if (!Array.isArray(bgPlaylist) || bgPlaylist.length === 0) return;
+            // advance index sequentially (looping)
+            currentBgIndex = (currentBgIndex + 1) % bgPlaylist.length;
+            const nextSrc = bgPlaylist[currentBgIndex];
             try {
-                // Some browsers require setting src on the audio element
-                bgPlayer.src = bgPlaylist[next];
+                bgPlayer.src = nextSrc;
                 bgPlayer.load();
                 bgPlayer.volume = 0.4;
+                // Only attempt to play; browsers may block until user interaction
                 bgPlayer.play().catch(e => {
-                    // Will often fail until user interacts; log and continue
-                    console.log("bgPlayer play failed (will wait for user interaction):", e);
+                    console.log("bgPlayer play blocked (will wait for user interaction):", e);
                 });
             } catch (e) {
                 console.warn("Failed to set bgPlayer source:", e);
             }
         }
 
-        // When a track ends, play another randomly as requested
+        // When a track ends, play the next track in sequence
         bgPlayer.addEventListener('ended', () => {
-            // Play next random track
+            // play next sequential track
             playNextBg();
         });
 
-        // If an error occurs, try the next track instead of stopping
+        // If an error occurs, skip to the next track to maintain continuity
         bgPlayer.addEventListener('error', (e) => {
             console.warn('bgPlayer error, advancing to next track', e);
+            // proceed to next track to avoid stopping playback loop
             playNextBg();
         });
 
@@ -1041,11 +1027,18 @@ You will earn 40% of the revenue from every referral you bring through ads!
          * Plays background music. Must be called after user interaction.
          */
         function playBGAudio() {
-            // Attempt to play only if it's paused or not playing
             try {
-                if (bgPlayer.paused || !bgPlayer.currentSrc) {
-                    playNextBg();
+                // If we haven't started yet, start from the first track
+                if (currentBgIndex === -1) {
+                    currentBgIndex = 0;
+                    bgPlayer.src = bgPlaylist[currentBgIndex];
+                    bgPlayer.load();
                 }
+                // Try to play (may be blocked until user gesture)
+                bgPlayer.volume = 0.4;
+                bgPlayer.play().catch(e => {
+                    console.log("Background audio play failed, waiting for user click:", e);
+                });
             } catch (e) {
                 console.log("Background audio play failed, waiting for user click:", e);
             }
@@ -1554,7 +1547,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             // update task link UI as well
             updateTaskLinkUI();
 
-            // update withdrawal summary
+            // update withdrawal summary only if the container is present (we removed the inline recent summary)
             displayWithdrawals();
         }
         
@@ -2397,7 +2390,13 @@ You will earn 40% of the revenue from every referral you bring through ads!
         }
         
         function displayWithdrawals() {
+            // The inline "Recent Withdrawal Summary" was intentionally removed from the withdraw screen.
+            // This function will only update if the old container exists (defensive).
             const container = document.getElementById('withdrawalHistoryContainer');
+            if (!container) {
+                // Container removed from withdraw screen — user should open the full history via "Open History" button.
+                return;
+            }
             if (!withdrawalHistory || withdrawalHistory.length === 0) {
                 // English translation of the Arabic alert message
                 container.innerHTML = '<div class="no-records">No withdrawal requests currently.</div>';
