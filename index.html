@@ -130,6 +130,36 @@
 
         .balance{position:absolute;top:20px;right:20px;background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:16px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05)}
         
+        /* GAMES button placed slightly under balance */
+        .games-launch {
+            position: absolute;
+            top: 70px; /* a bit below the balance */
+            right: 20px;
+            z-index: 101;
+        }
+        .games-button {
+            display:flex;
+            align-items:center;
+            gap:10px;
+            background: linear-gradient(135deg,#6a11cb,#2575fc);
+            color:#fff;
+            border: none;
+            padding:10px 16px;
+            border-radius: 12px;
+            font-weight:700;
+            box-shadow: 0 8px 18px rgba(37,117,252,0.18), inset 0 -4px 12px rgba(0,0,0,0.12);
+            cursor:pointer;
+            transition: transform .12s ease, box-shadow .12s ease;
+            font-size:14px;
+            letter-spacing:0.6px;
+        }
+        .games-button .icon {
+            width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:16px;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+        }
+        .games-button:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(37,117,252,0.22)}
+        .games-button:active{transform:translateY(1px)}
+
         /* Shared Progress Containers */
         .progress-group-container {
             position: absolute;
@@ -689,6 +719,83 @@
             border: 1px solid rgba(0,0,0,0.04);
         }
 
+        /* ===== Games Screen & Buttons ===== */
+        .games-screen{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:flex-start;
+            padding-top: 60px;
+            padding-bottom: 120px;
+            overflow-y:auto;
+            background: linear-gradient(180deg,#f7fbff,#eef6ff);
+        }
+        .games-header{
+            width:100%;
+            max-width:420px;
+            text-align:center;
+            margin-bottom:20px;
+        }
+        .games-title{
+            font-size:24px;
+            color:#1b3b72;
+            font-weight:800;
+            margin:0;
+            text-shadow:0 1px 0 #fff;
+        }
+        .games-sub{
+            font-size:13px;color:#4a5568;margin-top:8px;
+        }
+        .games-container{
+            width:100%;
+            max-width:420px;
+            display:flex;
+            flex-direction:column;
+            gap:16px;
+            padding:20px;
+        }
+        .game-card{
+            background:linear-gradient(180deg,#ffffff,#f6fbff);
+            border-radius:14px;
+            padding:18px;
+            display:flex;
+            flex-direction:column;
+            gap:12px;
+            box-shadow:0 10px 30px rgba(27,59,114,0.08);
+            border:1px solid rgba(27,59,114,0.06);
+            align-items:stretch;
+        }
+        .game-description{
+            color:#334155;font-size:14px;
+        }
+        .game-buttons{
+            display:flex;
+            gap:12px;
+            justify-content:space-between;
+        }
+        .game-button{
+            flex:1;
+            background:linear-gradient(135deg,#ff6b6b,#ff8c66);
+            color:#fff;border:none;padding:12px 14px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;
+            box-shadow:0 8px 20px rgba(255,108,108,0.16);transition:all .12s ease;text-transform:none;
+        }
+        .game-button.secondary{
+            background:linear-gradient(135deg,#00bfff,#0077b3);
+            box-shadow:0 8px 20px rgba(0,119,179,0.12);
+        }
+        .game-button:hover{transform:translateY(-4px)}
+        .game-button:active{transform:translateY(2px)}
+
+        .games-back-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background:linear-gradient(145deg, #6c757d, #5a6268);
+            color:#fff;border:none;padding:12px 30px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;
+            box-shadow:0 6px 0 #4e555b;transition:all .1s ease;width:90%;max-width:420px;z-index:1000;
+        }
+
         /* ===== Withdraw method toggle ===== */
         .withdraw-method-toggle {
             display:flex;
@@ -698,7 +805,7 @@
         }
         .method-option {
             display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;cursor:pointer;border:1px solid transparent;
-            transition:all .12s ease;
+            transition:all .12s.ease;
             background:linear-gradient(180deg,#fafafa,#fff);
         }
         .method-option input{display:none}
@@ -768,6 +875,14 @@
     
     <div class="app-screen main-screen" id="mainScreen">
         <div class="balance" id="shibBalance">0 SHIB</div>
+
+        <!-- GAMES launch button placed slightly under the balance box -->
+        <div class="games-launch">
+            <button class="games-button" onclick="showGames()" title="Open Games">
+                <div class="icon">🎮</div>
+                <div class="label">Games</div>
+            </button>
+        </div>
         
         <div class="progress-group-container">
             <div class="daily-progress-container">
@@ -929,6 +1044,34 @@ You will earn 40% of the revenue from every referral you bring through ads!
         </div>
 
         <button class="back-btn" onclick="hideInvite()">Back to Main</button>
+    </div>
+
+    <!-- NEW: Games Screen -->
+    <div class="app-screen games-screen" id="gamesScreen">
+        <div class="games-header">
+            <h2 class="games-title">Games</h2>
+            <div class="games-sub">Play quick games and weekly competitions to win more SHIB</div>
+        </div>
+
+        <div class="games-container">
+            <div class="game-card">
+                <div class="game-description"><strong>Click Game</strong> — A simple and fast reflex clicker. Tap fast to earn points.</div>
+                <div class="game-buttons">
+                    <button class="game-button" onclick="startClickGame()">Play Click Game</button>
+                    <button class="game-button secondary" onclick="showClickGameRules()">Rules</button>
+                </div>
+            </div>
+
+            <div class="game-card">
+                <div class="game-description"><strong>Weekly Competition</strong> — Join the weekly leaderboard to compete with other players.</div>
+                <div class="game-buttons">
+                    <button class="game-button" onclick="startWeeklyCompetition()">Join Weekly Competition</button>
+                    <button class="game-button secondary" onclick="showWeeklyRules()">Leaderboard & Rules</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="games-back-btn" onclick="hideGames()">Back to Main</button>
     </div>
     
     <div id="customAlert" class="custom-alert-overlay">
@@ -2556,6 +2699,42 @@ You will earn 40% of the revenue from every referral you bring through ads!
             playBGAudio();
             document.removeEventListener('click', handler); // Remove after first successful click
         });
+
+        /* ===== Games Navigation & Handlers ===== */
+        function showGames(){
+            if (isBanned) {
+                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
+                return;
+            }
+            mainScreen.classList.remove('visible');
+            document.getElementById('gamesScreen').classList.add('visible');
+            loadUserData();
+        }
+        function hideGames(){
+            document.getElementById('gamesScreen').classList.remove('visible');
+            mainScreen.classList.add('visible');
+        }
+
+        function startClickGame(){
+            // Placeholder behaviour: show alert and play sfx
+            showCustomAlert('Click Game', 'Launching Click Game... Good luck!', 'success');
+            // Real game logic can be integrated here
+        }
+
+        function startWeeklyCompetition(){
+            // Placeholder for joining weekly competition
+            showCustomAlert('Weekly Competition', 'You have joined the Weekly Competition. Check leaderboard for results.', 'success');
+            // Real competition integration can be implemented via server calls
+        }
+
+        function showClickGameRules(){
+            showCustomAlert('Click Game Rules', 'Tap quickly to score points. Higher score = higher rewards.', 'warning');
+        }
+
+        function showWeeklyRules(){
+            showCustomAlert('Weekly Competition', 'Participate during the week. Top players win additional SHIB prizes.', 'warning');
+        }
+
     </script>
 </body>
 </html>
