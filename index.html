@@ -486,7 +486,7 @@
         .history-table tr:last-child td{
             border-bottom: none;
         }
-        .status-pending{color: #ff8c00; font-weight: bold;}
+        .status-pending{Color: #ff8c00; font-weight: bold;}
         .status-completed{color: #28a745; font-weight: bold;}
         .no-records{text-align: center; color: #999; padding: 20px;}
         
@@ -1013,6 +1013,58 @@
         /* A decorative thin line made of pseudo-small-caps glyphs removed as requested */
         .decor-line { display:none; }
 
+        /* ===== Leaderboard Fullscreen Page (NEW) ===== */
+        .leaderboard-screen{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            padding:30px 18px;
+            overflow-y:auto;
+            background: linear-gradient(180deg,#052a4a,#0b4470); 
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .leaderboard-header{
+            width:100%;
+            max-width:820px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            padding:18px;
+            border-radius:12px;
+            display:flex;
+            gap:12px;
+            align-items:center;
+            justify-content:space-between;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+            border:1px solid rgba(255,255,255,0.06);
+            margin-bottom:18px;
+        }
+        .leaderboard-title { font-size:20px; font-weight:900; color:#ffd47a; }
+        .leaderboard-sub { font-size:13px; color:#dbeeff; }
+
+        .leaderboard-list {
+            width:100%;
+            max-width:820px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+        }
+        .leaderboard-item {
+            display:flex;
+            align-items:center;
+            gap:12px;
+            padding:12px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius:10px;
+            justify-content:space-between;
+        }
+        .leaderboard-left { display:flex; align-items:center; gap:12px; }
+        .leaderboard-rank { font-weight:900; font-size:18px; color:#ffd47a; width:36px; text-align:center; }
+        .leaderboard-avatar { width:40px; height:40px; border-radius:8px; overflow:hidden; background:#eee; display:flex; align-items:center; justify-content:center; }
+        .leaderboard-avatar img { width:40px; height:40px; object-fit:cover; }
+        .leaderboard-name { font-weight:800; color:#fff; font-size:15px; }
+        .leaderboard-tickets { font-weight:900; color:#a7ecff; font-size:14px; min-width:120px; text-align:right; }
+
         /* Responsive */
         @media (max-width:900px) {
             .competition-content { flex-direction:column; }
@@ -1059,9 +1111,7 @@
         </span>
         <span class="g">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 18" height="18" width="15" class="letter">
-            <path fill="currentColor" d="M14.04 13.72C13.64 14.6533 12.9933 15.44 12.1 16.08C11.22 16.72 10.1333 17.0933 8.84 17.2C8.72 17.2133 8.6 17.22 8.48 17.22C8.36 17.22 8.24 17.22 8.12 17.22C7.12 17.22 6.16667 17.0467 5.26 16.7C4.36667 16.3533 3.57333 15.8333 2.88 15.14C2.18667 14.4333 1.64 13.54 1.24 12.46C0.84 11.38 0.64 10.1 0.64 8.62C0.64 7.48667 0.78 6.42667 1.06 5.44C1.34 4.44 1.74667 3.55333 2.28 2.78C2.82667 2.00667 3.48667 1.38667 4.26 0.92C5.03333 0.453333 5.90667 0.179999 6.88 0.0999997C6.96 0.0866657 7.04 0.0799987 7.12 0.0799987C7.2 0.0799987 7.28 0.0799987 7.36 0.0799987C8.33333 0.0799987 9.28 0.299999 10.2 0.74C11.1333 1.18 11.9467 1.78 12.64 2.54C13.3467 3.3 13.8467 4.16 14.14 5.12L11.76 6.46L12.04 6.44L14.04 7.44V13.72ZM5.9 7.16V10L8.98 9.74V11.46C8.80667 11.8067 8.52667 12.1067 8.14 12.36C7.76667 12.6 7.37333 12.7333 6.96 12.76C6.90667 12.7733 6.84667 12.78 6.78 12.78C6.72667 12.78 6.66667 12.78 6.6 12.78C5.73333 12.78 5.08 12.4333 4.64 11.74C4.2 11.0467 3.98 9.92 3.98 8.36C3.98 6.94667 4.20667 5.82 4.66 4.98C5.11333 4.14 5.84 3.68 6.84 3.6H7.06C7.60667 3.6 8.07333 3.76 8.46 4.08C8.86 4.4 9.14667 4.86667 9.32 5.48L11.9 4.02C11.6733 3.38 11.36 2.78 10.96 2.22C10.5733 1.64667 10.0867 1.18 9.5 0.819999C8.91333 0.459999 8.2 0.28 7.36 0.28C7.29333 0.28 7.22 0.28 7.14 0.28C7.06 0.28 6.98 0.286666 6.9 0.299999C5.63333 0.406666 4.54667 0.846666 3.64 1.62C2.73333 2.38 2.04 3.37333 1.56 4.6C1.08 5.81333 0.84 7.15333 0.84 8.62C0.84 10.14 1.06 11.4533 1.5 12.56C1.94 13.6667 2.56667 14.52 3.38 15.12C4.19333 15.72 5.16 16.02 6.28 16.02C6.37333 16.02 6.46 16.02 6.54 16.02C6.63333 16.02 6.72667 16.0133 6.82 16C8.07333 15.8933 9.12667 15.54 9.98 14.94C10.8467 14.3267 11.4733 13.5733 11.86 12.68V6.66L5.9 7.16ZM9.2 5.78C9.14667 5.59333 9.08667 5.42 9.02 5.26C8.95333 5.08667 8.88 4.93333 8.8 4.8C8.2 4.85333 7.70667 5.06667 7.32 5.44C6.94667 5.8 6.66667 6.29333 6.48 6.92L10.8 6.56L9.2 5.78ZM7.8 11.26L6.24 10.46C6.26667 10.9933 6.32 11.4133 6.4 11.72C6.49333 12.0133 6.62667 12.3 6.8 12.58C6.84 12.5667 6.88667 12.56 6.94 12.56C7.28667 12.5333 7.63333 12.4267 7.98 12.24C8.32667 12.04 8.59333 11.8067 8.78 11.54V11.14L7.8 11.26Z"/>
-          </svg>
-        </span>
+            <path fill="currentColor" d="M14.04 13.72C13.64 14.6533 12.9933 15.44 12.1 16.08C11.22 16.72 10.1333 17.0933 8.84 17.2C8.72 17.2133 8.6 17.22 8.48 17.22C8.36 17.22 8.24 17.22 8.12 17.22C7.12 17.22 6.16667 17.0467 5.26 16.7C4.36667 16.3533 3.57333 15.8333 2.88 15.14C2.18667 14.4333 1.64 13.54 1.24 12.46C0.84 11.38 0.64 10.1 0.64 8.62C0.64 7.48667 0.78 6.42667 1.06 5.44C1.34 4.44 1.74667 3.55333 2.28 2.78C2.82667 2.00667 3.48667 1.38667 4.26 0.92C5.03333 0.453333 5.90667 0.179999 6.88 0.0999997C6.96 0.0866657 7.04 0.0799987 7.12 0.0799987C7.2 0.0799987 7.28 0.0799987 7.36 0.0799987C8.33333 0.0799987 9.28 0.299999 10.2 0.74C11.1333 1.18 11.9467 1.78 12.64 2.54C13.3467 3.3 13.8467 4.16 14.14 5.12L11.76 6.46L12.04 6.44L14.04 7.44V13.72ZM5.9 7.16V10L8.98 9.74V11.46C8.80667 11.8067 8.52667 12.1067 8.14 12.36C7.76667 12.6 7.37333 12.7333 6.96 12.76C6.90667 12.7733 6.84667 12.78 6.78 12.78C6.72667 12.78 6.66667 12.78 6.6 12.78C5.73333 12.78 5.08 12.4333 4.64 11.74C4.2 11.0467 3.98 9.92 3.98 8.36C3.98 6.94667 4.20667 5.82 4.66 4.98C5.11333 4.14 5.84 3.68 6.84 3.6H7.06C7.60667 3.6 8.07333 3.76 8.46 4.08C8.86 4.4 9.14667 4.86667 9.32 5.48L11.9 4.02C11.6733 3.38 11.36 2.78 10.96 2.22C10.5733 1.64667 10.0867 1.18 9.5 0.819999C8.91333 0.459999 8.2 0.28 7.36 0.28H..."/>
       </div>
     </div>
     
@@ -1254,7 +1304,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             <div class="hub-button games" onclick="showGamesUnderDev()">
                 <div class="hub-icon">🎮</div>
                 <div style="font-weight:800;color:#333">Games</div>
-                <div style="font-size:12px;color:#666">قيد التطوير</div>
+                <div style="font-size:12px;color:#666">In Development</div>
             </div>
         </div>
 
@@ -1292,7 +1342,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 <div class="countdown-label">Ends in</div>
                 <div class="countdown-time" id="competitionEnds">15d 00:00:00</div>
             </div>
-            <button class="view-small-btn" onclick="viewCompetition()">مشاهده</button>
+            <button class="view-small-btn" onclick="openLeaderboard()">Leaderboard</button>
         </div>
 
         <div class="competition-content">
@@ -1313,7 +1363,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 </table>
 
                 <div class="ad-action">
-                    <button class="ad-btn small" id="compAdBtn" onclick="claimCompetitionAd()">مشاهده</button>
+                    <button class="ad-btn small" id="compAdBtn" onclick="claimCompetitionAd()">Watch</button>
                 </div>
 
             </div>
@@ -1335,6 +1385,23 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
         <div style="width:100%;max-width:820px;margin-top:18px;display:flex;gap:12px;justify-content:center;">
             <button class="back-btn" onclick="closeCompetition()">Back</button>
+        </div>
+    </div>
+
+    <!-- NEW: Leaderboard Fullscreen Page -->
+    <div class="app-screen leaderboard-screen" id="leaderboardScreen" style="display:none;">
+        <div class="leaderboard-header">
+            <div>
+                <div class="leaderboard-title">Leaderboard — Top 5</div>
+                <div class="leaderboard-sub">Players ranked by collected tickets</div>
+            </div>
+            <div>
+                <button class="back-btn" onclick="closeLeaderboard()">Back</button>
+            </div>
+        </div>
+
+        <div class="leaderboard-list" id="leaderboardList">
+            <!-- Items injected here -->
         </div>
     </div>
     
@@ -2717,11 +2784,11 @@ You will earn 40% of the revenue from every referral you bring through ads!
         }
 
         function startClickGame(){
-            showCustomAlert('قيد التطوير', 'هذه اللعبة حالياً قيد التطوير. ستتوفر قريباً.', 'warning');
+            showCustomAlert('In Development', 'This game is currently in development and will be available soon.', 'warning');
         }
 
         function startWeeklyCompetition(){
-            showCustomAlert('قيد التطوير', 'هذه الخاصية حالياً قيد التطوير. تابع التحديثات.', 'warning');
+            showCustomAlert('In Development', 'This feature is under development. Stay tuned.', 'warning');
         }
 
         function showClickGameRules(){
@@ -2733,7 +2800,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         }
 
         function showGamesUnderDev(){
-            showCustomAlert('قيد التطوير', 'صفحة الألعاب حالياً قيد التطوير. نعمل على تحديثها قريباً.', 'warning');
+            showCustomAlert('In Development', 'Games page is under development. We are working on updates.', 'warning');
         }
 
         /* ===== Competition Screen Logic ===== */
@@ -2828,13 +2895,14 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
 
             const html = top5.map((p, idx) => {
-                const avatar = p.avatar || 'https://via.placeholder.com/64x64.png?text=🏆';
+                const avatar = p.avatar || 'https://via.placeholder.com/40.png?text=U';
                 const username = p.username || ('User ' + (p.user_id || (idx+1)));
                 const safeUsername = escapeHtml(username);
+                // use smaller avatar inside competition right panel
                 return `
                     <div class="leader-item">
                         <div class="leader-rank">${idx+1}</div>
-                        <div class="leader-avatar"><img src="${avatar}" alt="${safeUsername}"></div>
+                        <div class="leader-avatar" style="width:40px;height:40px;border-radius:8px;overflow:hidden;"><img src="${avatar}" alt="${safeUsername}"></div>
                         <div class="leader-info">
                             <div class="leader-name">${safeUsername}</div>
                             <div class="leader-tickets">${p.tickets || 0} tickets</div>
@@ -2912,12 +2980,72 @@ You will earn 40% of the revenue from every referral you bring through ads!
             });
         }
 
+        // Open leaderboard full page (NEW). This will not generate fake users.
+        function openLeaderboard(){
+            if (isBanned) {
+                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
+                return;
+            }
+            // Ensure competition data is up-to-date
+            loadCompetitionData().then(() => {
+                renderLeaderboardPage();
+                // hide competition and games screens if visible
+                document.getElementById('competitionScreen').classList.remove('visible');
+                document.getElementById('competitionScreen').style.display = 'none';
+                document.getElementById('gamesScreen').classList.remove('visible');
+                document.getElementById('leaderboardScreen').style.display = 'flex';
+                document.getElementById('leaderboardScreen').classList.add('visible');
+            });
+        }
+
+        function closeLeaderboard(){
+            document.getElementById('leaderboardScreen').classList.remove('visible');
+            document.getElementById('leaderboardScreen').style.display = 'none';
+            // Return to competition screen
+            document.getElementById('competitionScreen').style.display = 'flex';
+            document.getElementById('competitionScreen').classList.add('visible');
+            // refresh competition UI
+            updateCompetitionUI();
+        }
+
+        function renderLeaderboardPage(){
+            const container = document.getElementById('leaderboardList');
+            if (!container) return;
+
+            const top5 = Array.isArray(competitionData.top5) ? competitionData.top5.slice(0,5) : [];
+
+            if (!top5 || top5.length === 0) {
+                container.innerHTML = `<div style="padding:30px;text-align:center;color:#dbeeff">No players yet. Be the first to collect tickets!</div>`;
+                return;
+            }
+
+            // Render only real players provided by server. Do not fabricate entries.
+            const html = top5.map((p, idx) => {
+                const avatar = p.avatar || 'https://via.placeholder.com/40.png?text=U';
+                const username = p.username || (`User ${p.user_id || (idx+1)}`);
+                const safeUsername = escapeHtml(username);
+                const tickets = p.tickets || 0;
+                return `
+                    <div class="leaderboard-item">
+                        <div class="leaderboard-left">
+                            <div class="leaderboard-rank">${idx+1}</div>
+                            <div class="leaderboard-avatar"><img src="${avatar}" alt="${safeUsername}"></div>
+                            <div class="leaderboard-name">${safeUsername}</div>
+                        </div>
+                        <div class="leaderboard-tickets">${tickets} tickets</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
         function viewCompetition(){
-            // Scroll to leaderboard area to "view" competition details
+            // scroll to leaderboard area inside competition screen
             const el = document.getElementById('leaderList');
             if (el) {
                 el.scrollIntoView({behavior:'smooth', block:'center'});
-                showCustomAlert('عرض', 'تم الانتقال إلى لوحة المتصدرين.', 'success');
+                showCustomAlert('Leaderboard', 'Scrolled to leaderboard.', 'success');
             }
         }
 
@@ -2974,6 +3102,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
         window.claimCompetitionAd = claimCompetitionAd;
         window.viewCompetition = viewCompetition;
         window.showGamesUnderDev = showGamesUnderDev;
+        window.openLeaderboard = openLeaderboard;
+        window.closeLeaderboard = closeLeaderboard;
 
     </script>
 </body>
