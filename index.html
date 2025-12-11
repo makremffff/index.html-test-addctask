@@ -431,7 +431,7 @@
             width:100%;margin-bottom:15px;
         }
         .input-group label{display:block;margin-bottom:8px;font-size:14px;color:#555;font-weight:600;}
-        .input-group input{width:100%;padding:12px 15px;border:1px solid #ddd;border-radius:10px;font-size:16px;transition:border-color .3s ease, box-shadow .3s ease;outline:none;}
+        .input-group input{Width:100%;padding:12px 15px;border:1px solid #ddd;border-radius:10px;font-size:16px;transition:border-color .3s ease, box-shadow .3s ease;outline:none;}
         .input-group input:focus{border-color:#ff8c00;box-shadow:0 0 0 3px rgba(255,140,0,0.2);}
         .withdraw-buttons{display:flex;gap:15px;margin-top:20px;justify-content: center;flex-wrap:wrap}
         .withdraw-btn{
@@ -846,31 +846,63 @@
             overflow-y:auto;
             background: linear-gradient(180deg,#0f4c81,#0b69a3); /* Blue themed page background */
             color: #ffffff;
+            /* Use a typewriter/monospace font inside the competition screen as requested */
+            font-family: 'Courier New', Courier, monospace;
         }
         .competition-header{
             width:100%;
             max-width:820px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
-            padding:16px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            padding:18px;
             border-radius:12px;
             display:flex;
             gap:12px;
             align-items:center;
-            justify-content:space-between;
+            justify-content:center;
             box-shadow: 0 8px 24px rgba(0,0,0,0.18);
             border:1px solid rgba(255,255,255,0.06);
             margin-bottom:18px;
             position: relative;
+            /* simplified header: only countdown + small view button centered */
+            flex-direction: row;
         }
-        .competition-title {
-            font-size:20px;
+        .competition-countdown {
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            gap:6px;
+            color: #fff;
+        }
+        .countdown-label {
+            font-size:13px;
+            color: #dbeeff;
+            font-weight:700;
+            opacity:0.9;
+        }
+        .countdown-time {
+            font-size:26px;
+            font-weight:900;
+            color: #ffea8a;
+            letter-spacing:1px;
+        }
+        .competition-meta { text-align:right; color:#dbeeff; font-weight:700; font-size:13px; display:none; }
+
+        .view-small-btn {
+            margin-left:12px;
+            background: linear-gradient(135deg,#00bfff,#0077b3);
+            color:#fff;
+            border:none;
+            padding:8px 12px;
+            border-radius:10px;
             font-weight:800;
-            color:#ffea8a;
+            font-size:14px;
+            cursor:pointer;
+            box-shadow:0 6px 0 #005a8d;
+            transition:all .12s ease;
+            height:36px;
+            align-self:center;
         }
-        .competition-sub {
-            font-size:13px;color:#e6f3ff;
-        }
-        .competition-meta { text-align:right; color:#dbeeff; font-weight:700; font-size:13px; }
+        .view-small-btn:active{transform:translateY(2px);box-shadow:0 3px 0 #005a8d}
 
         .competition-content {
             width:100%;
@@ -914,8 +946,8 @@
         .stats-table td.label { color:#cfe9ff; font-weight:700; width:60%; display:flex; align-items:center; gap:10px; }
         .stats-table td.value { text-align:right; color:#fff; font-weight:900; }
 
-        /* Larger, ideal ticket image */
-        .ticket-img { width:48px; height:48px; object-fit:cover; vertical-align:middle; margin-right:8px; border-radius:8px; }
+        /* Smaller ticket image as requested */
+        .ticket-img { width:20px; height:20px; object-fit:cover; vertical-align:middle; margin-right:8px; border-radius:4px; }
 
         .ad-action {
             display:flex;
@@ -924,12 +956,20 @@
             margin-top:12px;
         }
         .ad-btn {
-            padding:12px 18px;
+            padding:10px 14px;
             background: linear-gradient(135deg,#ff8c00,#ff3366);
-            color:#fff;border:none;border-radius:12px;font-weight:800;cursor:pointer;
+            color:#fff;border:none;border-radius:10px;font-weight:800;cursor:pointer;
             box-shadow:0 8px 0 rgba(255,76,76,0.14);
+            font-size:14px;
         }
-        .ad-btn.secondary { background:linear-gradient(135deg,#00bfff,#0077b3); box-shadow:0 8px 0 rgba(0,119,179,0.12); }
+        .ad-btn.small {
+            padding:8px 12px;
+            font-size:13px;
+            border-radius:8px;
+            box-shadow:0 6px 0 rgba(255,76,76,0.12);
+        }
+        .ad-btn.secondary { background:linear-gradient(135deg,#00bfff,#0077b3); box-shadow:0 8px 0 rgba(0,119,179,0.12); display:none; } /* removed share button visually */
+        .ad-btn:active{transform:translateY(2px)}
 
         /* Right: Top 5 leaderboard */
         .competition-right {
@@ -970,16 +1010,8 @@
         .prize-title { font-weight:900; color:#ffecb3; font-size:15px; }
         .prize-list { margin-top:8px; display:flex; gap:8px; flex-direction:column; align-items:center; color:#dbeeff; font-weight:700; }
 
-        /* A decorative thin line made of pseudo-small-caps glyphs as requested */
-        .decor-line {
-            width:100%;
-            text-align:center;
-            font-family: 'Vazirmatn', monospace;
-            color: rgba(255,255,255,0.45);
-            margin-top:10px;
-            margin-bottom:12px;
-            letter-spacing: 3px;
-        }
+        /* A decorative thin line made of pseudo-small-caps glyphs removed as requested */
+        .decor-line { display:none; }
 
         /* Responsive */
         @media (max-width:900px) {
@@ -987,6 +1019,8 @@
             .competition-right { width:100%;}
             .competition-left { width:100%;}
             .games-hub { flex-direction:row; gap:10px; }
+            .competition-header { flex-direction:column; gap:10px; }
+            .view-small-btn { margin-left:0; }
         }
     </style>
 </head>
@@ -1254,12 +1288,11 @@ You will earn 40% of the revenue from every referral you bring through ads!
     <!-- NEW: Competition Fullscreen Page -->
     <div class="app-screen competition-screen" id="competitionScreen" style="display:none;">
         <div class="competition-header">
-            <div>
-                <div class="competition-title">15-Day Ticket Competition</div>
-                <div class="competition-sub">Collect tickets by watching ads. Top 5 collectors split the grand prize of 1,000,000 SHIB.</div>
-                <div class="decor-line">𝚕𝚒𝚔𝚎 𝚝𝚑𝚒𝚜 • • •</div>
+            <div class="competition-countdown">
+                <div class="countdown-label">Ends in</div>
+                <div class="countdown-time" id="competitionEnds">15d 00:00:00</div>
             </div>
-            <div class="competition-meta" id="competitionMeta">Ends in: <span id="competitionEnds">15 days</span></div>
+            <button class="view-small-btn" onclick="viewCompetition()">مشاهده</button>
         </div>
 
         <div class="competition-content">
@@ -1279,19 +1312,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     </tr>
                 </table>
 
-                <div style="font-size:13px;color:#e6f3ff;margin-bottom:8px;">Watch the ad below to earn 1 ticket. Tickets collected increase your chance to win the split prize.</div>
-
                 <div class="ad-action">
-                    <button class="ad-btn" id="compAdBtn" onclick="claimCompetitionAd()">Watch Ad (Get 1 Ticket)</button>
-                    <button class="ad-btn secondary" onclick="shareCompetition()">Share</button>
+                    <button class="ad-btn small" id="compAdBtn" onclick="claimCompetitionAd()">مشاهده</button>
                 </div>
 
-                <div style="margin-top:12px;font-size:13px;color:#e6f3ff;">
-                    <strong>How the grand prize is split (1,000,000 SHIB)</strong>
-                    <div style="margin-top:8px;">
-                        <div id="prizeSplitList"> <!-- Filled by JS --> </div>
-                    </div>
-                </div>
             </div>
 
             <div class="competition-right">
@@ -2830,7 +2854,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
         function renderPrizeSplit(){
             const prizeBox = document.getElementById('prizeBoxList');
-            const prizeList = document.getElementById('prizeSplitList');
 
             if (prizeBox) {
                 prizeBox.innerHTML = PRIZE_SPLIT.map(p => {
@@ -2839,13 +2862,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         <div style="font-weight:900;color:#fff;">${p.rank}st get</div>
                         <div style="color:#dbeeff;font-weight:800;">${amount.toLocaleString()} SHIB</div>
                     </div>`;
-                }).join('');
-            }
-
-            if (prizeList) {
-                prizeList.innerHTML = PRIZE_SPLIT.map(p => {
-                    const amount = Math.round(PRIZE_TOTAL * (p.pct / 100));
-                    return `<div>${p.rank}st get: <strong>${amount.toLocaleString()} SHIB</strong></div>`;
                 }).join('');
             }
         }
@@ -2896,20 +2912,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
             });
         }
 
-        function shareCompetition(){
-            const shareText = `Join the 15-day SHIB Ticket Competition and win a share of 1,000,000 SHIB!`;
-            if (navigator.share) {
-                navigator.share({
-                    title: 'SHIB Ticket Competition',
-                    text: shareText,
-                    url: location.href
-                }).catch(()=>{});
-            } else {
-                navigator.clipboard.writeText(shareText + ' ' + location.href).then(()=> {
-                    showCustomAlert('Link Copied', 'Competition link copied to clipboard.', 'success');
-                }).catch(()=> {
-                    showCustomAlert('Copy Failed', 'Unable to copy the link. Try again.', 'error');
-                });
+        function viewCompetition(){
+            // Scroll to leaderboard area to "view" competition details
+            const el = document.getElementById('leaderList');
+            if (el) {
+                el.scrollIntoView({behavior:'smooth', block:'center'});
+                showCustomAlert('عرض', 'تم الانتقال إلى لوحة المتصدرين.', 'success');
             }
         }
 
@@ -2964,7 +2972,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         window.openGamesList = openGamesList;
         window.closeGamesDetails = closeGamesDetails;
         window.claimCompetitionAd = claimCompetitionAd;
-        window.shareCompetition = shareCompetition;
+        window.viewCompetition = viewCompetition;
         window.showGamesUnderDev = showGamesUnderDev;
 
     </script>
