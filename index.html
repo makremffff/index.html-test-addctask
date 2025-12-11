@@ -13,18 +13,8 @@
         *{margin:0;padding:0;box-sizing:border-box}
         /* Primary font set to the special '𝚝𝚢𝚙𝚎' glyph sequence first (if available),
            then Courier New, then any monospace — this ensures the page "feels" like the requested type. */
-        /* Changed overflow to auto to avoid sudden layout jumps/zoom when overlays & alerts appear.
-           This prevents the page from being clipped and helps text remain visible on smaller screens. */
-        body{
-            font-family:'𝚝𝚢𝚙𝚎', 'Courier New', monospace, 'Vazirmatn', Arial, Helvetica, sans-serif;
-            overflow:auto;
-            background: #0d0c1d;
-            color:#111;
-            -webkit-font-smoothing:antialiased;
-            -moz-osx-font-smoothing:grayscale;
-            font-size:16px;
-        }
-
+        body{font-family:'𝚝𝚢𝚙𝚎', 'Courier New', monospace, 'Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;color:#111;}
+        
         .app-screen {
             position: fixed;
             inset: 0;
@@ -34,16 +24,13 @@
             display: flex;
             flex-direction: column;
             opacity: 0;
-            pointer-events: none;
-            z-index: 10;
-            /* Ensure transforms inside overlays won't inherit scale from parent */
-            transform: none;
-            will-change: opacity;
+            pointer-events: none; 
+            z-index: 10; 
         }
         .app-screen.visible {
             opacity: 1;
             pointer-events: auto;
-            z-index: 20;
+            z-index: 20; 
         }
 
         /* Loading Screen - Replaced with animated "LOADING" letter sequence */
@@ -71,17 +58,12 @@
           overflow: hidden;
         }
 
-        /* Fixed the extreme negative letter-spacing that caused layout content shifts.
-           Use small negative spacing only when safe, otherwise normal spacing. */
         .loader span {
           padding: 0;
-          margin: 0 2px;
-          letter-spacing: normal;
-          transform: translateY(0.4rem);
-          animation: hideAndSeek 900ms alternate infinite cubic-bezier(0.86, 0, 0.07, 1);
-          display:inline-flex;
-          align-items:center;
-          justify-content:center;
+          margin: 0;
+          letter-spacing: -5rem;
+          transform: translateY(4rem);
+          animation: hideAndSeek 1s alternate infinite cubic-bezier(0.86, 0, 0.07, 1);
         }
 
         .loader .l { animation-delay: calc(var(--ANIMATION-DELAY-MULTIPLIER) * 0); color:#ff3b3b; }
@@ -95,7 +77,6 @@
         .letter {
           width: fit-content;
           height: 3rem;
-          display:block;
         }
 
         .i {
@@ -104,39 +85,36 @@
 
         @keyframes hideAndSeek {
           0% {
-            transform: translateY(1.2rem);
-            opacity: 0.35;
+            transform: translateY(4rem);
           }
           100% {
             transform: translateY(0rem);
-            opacity: 1;
           }
         }
         /* End of replaced loader styles */
 
         /* Main Screen */
         .main-screen{
-            background-color: #f0f0f0;
+            background-color: #f0f0f0; 
         }
-
-        .main-content{flex:1;display:flex;justify-content:center;align-items:center; padding:12px; width:100%;}
-
+        
+        .main-content{flex:1;display:flex;justify-content:center;align-items:center}
+        
         /* User Circle */
         .user-circle{
             position:absolute;top:10px;left:15px;width:60px;height:60px;border:2px dashed #ccc;
             border-radius:50%;display:flex;flex-direction:column;justify-content:center;
-            align-items:center;cursor:pointer;transition:all .3s ease;z-index:100;overflow:hidden;
-            background: rgba(255,255,255,0.02);
+            align-items:center;cursor:pointer;transition:all .3s ease;z-index:100;overflow:hidden
         }
         .user-circle:hover{border-color:#4a90e2;background:rgba(74,144,226,.05)}
-        .user-circle img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
+        .user-circle img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:none}
         .user-circle .placeholder{color:#999;font-size:12px;text-align:center}
-
+        
         .user-username{
             position: absolute;
             top: 70px;
             left: 10px;
-            width: 120px; /* widened to avoid text clipping */
+            width: 70px;
             font-size:13px;color:#555;white-space:nowrap;
             text-align: center;
             overflow: hidden;
@@ -144,17 +122,17 @@
         }
         .user-id{
             position: absolute;
-            top: 90px;
+            top: 85px;
             left: 10px;
-            width: 120px; /* widened to avoid clipping of ID */
-            font-size:12px;color:#888;white-space:nowrap;
+            width: 70px;
+            font-size:11px;color:#888;white-space:nowrap;
             text-align: center;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .balance{position:absolute;top:20px;right:20px;background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:14px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05);white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
-
+        .balance{position:absolute;top:20px;right:20px;background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:16px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05)}
+        
         /* Contest button placed just under balance */
         .contest-btn {
             position:absolute;
@@ -183,7 +161,7 @@
             flex-direction: column;
             gap: 20px;
             width: 90%;
-            max-width: 320px;
+            max-width: 300px;
             z-index: 102;
         }
         .daily-progress-container, .spin-progress-container {
@@ -192,13 +170,13 @@
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,.1);
             text-align: center;
-            border-left: 5px solid #4a90e2;
+            border-left: 5px solid #4a90e2; 
         }
         .spin-progress-container {
-            border-left: 5px solid #ff8c00;
+            border-left: 5px solid #ff8c00; 
         }
         .daily-progress-text, .spin-progress-text {font-size:14px;color:#333;margin-bottom:4px; font-weight: bold;}
-        .daily-progress-bar, .spin-progress-bar {width:100%;height:12px;background:rgba(0,0,0,.1);border-radius:10px;overflow:hidden;margin-top:6px}
+        .daily-progress-bar, .spin-progress-bar {width:100%;Height:12px;background:rgba(0,0,0,.1);border-radius:10px;overflow:hidden;margin-top:6px}
         .daily-progress-fill {height:100%;background:linear-gradient(90deg,#00f2fe,#4facfe);border-radius:10px;width:0%;transition:width .4s ease}
         .spin-progress-fill {height:100%;background:linear-gradient(90deg,#ff8c00, #ff4500);border-radius:10px;width:0%;transition:width .4s ease}
 
@@ -208,10 +186,10 @@
             display:grid; /* Change to grid for better control */
             grid-template-columns: repeat(5, 1fr); /* 5 equal columns (UPDATED) */
             gap: 8px; /* Slightly reduced gap */
-            background:rgba(240,240,240,.95);padding:8px 10px; /* Reduced padding */
-            border-radius:20px;box-shadow:0 4px 15px rgba(0,0,0,.1);backdrop-filter:blur(6px);
+            background:rgba(240,240,240,.9);padding:10px 10px; /* Reduced padding */
+            border-radius:20px;box-shadow:0 4px 15px rgba(0,0,0,.1);backdrop-filter:blur(10px);
             width: 95%; /* Increased width for more space */
-            max-width: 600px;
+            max-width: 450px;
         }
         .nav-button{
             position:relative;background:linear-gradient(145deg,#4a90e2,#357abd);color:#fff;border:none;padding:10px 0; /* Adjust padding for height control */
@@ -225,7 +203,7 @@
         }
         .nav-button:hover{transform:translateY(-1px);box-shadow:0 6px 0 #2c5aa0,0 10px 15px rgba(0,0,0,.2)}
         .nav-button:active{transform:translateY(2px);box-shadow:0 3px 0 #2c5aa0,0 5px 8px rgba(0,0,0,.15)}
-        .nav-button span{display:block;text-shadow:0 1px 2px rgba(0,0,0,.3);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+        .nav-button span{display:block;text-shadow:0 1px 2px rgba(0,0,0,.3)}
 
         .nav-button.task-btn{
             background:linear-gradient(145deg,#ffc107,#ff9800);
@@ -247,34 +225,33 @@
             display:flex;
             flex-direction:column;
             align-items:center;
-            justify-content: flex-start;
-            padding-top: 50px;
-            padding-bottom: 120px;
+            justify-content: flex-start; 
+            padding-top: 50px; 
+            padding-bottom: 120px; 
             overflow-y: auto;
             background: #ffffed; /* Light, paper-like background */
-            -webkit-overflow-scrolling:touch;
         }
-        .task-header{
+        .task-header{ 
             text-align: center;
             margin-bottom: 30px;
             width: 90%;
-            max-width: 420px;
+            max-width: 350px;
         }
-        .task-title{
-             font-family: 'Vazirmatn', sans-serif;
-             font-size:24px;
+        .task-title{ 
+             font-family: 'Vazirmatn', sans-serif; 
+             font-size:24px; 
              color:#333; /* Dark pencil color */
-             font-weight:700;
-             text-shadow: 1px 1px 0 #fff;
+             font-weight:700; 
+             text-shadow: 1px 1px 0 #fff; 
              border-bottom: 2px dashed #a0a0a0;
              padding-bottom: 10px;
         }
-
+        
         /* New Task Card Style based on user's input (Paper Style) */
         .task-content-container {
             width: 100%;
             padding: 0 10px;
-            max-width: 420px;
+            max-width: 400px;
         }
 
         .task-item-card {
@@ -285,19 +262,14 @@
             display:flex;
             justify-content:space-between;
             align-items:center;
-            border: 1px solid #ddd;
+            border: 1px solid #ddd; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            gap: 12px;
         }
 
         .task-text-info {
             color: #555; /* Slightly lighter text */
             font-size: 16px;
             font-weight: 500;
-            overflow:hidden;
-            text-overflow:ellipsis;
-            white-space:nowrap;
-            max-width:220px;
         }
 
         /* Button style from user's input (Pencil Style Action Button) */
@@ -310,11 +282,10 @@
             cursor:pointer;
             font-size:1em;
             font-weight: bold;
-            min-width: 90px;
+            min-width: 90px; 
             transition: all 0.1s ease;
             box-shadow: 0 4px 0 #cc9a00;
             text-transform: uppercase;
-            white-space:nowrap;
         }
         .task-action-btn-new:hover {
             transform: translateY(-1px);
@@ -332,7 +303,7 @@
             box-shadow: 0 4px 0 #aaa;
             transform: translateY(0);
         }
-
+        
         .task-action-btn-new.completed {
             background:linear-gradient(145deg, #28a745, #1e7e34); /* Green for completed */
             border-color: #1c6d32;
@@ -345,7 +316,7 @@
              color: #ccc;
              box-shadow: 0 4px 0 #1c6d32;
         }
-
+        
         /* Task Note style - REMOVED */
         .task-screen .note{ display: none; }
 
@@ -368,7 +339,7 @@
             z-index: 1000; /* Ensure it's above other elements */
         }
         .task-back-btn:active{transform:translateY(3px) translateX(-50%);box-shadow:0 3px 0 #4e555b}
-
+        
         /* ===== Spin Screen ===== */
         .spin-screen{
             display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -378,15 +349,12 @@
         #wheelCanvas{
             border-radius:50%;
             /* Enhanced 3D Look */
-            box-shadow:0 0 0 10px #eee, 0 15px 35px rgba(0,0,0,0.4);
-            background-color: #fefefe;
-            border: 2px solid #ccc;
+            box-shadow:0 0 0 10px #eee, 0 15px 35px rgba(0,0,0,0.4); 
+            background-color: #fefefe; 
+            border: 2px solid #ccc; 
             transform-origin: center center;
             transition: transform 4s cubic-bezier(0.22,0,0.2,1);
             will-change: transform;
-            display:block;
-            max-width:100%;
-            height:auto;
         }
         /* Extra visual effect while spinning (glow) */
         #wheelCanvas.spinning {
@@ -400,7 +368,7 @@
         }
         .spin-btn{background:#ff3366;color:#fff;border:none;padding:12px 35px;border-radius:30px;font-size:16px;font-weight:bold;cursor:pointer;box-shadow:0 6px 0 #cc2950;transition:all .1s ease}
         .spin-btn:active{transform:translateY(3px);box-shadow:0 3px 0 #cc2950}
-        .spin-result{margin-top:18px;font-size:18px;color:#333;white-space:pre-wrap;text-align:center}
+        .spin-result{margin-top:18px;font-size:18px;color:#333}
         .spin-back{margin-top:25px;background:#6c757d;color:#fff;border:none;padding:10px 25px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;box-shadow:0 4px 0 #5a6268}
         .spin-back:active{transform:translateY(2px);box-shadow:0 2px 0 #5a6268}
 
@@ -409,7 +377,6 @@
             display:flex;flex-direction:column;align-items:center;padding:20px 20px;
             transition:opacity .3s ease;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
         }
         .withdraw-header{
             text-align: center;
@@ -513,14 +480,14 @@
         .status-pending{color: #ff8c00; font-weight: bold;}
         .status-completed{color: #28a745; font-weight: bold;}
         .no-records{text-align: center; color: #999; padding: 20px;}
-
+        
         /* ===== Invite Screen - (No changes needed) ===== */
         .invite-screen{
             display:flex;flex-direction:column;align-items:center;padding:20px 20px;
             transition:opacity .3s ease;
             overflow-y: auto;
         }
-        .invite-header{
+        .invite-header{ 
             text-align: center;
             margin-bottom: 25px;
             width: 100%;
@@ -529,7 +496,7 @@
             padding: 15px;
             border-radius: 15px;
         }
-        .invite-title{
+        .invite-title{ 
              font-size:28px;color:#4a90e2;font-weight:700; text-shadow: 0 1px 1px rgba(0,0,0,.1);
         }
         .referrals-count-info{
@@ -552,7 +519,7 @@
             background:linear-gradient(145deg, #00bfff, #0077b3);
             color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;
             box-shadow:0 5px 0 #005a8d;transition:all .1s ease;
-            width: 100%;
+            width: 100%; 
         }
         .copy-link-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #005a8d}
         #referralLinkInput{
@@ -564,7 +531,7 @@
             word-break: break-all;
             white-space: normal;
         }
-
+        
         /* Custom Alert Overlay - (No changes needed) */
         .custom-alert-overlay {
             position: fixed;
@@ -576,7 +543,6 @@
             z-index: 99999;
             opacity: 0;
             transition: opacity 0.3s ease;
-            padding: 16px;
         }
         .custom-alert-overlay.visible {
             display: flex;
@@ -586,21 +552,17 @@
         /* Custom Alert Box - 3D Pencil Style - SLIGHTLY SMALLER - (No changes needed) */
         .custom-alert-box {
             width: 90%;
-            max-width: 320px; /* slightly increased width for better legibility */
+            max-width: 280px; /* Smaller max width */
             background: #ffffed; /* Off-white paper background */
             border-radius: 15px;
-            padding: 18px; /* Slightly increased padding */
+            padding: 20px; /* Reduced padding */
             text-align: center;
-            box-shadow:
+            box-shadow: 
                 0 8px 15px rgba(0, 0, 0, 0.3), /* Base shadow */
                 inset 0 0 10px rgba(0, 0, 0, 0.05); /* Inner light effect */
             border: 3px solid #6b4d32; /* Pencil/Wood border */
-            transform: perspective(600px) rotateX(0deg) scale(0.98);
-            transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring effect */
-            display:flex;
-            flex-direction:column;
-            gap:10px;
-            align-items:center;
+            transform: perspective(600px) rotateX(0deg) scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring effect */
         }
         .custom-alert-overlay.visible .custom-alert-box {
             transform: perspective(600px) rotateX(0deg) scale(1);
@@ -608,39 +570,32 @@
 
         .alert-title {
             font-family: 'Vazirmatn', sans-serif;
-            font-size: 18px; /* Slightly smaller title for better fit */
+            font-size: 20px; /* Slightly smaller title */
             font-weight: 700;
-            color: #4CAF50;
-            margin-bottom: 4px; /* Reduced margin */
-            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
-            letter-spacing: 0.4px;
-            word-break: break-word;
+            color: #4CAF50; 
+            margin-bottom: 8px; /* Reduced margin */
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1); 
+            letter-spacing: 0.5px;
         }
 
         .alert-message {
             font-family: 'Vazirmatn', sans-serif;
             font-size: 13px; /* Slightly smaller message */
-            color: #333;
-            margin-bottom: 6px; /* Reduced margin */
-            white-space: pre-wrap;
-            word-break: break-word;
-            text-align:center;
+            color: #333; 
+            margin-bottom: 18px; /* Reduced margin */
+            white-space: pre-wrap; 
         }
 
         .alert-icon {
-            font-size: 32px; /* Slightly smaller icon */
-            margin-bottom: 6px;
-            min-height:34px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
+            font-size: 35px; /* Slightly smaller icon */
+            margin-bottom: 12px;
         }
         .alert-icon::before {
             content: '⭐';
         }
 
         .alert-close-btn {
-            background: #6b4d32;
+            background: #6b4d32; 
             color: #fff;
             border: none;
             padding: 9px 18px; /* Slightly smaller button */
@@ -674,7 +629,7 @@
         /* ===== Task Link Progress (NEW, COMPACT) ===== */
         .task-link-container {
             width: 100%;
-            max-width: 420px;
+            max-width: 360px;
             background: #fff;
             padding: 8px;
             border-radius: 10px;
@@ -792,7 +747,7 @@
         .history-item .amount {font-weight:800;color:#ff2a2a}
         .history-empty {text-align:center;color:#777;padding:30px}
 
-        /* ===== Contest Screen (NEW) ===== */
+        /* ===== Contest Screen (UPDATED FIXED + SIZING) ===== */
         .contest-screen {
             display:flex;
             flex-direction:column;
@@ -803,6 +758,17 @@
             overflow-y: auto;
             background: linear-gradient(180deg,#0b57d0,#007bff); /* blue background per request */
             color: #fff;
+            z-index: 400; /* Ensure on top of other app-screen content */
+        }
+        /* Ensure the contest screen is presented as a contained centered panel so everything fits and is fixed */
+        .contest-screen .contest-panel {
+            width: 100%;
+            max-width: 980px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.06);
         }
         .contest-header {
             width: 100%;
@@ -812,24 +778,25 @@
             align-items:center;
             gap: 12px;
             margin-bottom: 18px;
+            flex-wrap:wrap;
         }
         .contest-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             color: #fff;
             text-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
         .contest-countdown {
             text-align:center;
-            font-size: 18px;
-            background: rgba(255,255,255,0.08);
-            padding: 10px 14px;
+            font-size: 14px;
+            background: rgba(255,255,255,0.06);
+            padding: 8px 10px;
             border-radius: 10px;
-            min-width: 220px;
+            min-width: 160px;
         }
         .contest-main {
             width: 100%;
-            max-width: 820px;
+            max-width: 980px;
             display:grid;
             grid-template-columns: 1fr 360px;
             gap: 16px;
@@ -841,8 +808,8 @@
             gap: 12px;
         }
         .contest-card {
-            background: rgba(255,255,255,0.06);
-            padding: 14px;
+            background: rgba(255,255,255,0.04);
+            padding: 12px;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 6px 20px rgba(0,0,0,0.12);
@@ -858,12 +825,12 @@
             background: linear-gradient(145deg,#00bfff,#0077b3);
             color: #fff;
             border:none;
-            padding:12px 18px;
+            padding:10px 14px;
             border-radius:10px;
             font-weight:800;
             cursor:pointer;
             box-shadow: 0 8px 0 #005a8d;
-            font-size:15px;
+            font-size:14px;
             letter-spacing:0.6px;
         }
         .contest-action-btn:active{transform:translateY(3px);box-shadow:0 4px 0 #005a8d}
@@ -874,12 +841,12 @@
             gap:8px;
             align-items:center;
             justify-content:space-between;
-            font-size:15px;
+            font-size:13px;
         }
         .tickets-numbers {
             font-family: 'Courier New', monospace;
             font-weight:800;
-            font-size:18px;
+            font-size:14px; /* Reduced size to keep numbers from appearing too large */
             color:#fff;
         }
 
@@ -905,23 +872,23 @@
             display:flex;
             gap:12px;
             align-items:center;
-            background: rgba(255,255,255,0.04);
+            background: rgba(255,255,255,0.03);
             padding:10px;
             border-radius:10px;
             border: 1px solid rgba(255,255,255,0.06);
         }
         .leader-avatar {
-            width:50px;
-            height:50px;
+            width:44px;
+            height:44px;
             border-radius:50%;
             overflow:hidden;
             flex-shrink:0;
             border:2px solid rgba(255,255,255,0.12);
         }
-        .leader-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+        .leader-avatar img{width:100%;height:100%;object-fit:cover}
         .leader-meta {flex:1;display:flex;flex-direction:column;gap:4px}
-        .leader-name {font-weight:800;color:#fff;font-size:14px}
-        .leader-sub {font-size:12px;color:#e8f3ff}
+        .leader-name {font-weight:800;color:#fff;font-size:13px}
+        .leader-sub {font-size:11px;color:#e8f3ff}
         /* Ticket block with small icon */
         .leader-tickets {font-weight:900;color:#ffd700;display:flex;align-items:center;gap:6px;font-size:13px}
         .leader-tickets img.ticket-icon { width:15px;height:15px;object-fit:cover;display:inline-block }
@@ -995,8 +962,6 @@
         /* small screens fallback */
         @media (max-width: 880px) {
             .contest-main { grid-template-columns: 1fr; }
-            .user-username, .user-id { left: 8px; width: 110px; }
-            .progress-group-container { max-width: 90%; transform: translate(-50%, -48%); }
         }
 
         /* Ticket badge small style for inline counters */
@@ -1006,7 +971,7 @@
             gap:6px;
             font-weight:900;
             color:#ffd700;
-            font-size:16px;
+            font-size:14px;
         }
         .ticket-inline img { width:18px; height:18px; object-fit:cover; vertical-align:middle; }
 
@@ -1014,49 +979,49 @@
 </head>
 <body>
     <div class="loading-screen" id="loadingScreen">
-      <div class="loader" aria-hidden="true">
-        <span class="l" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 11 18" height="18" width="11" class="letter" aria-hidden="true">
+      <div class="loader">
+        <span class="l">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 11 18" height="18" width="11" class="letter">
             <path fill="currentColor" d="M0.28 16.14V0.94L3.7 0.64L5.7 1.64V12.3L8.5 12.06L10.5 13.06V16.44L2.28 17.14L0.28 16.14ZM3.5 12.7V0.859999L0.48 1.12V15.94L8.3 15.26V12.28L3.5 12.7Z"/>
           </svg>
         </span>
-        <span class="o" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18" height="18" width="16" class="letter" aria-hidden="true">
+        <span class="o">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18" height="18" width="16" class="letter">
             <path fill="currentColor" d="M8.94 17.24C8.84667 17.2533 8.74667 17.26 8.64 17.26C8.54667 17.26 8.45333 17.26 8.36 17.26C7.66667 17.26 7.02667 17.16 6.44 16.96C5.86667 16.7733 5.30667 16.5533 4.76 16.3C3.33333 15.5933 2.28667 14.6 1.62 13.32C0.966667 12.0267 0.64 10.4933 0.64 8.72C0.64 7.68 0.766667 6.67333 1.02 5.7C1.28667 4.71333 1.68 3.82667 2.2 3.04C2.72 2.24 3.36667 1.58667 4.14 1.08C4.92667 0.573332 5.84667 0.273333 6.9 0.18C7.00667 0.166666 7.10667 0.159999 7.2 0.159999C7.29333 0.159999 7.38667 0.159999 7.48 0.159999C8.14667 0.159999 8.74 0.246666 9.26 0.419999C9.78 0.579999 10.3067 0.766666 10.84 0.979999C11.8 1.36667 12.6 1.94 13.24 2.7C13.88 3.46 14.36 4.35333 14.68 5.38C15 6.39333 15.16 7.48 15.16 8.64C15.16 9.72 15.0333 10.7533 14.78 11.74C14.5267 12.7267 14.14 13.62 13.62 14.42C13.1133 15.2067 12.4667 15.8467 11.68 16.34C10.9067 16.8467 9.99333 17.1467 8.94 17.24ZM6.92 16.04C7.94667 15.96 8.84 15.68 9.6 15.2C10.36 14.7067 10.9867 14.0733 11.48 13.3C11.9733 12.5133 12.34 11.64 12.58 10.68C12.8333 9.70667 12.96 8.69333 12.96 7.64C12.96 6.68 12.8467 5.76667 12.62 4.9C12.4067 4.02 12.0733 3.24 11.62 2.56C11.1667 1.88 10.5933 1.34667 9.9 0.959999C9.22 0.559999 8.41333 0.359999 7.48 0.359999C7.38667 0.359999 7.29333 0.359999 7.2 0.359999C7.12 0.359999 7.02667 0.366666 6.92 0.38C5.89333 0.473333 5.0 0.766666 4.24 1.26C3.48 1.74 2.84667 2.37333 2.34 3.16C1.83333 3.93333 1.45333 4.8 1.2 5.76C0.96 6.70667 0.84 7.69333 0.84 8.72C0.84 9.72 0.953333 10.6667 1.18 11.56C1.40667 12.44 1.74667 13.22 2.2 13.9C2.65333 14.5667 3.22667 15.0933 3.92 15.48C4.61333 15.8667 5.42 16.06 6.34 16.06C6.44667 16.06 6.54667 16.06 6.64 16.06C6.73333 16.06 6.82667 16.0533 6.92 16.04ZM6.92 12.94C6.86667 12.94 6.81333 12.9467 6.76 12.96C6.72 12.96 6.67333 12.96 6.62 12.96C5.82 12.96 5.18667 12.6133 4.72 11.92C4.26667 11.2267 4.04 10.0667 4.04 8.44C4.04 7.28 4.16667 6.34667 4.42 5.64C4.67333 4.93333 5.02 4.41333 5.46 4.08C5.9 3.73333 6.38667 3.54 6.92 3.5C6.97333 3.5 7.02667 3.5 7.08 3.5C7.13333 3.48667 7.18667 3.48 7.24 3.48C8.02667 3.48 8.64 3.82 9.08 4.5C9.52 5.16667 9.74 6.31333 9.74 7.94C9.74 9.67333 9.47333 10.9267 8.94 11.7C8.42 12.46 7.74667 12.8733 6.92 12.94ZM6.86 12.74C7.64667 12.6733 8.28667 12.2733 8.78 11.54C9.28667 10.8067 9.54 9.60667 9.54 7.94C9.54 7.18 9.49333 6.53333 9.4 6C9.30667 5.46667 9.16667 5.03333 8.98 4.7C8.91333 4.68667 8.84667 4.68 8.78 4.68C8.71333 4.66667 8.64667 4.66 8.58 4.66C7.79333 4.66 7.20667 5.07333 6.82 5.9C6.43333 6.71333 6.24 7.89333 6.24 9.44C6.24 10.2133 6.29333 10.8733 6.4 11.42C6.50667 11.9533 6.66 12.3933 6.86 12.74Z"/>
           </svg>
         </span>
-        <span class="a" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 18" height="18" width="15" class="letter" aria-hidden="true">
+        <span class="a">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 18" height="18" width="15" class="letter">
             <path fill="currentColor" d="M9.28 15.76L8.54 13.38L6.96 13.52L5.98 17.02L2.58 17.32L0.58 16.32L4.96 0.699999L8.26 0.419999L10.26 1.42L14.72 16.48L11.28 16.76L9.28 15.76ZM5.12 0.899999L0.88 16.08L3.8 15.84L4.8 12.34L8.36 12.02L9.42 15.56L12.44 15.3L8.1 0.64L5.12 0.899999ZM5.5 9.42C5.75333 8.59333 5.96 7.80667 6.12 7.06C6.29333 6.31333 6.44 5.56667 6.56 4.82H6.64C6.74667 5.55333 6.88 6.27333 7.04 6.98C7.21333 7.67333 7.42 8.42 7.66 9.22L5.5 9.42Z"/>
           </svg>
         </span>
-        <span class="d" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 18" height="18" width="14" class="letter" aria-hidden="true">
+        <span class="d">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 18" height="18" width="14" class="letter">
             <path fill="currentColor" d="M0.28 16.24V1.04L4.44 0.679999C4.61333 0.666666 4.78 0.66 4.94 0.66C5.1 0.646666 5.24667 0.64 5.38 0.64C6.11333 0.64 6.76667 0.726666 7.34 0.899999C7.92667 1.07333 8.56667 1.32667 9.26 1.66C10.1933 2.08667 10.9533 2.61333 11.54 3.24C12.1267 3.85333 12.56 4.61333 12.84 5.52C13.12 6.41333 13.26 7.50667 13.26 8.8C13.26 10.4933 12.9733 11.92 12.4 13.08C11.84 14.24 11.0667 15.1333 10.08 15.76C9.09333 16.3733 7.95333 16.74 6.66 16.86L2.28 17.24L0.28 16.24ZM4.64 15.68C5.89333 15.5733 7 15.2133 7.96 14.6C8.93333 13.9867 9.69333 13.1133 10.24 11.98C10.7867 10.8467 11.06 9.45333 11.06 7.8C11.06 5.53333 10.5733 3.80667 9.6 2.62C8.64 1.43333 7.21333 0.84 5.32 0.84C5.18667 0.84 5.04667 0.846666 4.9 0.859999C4.75333 0.859999 4.60667 0.866666 4.46 0.879999L0.48 1.22V16.02L4.64 15.68ZM3.5 3.9L4.08 3.86C4.22667 3.84667 4.36 3.84 4.48 3.84C4.61333 3.82667 4.74667 3.82 4.88 3.82C5.57333 3.82 6.14 3.94667 6.58 4.2C7.03333 4.45333 7.36667 4.88667 7.58 5.5C7.80667 6.11333 7.92 6.97333 7.92 8.08C7.92 9.65333 7.59333 10.8067 6.94 11.54C6.28667 12.26 5.4 12.6667 4.28 12.76L3.5 12.82V3.9ZM5.7 12.2C6.38 11.9067 6.88667 11.4333 7.22 10.78C7.55333 10.1133 7.72 9.21333 7.72 8.08C7.72 6.66667 7.52 5.65333 7.12 5.04C7.06667 5.02667 7.01333 5.02 6.96 5.02C6.90667 5.02 6.85333 5.02 6.8 5.02C6.68 5.02 6.56 5.02667 6.44 5.04C6.33333 5.04 6.22 5.04667 6.1 5.06L5.7 5.08V12.2Z"/>
           </svg>
         </span>
-        <span class="ispan" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 17" height="18" width="6" class="letter i" aria-hidden="true">
+        <span class="ispan">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 17" height="18" width="6" class="letter i">
             <path fill="currentColor" d="M0.38 15.96V0.76L3.86 0.439999L5.86 1.44V16.64L2.38 16.94L0.38 15.96ZM0.58 0.94V15.74L3.66 15.46V0.66L0.58 0.94Z"/>
           </svg>
         </span>
-        <span class="n" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 13 18" height="18" width="13" class="letter" aria-hidden="true">
+        <span class="n">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 13 18" height="18" width="13" class="letter">
             <path fill="currentColor" d="M7.22 15.82L5.72 12.44V16.92L2.28 17.22L0.28 16.22V1.02L3.52 0.74L5.52 1.74L7 4.94V0.64L10.48 0.319999L12.48 1.32V16.54L9.22 16.82L7.22 15.82ZM7.2 0.819999V6.42C7.2 6.56667 7.20667 6.80667 7.22 7.14C7.23333 7.46 7.24667 7.8 7.26 8.16C7.28667 8.50667 7.30667 8.80667 7.32 9.06C7.33333 9.3 7.34 9.42 7.34 9.42L7.28 9.46C7.28 9.46 7.26 9.38667 7.22 9.24C7.19333 9.09333 7.14667 8.92 7.08 8.72C7.01333 8.50667 6.94 8.31333 6.86 8.14L3.4 0.959999L0.48 1.2V16L3.52 15.76V10.52C3.52 10.36 3.51333 10.0867 3.5 9.7C3.48667 9.31333 3.47333 8.90667 3.46 8.48C3.46 8.05333 3.45333 7.69333 3.44 7.4C3.42667 7.09333 3.42 6.94 3.42 6.94L3.48 6.92C3.48 6.92 3.51333 7.05333 3.58 7.32C3.66 7.57333 3.76667 7.84 3.9 8.12L7.4 15.62L10.28 15.36V0.539999L7.2 0.819999Z"/>
           </svg>
         </span>
-        <span class="g" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 18" height="18" width="15" class="letter" aria-hidden="true">
+        <span class="g">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 18" height="18" width="15" class="letter">
             <path fill="currentColor" d="M14.04 13.72C13.64 14.6533 12.9933 15.44 12.1 16.08C11.22 16.72 10.1333 17.0933 8.84 17.2C8.72 17.2133 8.6 17.22 8.48 17.22C8.36 17.22 8.24 17.22 8.12 17.22C7.12 17.22 6.16667 17.0467 5.26 16.7C4.36667 16.3533 3.57333 15.8333 2.88 15.14C2.18667 14.4333 1.64 13.54 1.24 12.46C0.84 11.38 0.64 10.1 0.64 8.62C0.64 7.48667 0.78 6.42667 1.06 5.44C1.34 4.44 1.74667 3.55333 2.28 2.78C2.82667 2.00667 3.48667 1.38667 4.26 0.92C5.03333 0.453333 5.90667 0.179999 6.88 0.0999997C6.96 0.0866657 7.04 0.0799987 7.12 0.0799987C7.2 0.0799987 7.28 0.0799987 7.36 0.0799987C8.33333 0.0799987 9.28 0.299999 10.2 0.74C11.1333 1.18 11.9467 1.78 12.64 2.54C13.3467 3.3 13.8467 4.16 14.14 5.12L11.76 6.46L12.04 6.44L14.04 7.44V13.72ZM5.9 7.16V10L8.98 9.74V11.46C8.80667 11.8067 8.52667 12.1067 8.14 12.36C7.76667 12.6 7.37333 12.7333 6.96 12.76C6.90667 12.7733 6.84667 12.78 6.78 12.78C6.72667 12.78 6.66667 12.78 6.6 12.78C5.73333 12.78 5.08 12.4333 4.64 11.74C4.2 11.0467 3.98 9.92 3.98 8.36C3.98 6.94667 4.20667 5.82 4.66 4.98C5.11333 4.14 5.84 3.68 6.84 3.6H7.06C7.60667 3.6 8.07333 3.76 8.46 4.08C8.86 4.4 9.14667 4.86667 9.32 5.48L11.9 4.02C11.6733 3.38 11.36 2.78 10.96 2.22C10.5733 1.64667 10.0867 1.18 9.5 0.819999C8.91333 0.459999 8.2 0.28 7.36 0.28C7.29333 0.28 7.22 0.28 7.14 0.28C7.06 0.28 6.98 0.286666 6.9 0.299999C5.63333 0.406666 4.54667 0.846666 3.64 1.62C2.73333 2.38 2.04 3.37333 1.56 4.6C1.08 5.81333 0.84 7.15333 0.84 8.62C0.84 10.14 1.06 11.4533 1.5 12.56C1.94 13.6667 2.56667 14.52 3.38 15.12C4.19333 15.72 5.16 16.02 6.28 16.02C6.37333 16.02 6.46 16.02 6.54 16.02C6.63333 16.02 6.72667 16.0133 6.82 16C8.07333 15.8933 9.12667 15.54 9.98 14.94C10.8467 14.3267 11.4733 13.5733 11.86 12.68V6.66L5.9 7.16ZM9.2 5.78C9.14667 5.59333 9.08667 5.42 9.02 5.26C8.95333 5.08667 8.88 4.93333 8.8 4.8C8.2 4.85333 7.70667 5.06667 7.32 5.44C6.94667 5.8 6.66667 6.29333 6.48 6.92L10.8 6.56L9.2 5.78ZM7.8 11.26L6.24 10.46C6.26667 10.9933 6.32 11.4133 6.4 11.72C6.49333 12.0133 6.62667 12.3 6.8 12.58C6.84 12.5667 6.88667 12.56 6.94 12.56C7.28667 12.5333 7.63333 12.4267 7.98 12.24C8.32667 12.04 8.59333 11.8067 8.78 11.54V11.14L7.8 11.26Z"/>
           </svg>
         </span>
       </div>
     </div>
-
+    
     <div class="app-screen main-screen" id="mainScreen">
         <div class="balance" id="shibBalance">0 SHIB</div>
         <button class="contest-btn" id="contestBtn" onclick="showContest()">Contest</button>
-
+        
         <div class="progress-group-container">
             <div class="daily-progress-container">
                 <div class="daily-progress-text">Ads today: <span id="adsCount">0</span> / 200</div>
@@ -1071,30 +1036,30 @@
                 </div>
             </div>
         </div>
-
-        <div class="user-circle" onclick="circleClick()" aria-label="User profile">
+        
+        <div class="user-circle" onclick="circleClick()">
             <img id="userImage" src="" alt="User">
             <div class="placeholder">+</div>
         </div>
-        <div class="user-username" id="userName" title=""></div>
-        <div class="user-id" id="userId" title=""></div>
-
+        <div class="user-username" id="userName"></div>
+        <div class="user-id" id="userId"></div>
+        
         <div class="main-content"></div>
-
-        <div class="button-container" role="navigation" aria-label="Main navigation">
+        
+        <div class="button-container">
             <button class="nav-button" onclick="watchAds()"><span>Ads</span></button>
             <button class="nav-button task-btn" onclick="showTask()"><span>Task</span></button>
             <button class="nav-button" onclick="showSpin()"><span>Spin</span></button>
             <button class="nav-button withdraw-btn-nav" onclick="showWithdraw()"><span>Withdraw</span></button>
             <button class="nav-button" onclick="inviteFriends()"><span>Invite</span></button>
         </div>
-    </div>
+        </div>
 
     <div class="app-screen task-screen" id="taskScreen">
         <div class="task-header">
             <h2 class="task-title">Daily Tasks</h2>
         </div>
-
+        
         <div class="task-content-container" id="taskContentContainer">
             <div id="taskLinkArea" class="task-link-container" style="display:none;">
                 <div class="task-link-title">
@@ -1118,11 +1083,11 @@
 
     <div class="app-screen spin-screen" id="spinScreen">
         <div id="wheelBox">
-            <div class="arrow" aria-hidden="true"></div>
-            <canvas id="wheelCanvas" width="280" height="280" aria-label="Prize wheel"></canvas>
+            <div class="arrow"></div>
+            <canvas id="wheelCanvas" width="280" height="280"></canvas>
         </div>
         <button class="spin-btn" id="spinBtn" onclick="startSpin()">SPIN</button>
-        <div class="spin-result" id="spinResult" aria-live="polite"></div>
+        <div class="spin-result" id="spinResult"></div>
         <button class="spin-back" onclick="hideSpin()">Back</button>
     </div>
 
@@ -1133,7 +1098,7 @@
             </div>
             <div class="current-balance-info">Your Balance: <span id="withdrawBalanceDisplay">0 SHIB</span></div>
         </div>
-
+        
         <div class="input-form-container">
             <div class="input-group">
                 <label>Choose Withdrawal Method</label>
@@ -1168,7 +1133,7 @@
                 <button class="back-btn" onclick="displayWithdrawalsFull()" style="max-width:220px">Open History</button>
             </div>
         </div>
-
+        
         <div class="note">
             ⚠️ **Important:** The withdrawal will be processed manually within **24 hours**. Ensure your Binance ID or FaucetPay email is correct.
         </div>
@@ -1199,7 +1164,7 @@
                 Your Referrals: <span id="referralsCountDisplay">0</span>
             </div>
         </div>
-
+        
         <div class="input-form-container">
             <div class="input-group">
                 <label>Your Referral Link</label>
@@ -1209,9 +1174,9 @@
                 <button class="copy-link-btn" onclick="copyReferralLink()">Copy Link</button>
             </div>
         </div>
-
+        
         <div class="note">
-
+       
 🚀 Share this link to invite new users.
 You will earn 40% of the revenue from every referral you bring through ads!
         </div>
@@ -1219,131 +1184,133 @@ You will earn 40% of the revenue from every referral you bring through ads!
         <button class="back-btn" onclick="hideInvite()">Back to Main</button>
     </div>
 
-    <!-- NEW: Contest Screen -->
-    <div class="app-screen contest-screen" id="contestScreen" style="display:none;">
-        <div class="contest-header">
-            <div class="contest-title">Contest</div>
-            <div class="contest-countdown" id="contestCountdown">Loading countdown...</div>
-        </div>
+    <!-- NEW: Contest Screen (fixed & sized, no inline display:none) -->
+    <div class="app-screen contest-screen" id="contestScreen">
+        <div class="contest-panel">
+            <div class="contest-header">
+                <div class="contest-title">Contest</div>
+                <div class="contest-countdown" id="contestCountdown">Loading countdown...</div>
+            </div>
 
-        <div class="contest-main">
-            <div class="contest-left">
-                <div class="contest-card">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-                        <div style="font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px">
-                            <img src="https://files.catbox.moe/ut2ljl.png" width="15" height="15" alt="ticket" style="vertical-align:middle;margin-right:0;">
-                            <span>Your Tickets</span>
+            <div class="contest-main">
+                <div class="contest-left">
+                    <div class="contest-card">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                            <div style="font-weight:800;font-size:14px;display:flex;align-items:center">
+                                <img src="https://files.catbox.moe/ut2ljl.png" width="15" height="15" alt="ticket" style="vertical-align:middle;margin-right:8px;">
+                                Your Tickets
+                            </div>
+                            <div class="tickets-numbers" id="userTicketsDisplay">0</div>
                         </div>
-                        <div class="tickets-numbers" id="userTicketsDisplay">0</div>
-                    </div>
-                    <div class="tickets-summary" style="margin-bottom:12px">
-                        <div>Collected by you</div>
-                        <div class="tickets-numbers" id="userTicketsCollected">0</div>
+                        <div class="tickets-summary" style="margin-bottom:12px">
+                            <div style="font-size:13px">Collected by you</div>
+                            <div class="tickets-numbers" id="userTicketsCollected">0</div>
+                        </div>
+
+                        <div class="contest-actions">
+                            <!-- The old "Refresh Leaderboard" was replaced per request with a 'Watch' ad button named only "Watch" -->
+                            <button class="contest-action-btn watch" id="watchLeaderboardBtn" onclick="watchLeaderboardAd()">Watch</button>
+                            <!-- Keep an explicit refresh hidden but available programmatically if needed -->
+                            <button class="contest-action-btn" id="refreshLeaderboardBtn" style="display:none;" onclick="refreshContestData()">Refresh</button>
+                        </div>
                     </div>
 
-                    <div class="contest-actions">
-                        <!-- The old "Refresh Leaderboard" was replaced per request with a 'Watch' ad button named only "Watch" -->
-                        <button class="contest-action-btn watch" id="watchLeaderboardBtn" onclick="watchLeaderboardAd()">Watch</button>
-                        <!-- Keep an explicit refresh hidden but available programmatically if needed -->
-                        <button class="contest-action-btn" id="refreshLeaderboardBtn" style="display:none;" onclick="refreshContestData()">Refresh</button>
+                    <div class="contest-card">
+                        <div style="font-weight:800;margin-bottom:8px">My Tickets Table</div>
+                        <table style="width:100%;border-collapse:collapse;color:#fff;font-size:13px">
+                            <thead>
+                                <tr style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)">
+                                    <th style="padding:6px 0">Type</th>
+                                    <th style="padding:6px 0"><img src="https://files.catbox.moe/ut2ljl.png" width="15" height="15" alt="ticket" style="vertical-align:middle;margin-right:6px">Tickets</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding:6px 0">Tickets you collected</td>
+                                    <td style="padding:6px 0" id="myTicketsCount">0</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:6px 0">All tickets collected</td>
+                                    <td style="padding:6px 0" id="totalTicketsCount">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+
+                    <div class="prizes-card">
+                        <div style="font-weight:900;margin-bottom:8px">Prizes</div>
+                        <div class="prize-row">
+                            <div class="prize-label">1st get</div>
+                            <div class="prize-value">500,000 SHIB</div>
+                        </div>
+                        <div class="prize-row">
+                            <div class="prize-label">2nd get</div>
+                            <div class="prize-value">250,000 SHIB</div>
+                        </div>
+                        <div class="prize-row">
+                            <div class="prize-label">3rd get</div>
+                            <div class="prize-value">100,000 SHIB</div>
+                        </div>
+                        <div class="prize-row">
+                            <div class="prize-label">4th get</div>
+                            <div class="prize-value">100,000 SHIB</div>
+                        </div>
+                        <div class="prize-row">
+                            <div class="prize-label">5th get</div>
+                            <div class="prize-value">50,000 SHIB</div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="contest-card">
-                    <div style="font-weight:800;margin-bottom:8px">My Tickets Table</div>
-                    <table style="width:100%;border-collapse:collapse;color:#fff">
-                        <thead>
-                            <tr style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)">
-                                <th style="padding:6px 0">Type</th>
-                                <th style="padding:6px 0"><img src="https://files.catbox.moe/ut2ljl.png" width="15" height="15" alt="ticket" style="vertical-align:middle;margin-right:6px">Tickets</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="padding:6px 0">Tickets you collected</td>
-                                <td style="padding:6px 0" id="myTicketsCount">0</td>
-                            </tr>
-                            <tr>
-                                <td style="padding:6px 0">All tickets collected</td>
-                                <td style="padding:6px 0" id="totalTicketsCount">0</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <div>
+                    <div class="contest-card leaderboard">
+                        <div class="leaderboard-header">
+                            <div>Top Players (by tickets)</div>
+                            <div style="font-size:12px;opacity:0.95">Top 5</div>
+                        </div>
 
-                <div class="prizes-card">
-                    <div style="font-weight:900;margin-bottom:8px">Prizes</div>
-                    <div class="prize-row">
-                        <div class="prize-label">1st get</div>
-                        <div class="prize-value">500,000 SHIB</div>
+                        <div class="leaderboard-list" id="leaderboardList">
+                            <!-- entries injected here -->
+                        </div>
                     </div>
-                    <div class="prize-row">
-                        <div class="prize-label">2nd get</div>
-                        <div class="prize-value">250,000 SHIB</div>
-                    </div>
-                    <div class="prize-row">
-                        <div class="prize-label">3rd get</div>
-                        <div class="prize-value">100,000 SHIB</div>
-                    </div>
-                    <div class="prize-row">
-                        <div class="prize-label">4th get</div>
-                        <div class="prize-value">100,000 SHIB</div>
-                    </div>
-                    <div class="prize-row">
-                        <div class="prize-label">5th get</div>
-                        <div class="prize-value">50,000 SHIB</div>
+
+                    <div style="height:12px"></div>
+
+                    <div class="contest-card" style="text-align:center">
+                        <div style="font-weight:900;font-size:18px;margin-bottom:8px">Pool Prize</div>
+                        <div class="contest-prize-big">1M SHIB</div>
                     </div>
                 </div>
-
             </div>
 
-            <div>
-                <div class="contest-card leaderboard">
-                    <div class="leaderboard-header">
-                        <div>Top Players (by tickets)</div>
-                        <div style="font-size:12px;opacity:0.95">Top 5</div>
-                    </div>
-
-                    <div class="leaderboard-list" id="leaderboardList">
-                        <!-- entries injected here -->
-                    </div>
-                </div>
-
-                <div style="height:12px"></div>
-
-                <div class="contest-card" style="text-align:center">
-                    <div style="font-weight:900;font-size:18px;margin-bottom:8px">Pool Prize</div>
-                    <div class="contest-prize-big">1M SHIB</div>
-                </div>
+            <div style="height:18px"></div>
+            <div style="width:100%;display:flex;justify-content:center">
+                <button class="back-btn" onclick="closeContest()">Close</button>
             </div>
-        </div>
-
-        <div style="height:18px"></div>
-        <div style="width:100%;max-width:820px;display:flex;justify-content:center">
-            <button class="back-btn" onclick="closeContest()">Close</button>
         </div>
     </div>
 
-    <div id="customAlert" class="custom-alert-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div id="customAlert" class="custom-alert-overlay">
         <div class="custom-alert-box">
-            <div class="alert-icon" id="alertIcon" aria-hidden="true"></div>
+            <div class="alert-icon" id="alertIcon"></div>
             <div class="alert-title" id="alertTitle"></div>
             <div class="alert-message" id="alertMessage"></div>
-            <button class="alert-close-btn" id="alertCloseBtn" onclick="closeCustomAlert()">OK</button>
+            <button class="alert-close-btn" onclick="document.getElementById('customAlert').classList.remove('visible')">OK</button>
         </div>
     </div>
 
     <!-- Background audio player (playlist managed in JS): audio.mp3, audio2.mp3, audio3.mp3, audio4.mp3 -->
-    <audio id="bgPlayer" preload="none">
+    <audio id="bgPlayer">
         <source id="bgSource" src="audio.mp3" type="audio/mp3">
         Your browser does not support the audio element.
     </audio>
 
-    <audio id="successSFX" preload="auto">
-        <source src="success.mp3" type="audio/mp3">
+    <audio id="successSFX">
+        <source src="success.mp3" type="audio/mp3"> 
     </audio>
-    <audio id="errorSFX" preload="auto">
-        <source src="error.mp3" type="audio/mp3">
+    <audio id="errorSFX">
+        <source src="error.mp3" type="audio/mp3"> 
     </audio>
 
     <script src='//libtl.com/sdk.js' data-zone='10245709' data-sdk='show_10245709'></script>
@@ -1363,11 +1330,11 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // hide with existing CSS fade
                 loadingScreen.classList.add('hidden');
                 playBGAudio(); 
-            }, 1200); // reduced artificial wait for responsiveness
+            }, 7000); 
         });
         
         /* ===== Custom Alert & Audio Functions ===== */
-
+        
         const bgPlayer = document.getElementById('bgPlayer');
         const successSFX = document.getElementById('successSFX');
         const errorSFX = document.getElementById('errorSFX');
@@ -1376,7 +1343,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
         const alertTitleEl = document.getElementById('alertTitle');
         const alertMessageEl = document.getElementById('alertMessage');
         const alertIconEl = document.getElementById('alertIcon');
-        const alertCloseBtn = document.getElementById('alertCloseBtn');
 
         // Playlist for background: per request use these files
         const bgPlaylist = ['audio.mp3', 'audio2.mp3', 'audio3.mp3', 'audio4.mp3'];
@@ -1448,15 +1414,11 @@ You will earn 40% of the revenue from every referral you bring through ads!
             } else if (type === 'error') {
                 sfx = errorSFX;
             } else {
-                sfx = successSFX;
+                return;
             }
-            try {
-                sfx.currentTime = 0; // Rewind to start
-                sfx.volume = 0.8;
-                sfx.play().catch(e => console.log("SFX play failed:", e));
-            } catch (e) {
-                console.warn('SFX play error', e);
-            }
+            sfx.currentTime = 0; // Rewind to start
+            sfx.volume = 0.8;
+            sfx.play().catch(e => console.log("SFX play failed:", e));
         }
 
         /**
@@ -1468,7 +1430,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
          */
         function showCustomAlert(title, message, type = 'warning', customIconHtml = null) {
             const finalTitle = title;
-            const finalMessage = message ? message.toString().replace(/(\r\n|\n|\r)/gm, "\n") : '';
+            const finalMessage = message.replace(/(\r\n|\n|\r)/gm, "\n"); 
 
             alertTitleEl.textContent = finalTitle;
             alertMessageEl.textContent = finalMessage;
@@ -1486,31 +1448,20 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 alertIconEl.innerHTML = '';
             }
 
-            // Make the overlay accessible
-            customAlert.setAttribute('aria-hidden', 'false');
             customAlert.classList.add('visible');
-            // Focus the close button for keyboard users
-            setTimeout(() => {
-                try { alertCloseBtn.focus(); } catch (e) {}
-            }, 100);
-
-            // Play sfx (success for non-error)
-            playSFX(type === 'error' ? 'error' : 'success');
+            
+            playSFX(type === 'error' ? 'error' : 'success'); 
         }
 
-        function closeCustomAlert(){
-            customAlert.classList.remove('visible');
-            customAlert.setAttribute('aria-hidden', 'true');
-        }
 
         /* ===== Telegram User & Referral Setup (Modified to include audio) ===== */
-        try { Telegram.WebApp.ready(); } catch(e){ console.warn('Telegram WebApp not available', e); }
-
+        Telegram.WebApp.ready();
+        
         let tgUser = null;
-        if(typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user){
+        if(Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user){
             tgUser = Telegram.WebApp.initDataUnsafe.user;
             const photoUrl = tgUser.photo_url;
-            const userName = (tgUser.first_name || '') + (tgUser.last_name? ' '+tgUser.last_name:'');
+            const userName = tgUser.first_name + (tgUser.last_name? ' '+tgUser.last_name:'');
             const userId = tgUser.id;
             const imgEl  = document.getElementById('userImage');
             const nameEl = document.getElementById('userName');
@@ -1520,23 +1471,18 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 imgEl.src = photoUrl;
                 imgEl.style.display = 'block';
                 placeHolder.style.display = 'none';
-            } else {
-                imgEl.style.display = 'none';
-                placeHolder.style.display = 'block';
             }
-            nameEl.textContent = userName || 'User';
-            nameEl.title = userName || '';
+            nameEl.textContent = userName;
             idEl.textContent   = 'ID: ' + userId;
-            idEl.title = 'ID: ' + userId;
         }
 
         function getRefParam() {
             let referrerId = null;
             const REF_PREFIX = 'ref_';
 
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.start_param) {
+            if (Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.start_param) {
                 const startParam = Telegram.WebApp.initDataUnsafe.start_param;
-                if (startParam && startParam.startsWith(REF_PREFIX)) {
+                if (startParam.startsWith(REF_PREFIX)) {
                     referrerId = startParam.substring(REF_PREFIX.length);
                     console.log('Referrer ID from start_param:', referrerId);
                 }
@@ -1556,14 +1502,14 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return { ok: false, error: 'User not initialized' };
             }
 
-            const initData = (typeof Telegram !== 'undefined' && Telegram.WebApp) ? Telegram.WebApp.initData : null;
+            const initData = Telegram.WebApp.initData;
             if (!initData) {
                 // English translation of the Arabic alert message
                 showCustomAlert('Critical Error!', 'Initialization data is missing. Please restart the app. [CODE: ID_MS]', 'error');
                 return { ok: false, error: 'InitData missing' };
             }
 
-            if (typeof Telegram !== 'undefined' && typeof Telegram.WebApp.showProgress === 'function') {
+            if (typeof Telegram.WebApp.showProgress === 'function') {
                 Telegram.WebApp.showProgress();
             }
             
@@ -1580,14 +1526,14 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     }),
                 });
 
-                if (typeof Telegram !== 'undefined' && typeof Telegram.WebApp.hideProgress === 'function') {
+                if (typeof Telegram.WebApp.hideProgress === 'function') {
                     Telegram.WebApp.hideProgress();
                 }
 
                 const data = await response.json();
 
                 if (!response.ok || !data.ok) {
-                    const errorMessage = data && data.error ? data.error : `Server Error: ${response.status} ${response.statusText}`;
+                    const errorMessage = data.error || `Server Error: ${response.status} ${response.statusText}`;
                     console.error(`API Call failed for type ${payload.type}:`, errorMessage);
                     let alertTitle = 'Operation Failed!';
                     let alertType = 'error';
@@ -1597,23 +1543,23 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         alertTitle = 'Rate Limit Exceeded!';
                         alertType = 'warning';
                         cleanMessage = 'You have exceeded the allowed request limit. Please try again after 5 second.';
-                    } else if (errorMessage && errorMessage.includes && errorMessage.includes('banned')) {
+                    } else if (errorMessage.includes('banned')) {
                         alertTitle = 'Access Denied!';
                         alertType = 'error';
                         cleanMessage = 'This account has been banned.';
-                    } else if (errorMessage && errorMessage.includes && errorMessage.includes('limit reached')) {
+                    } else if (errorMessage.includes('limit reached')) {
                         alertTitle = 'Daily Limit Reached!';
                         alertType = 'warning';
                         cleanMessage = 'You have reached the maximum number of allowed actions for today.';
-                    } else if (errorMessage && (errorMessage.includes('Server Token') || response.status === 409 || response.status === 408)) {
+                    } else if (errorMessage.includes('Server Token') || response.status === 409 || response.status === 408) {
                         alertTitle = 'Security Error!';
                         alertType = 'error';
                         cleanMessage = 'A security-related error occurred. Please try again.';
-                    } else if (payload.type === 'completeTask' && errorMessage && errorMessage.includes && errorMessage.includes('already completed')) {
+                    } else if (payload.type === 'completeTask' && errorMessage.includes('already completed')) {
                         alertTitle = 'Task Completed!';
                         alertType = 'warning';
                         cleanMessage = 'Reward already claimed. Task is complete.';
-                    } else if (payload.type === 'completeTask' && errorMessage && errorMessage.includes && errorMessage.includes('not joined')) {
+                    } else if (payload.type === 'completeTask' && errorMessage.includes('not joined')) {
                         alertTitle = 'Task Failed!';
                         alertType = 'error';
                         cleanMessage = 'Membership not verified. Please ensure you joined the channel and try again.';
@@ -1630,13 +1576,13 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
                 return data;
             } catch (error) {
-                if (typeof Telegram !== 'undefined' && typeof Telegram.WebApp.hideProgress === 'function') {
+                if (typeof Telegram.WebApp.hideProgress === 'function') {
                     Telegram.WebApp.hideProgress();
                 }
-                console.error(`General Fetch Error for type ${payload.type}:`, error && error.message ? error.message : error);
+                console.error(`General Fetch Error for type ${payload.type}:`, error.message);
                 // English translation of the Arabic alert message
                 showCustomAlert('Connection Error!', 'Could not connect to the server. Please check your internet connection.', 'error');
-                return { ok: false, error: error && error.message ? error.message : String(error) };
+                return { ok: false, error: error.message };
             }
         }
 
@@ -1649,7 +1595,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 action_type: actionType 
             });
             
-            if (result && result.ok && result.data) {
+            if (result.ok) {
                 return result.data.action_id;
             }
             return null;
@@ -1796,12 +1742,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
             if (serverResult && serverResult.ok) {
                 if (serverResult.data && serverResult.data.new_balance !== undefined) {
                     shibBalance = serverResult.data.new_balance;
-
+                    
                     // The server confirmed the award and incremented its counter (new_count)
                     // We sync our local counter with the server's response to prevent local-storage abuse
                     taskLinkState.count = serverResult.data.new_count;
                     saveTaskLinkProgressToStorage();
-
+                    
                     updateState({ balance: shibBalance });
                     updateTaskLinkUI();
 
@@ -1813,7 +1759,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 }
                 return;
             }
-
+            
             // 5. If server failed, we should NOT award locally (removed local fallback reward logic)
             
             // If the server call failed (and fetchApi showed an error) or if we couldn't get an action ID, 
@@ -1847,7 +1793,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             
             const result = await fetchApi({ type: 'getUserData' }); 
 
-            if (result && result.ok) {
+            if (result.ok) {
                 if (result.data.is_banned) {
                     isBanned = true;
                     mainScreen.classList.remove('visible');
@@ -1888,9 +1834,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 
                 mainScreen.classList.add('visible'); 
 
-            } else {
-                // if fetch failed, still show main screen to avoid blank UI (but it's hidden until register completes)
-                mainScreen.classList.add('visible');
             }
         }
         
@@ -1902,11 +1845,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 ref_by: referrerId ? referrerId : null 
             });
 
-            if (registerResult && registerResult.ok) {
+            if (registerResult.ok) {
                 await loadUserData(); 
-            } else {
-                // Show main screen even if register failed to avoid blocking the user
-                mainScreen.classList.add('visible');
             }
         }
         
@@ -1997,7 +1937,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
             
             if (adsWatchedToday >= DAILY_MAX) {
-                showCustomAlert('Daily Limit Reached!', `You have completed all today's ads (${DAILY_MAX}). Come back later!`, 'warning');
+                showCustomAlert('Daily Limit Reached!', `ＡＬＬ ａｄｓ Ｄｏｎｅ (${DAILY_MAX}). Ｃｏｍｅ ｂａｃｋ Ａｆｔｅｒ 6 Ｈｏｕｒｓ🥩!`, 'warning');
                 return;
             }
 
@@ -2009,12 +1949,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             if (!actionId) return; // Error message already shown by fetchApi
 
             // 2. Show First Ad - NO ALERT HERE
-            if (typeof show_10245709 !== 'function') {
-                // if ad SDK not available, notify user cleanly
-                showCustomAlert('Ad Error', 'Ad SDK not available. Please try again later.', 'error');
-                return;
-            }
-
             show_10245709()
                 .then(() => {
                     // Success for Ad 1 - Immediately start the second ad - NO ALERT HERE
@@ -2029,8 +1963,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         action_id: actionId // ⬅️ Send Server-Issued ID
                     });
 
-                    if (adResult && adResult.ok) {
-                        const actualReward = adResult.data.actual_reward;
+                    if (adResult.ok) {
+                        const actualReward = adResult.data.actual_reward; 
                         
                         // 4. Update UI with trusted server values
                         updateState({
@@ -2045,26 +1979,26 @@ You will earn 40% of the revenue from every referral you bring through ads!
                                 referrer_id: referrerId,
                                 referee_id: tgUser.id
                             }).then(r => {
-                                if (r && r.ok) { console.log('Commission sent successfully.'); }
-                                else { console.warn('Commission failed to send:', r ? r.error : 'no result'); }
+                                if (r.ok) { console.log('Commission sent successfully.'); }
+                                else { console.warn('Commission failed to send:', r.error); }
                             });
                         }
                         
                         // 6. Custom Alert for Success (in English)
                         let alertTitle = 'Reward Granted!';
                         let alertType = 'success';
-                        let alertMessage = `YOU WIN ${actualReward} SHIB.`;
+                        let alertMessage = ` ＹＯＵ ＷＩＮ ${actualReward} SHIB.`;
                         
                         if(adResult.data.new_ads_count >= DAILY_MAX){
                             alertTitle = 'Daily Task Completed!';
                             // **UPDATED MESSAGE HERE** to 'Come back in 6 hours.'
-                            alertMessage = `Congratulations! You have completed all today's ads (${DAILY_MAX}). Come back later!`;
+                            alertMessage = `Congratulations! You have completed all today's ads (${DAILY_MAX}). ＣＯＭＥ ｂａｃｋ ａｆｔｅｒ 6 Ｈｏｕｒｓ!`;
                         }
                         showCustomAlert(alertTitle, alertMessage, alertType);
 
                         // 7. Try to credit contest tickets (best-effort, using contestActionId obtained earlier)
                         // If server credits successfully, update local contest UI from server response.
-                        // If server fails, do a conservative local increment so user sees immediate feedback (10 tickets).
+                        // If server fails, apply a local increment so user sees immediate feedback (10 tickets).
                         const TICKETS_PER_AD = 10;
                         let contestCredited = false;
                         if (contestActionId) {
@@ -2073,7 +2007,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                                     type: 'contestAd',
                                     action_id: contestActionId
                                 });
-                                if (contestRes && contestRes.ok) {
+                                if (contestRes.ok) {
                                     contestCredited = true;
                                     // sync contest data with server if returned
                                     if (contestRes.data) {
@@ -2109,10 +2043,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         const ticketIconHtml = `<img src="https://files.catbox.moe/ut2ljl.png" width="28" height="28" style="vertical-align:middle;border-radius:4px">`;
                         showCustomAlert('🎟️ You got 10 tickets', 'You have been awarded 10 contest tickets for watching the ads.', 'ticket', ticketIconHtml);
 
-                    } else {
-                        // adResult not ok
-                        console.warn('Ad reward server response failed', adResult ? adResult.error : 'no response');
-                        showCustomAlert('Ad Reward Error', 'Server refused to grant reward. Please try again.', 'error');
                     }
                 })
                 .catch(e => {
@@ -2130,7 +2060,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         // ***************************************************************
         // END OF UPDATED watchAds FUNCTION
         // ***************************************************************
-
+        
         function circleClick(){ console.log('Circle clicked'); }
 
         /* ===== Task Screen Functions (UPDATED LOGIC with dynamic tasks) ===== */
@@ -2141,7 +2071,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
          */
         async function fetchTasks() {
             const res = await fetchApi({ type: 'getTasks' });
-            if (res && res.ok && Array.isArray(res.data.tasks)) {
+            if (res.ok && Array.isArray(res.data.tasks)) {
                 return res.data.tasks;
             }
             return [];
@@ -2189,12 +2119,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     Telegram.WebApp.openTelegramLink(normalized);
                     return true;
                 } else {
-                    window.open(normalized, '_blank', 'noopener');
+                    window.open(normalized, '_blank');
                     return true;
                 }
             } catch (e) {
                 console.warn('Failed to open link via WebApp, fallback to window.open:', e);
-                try { window.open(normalized, '_blank', 'noopener'); return true; } catch (err) { return false; }
+                try { window.open(normalized, '_blank'); return true; } catch (err) { return false; }
             }
         }
 
@@ -2232,7 +2162,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 const safeLink = (t.link || '').replace(/"/g, '&quot;');
                 return `
                     <div class="task-item-card" data-task-id="${t.task_id}">
-                        <span class="task-text-info" title="${(t.name || '') + ' — ' + rewardText}">${t.name} — ${rewardText}</span>
+                        <span class="task-text-info">${t.name} — ${rewardText}</span>
                         <button class="task-action-btn-new" data-task-link="${safeLink}" data-task-id="${t.task_id}" onclick="onTaskButtonClick(event)">
                             Open
                         </button>
@@ -2510,7 +2440,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             
             isProcessingTask = false; // Reset flag
 
-            if (result && result.ok) {
+            if (result.ok) {
                 // Update state
                 updateState({ 
                     balance: result.data.new_balance
@@ -2571,7 +2501,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 if (channelLink && typeof Telegram.WebApp.openTelegramLink === 'function') {
                      Telegram.WebApp.openTelegramLink(channelLink);
                 } else if (channelLink) {
-                     window.open(channelLink, '_blank', 'noopener');
+                     window.open(channelLink, '_blank');
                 } else {
                      showCustomAlert('No Link', 'This task has no join link. Click Claim to verify.', 'warning');
                 }
@@ -2636,7 +2566,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
 
             navigator.clipboard.writeText(inviteLink).then(() => {
-                try { Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
+                Telegram.WebApp.HapticFeedback.notificationOccurred('success');
                 // English translation of the Arabic alert message
                 showCustomAlert('Link Copied!', 'The referral link has been copied to the clipboard.', 'success');
             }).catch(err => {
@@ -2659,18 +2589,18 @@ You will earn 40% of the revenue from every referral you bring through ads!
         let currentAngle = 0;
 
         function drawWheel() {
-            if (!ctx || !canvas) return;
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const radius = Math.min(centerX, centerY) - 10;
+            const radius = 130;
             const sectorCount = sectors.length;
             const arc = 2 * Math.PI / sectorCount;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            ctx.font = '18px Vazirmatn, sans-serif'; // Set font size for emoji
+            ctx.font = '24px Vazirmatn, sans-serif'; // Set font size for emoji
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
+
 
             sectors.forEach((val, i) => {
                 const start = i * arc - Math.PI / 2; 
@@ -2687,22 +2617,24 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // Draw sector border
                 ctx.beginPath();
                 ctx.strokeStyle = '#fff'; 
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 3;
                 ctx.moveTo(centerX, centerY);
                 ctx.arc(centerX, centerY, radius, start, end);
                 ctx.closePath();
                 ctx.stroke();
 
-                // Add Emoji to the sector
+                // 🐱 Add Emoji to the sector
+                // Calculate the position for the emoji (midpoint of the arc, halfway to the edge)
                 const angle = start + arc / 2;
-                const textX = centerX + radius * 0.6 * Math.cos(angle);
-                const textY = centerY + radius * 0.6 * Math.sin(angle);
+                const textX = centerX + radius * 0.65 * Math.cos(angle);
+                const textY = centerY + radius * 0.65 * Math.sin(angle);
 
+                // Rotate context to align the emoji with the sector
                 ctx.save();
                 ctx.translate(textX, textY);
-                ctx.rotate(angle + Math.PI / 2);
-                ctx.fillStyle = '#000';
-                ctx.fillText('🐱', 0, 0);
+                ctx.rotate(angle + Math.PI / 2); // Rotate to be perpendicular to the radius
+                ctx.fillStyle = '#000'; // Color doesn't matter for emoji usually
+                ctx.fillText('🐱', 0, 0); 
                 ctx.restore();
             });
 
@@ -2714,7 +2646,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             ctx.strokeStyle = '#ff3366';
             ctx.lineWidth = 4;
             ctx.stroke();
-
+            
             // Draw Mini Circle inside
             ctx.beginPath();
             ctx.fillStyle = '#ff3366';
@@ -2726,18 +2658,17 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
         async function startSpin(){
             if(spinning) return;
-
+            
             if (isBanned) {
                  // English translation of the Arabic alert message
                  showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                  return;
             }
-
+            
             if (spinsToday >= DAILY_MAX_SPINS) {
-                showCustomAlert('Daily Limit Reached!', `You have used all spins for today (${DAILY_MAX_SPINS}).`, 'warning');
                 return;
             }
-
+            
             // 1. Request Action ID from the Server for pre-spin (security check)
             const preSpinActionId = await requestActionId('preSpin');
             if (!preSpinActionId) return; // Error message already shown by fetchApi
@@ -2749,11 +2680,11 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 action_id: preSpinActionId // ⬅️ Send Action ID
             });
 
-            if (!preSpinReqResult || !preSpinReqResult.ok) {
+            if (!preSpinReqResult.ok) {
                 await loadUserData(); 
                 return; 
             }
-
+            
             // 3. Request Action ID from the Server for the spin result (prize confirmation)
             const spinResultActionId = await requestActionId('spinResult');
             if (!spinResultActionId) {
@@ -2762,12 +2693,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 await loadUserData(); 
                 return;
             }
-
-            if (typeof show_10245709 !== 'function') {
-                showCustomAlert('Ad Error', 'Ad SDK not available. Please try again later.', 'error');
-                return;
-            }
-
+            
             // 4. Call Ad SDK twice in sequence (no intermediate alerts) - user will see two ads like watchAds
             show_10245709()
                 .then(() => {
@@ -2785,20 +2711,20 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         type: 'spinResult',
                         action_id: spinResultActionId // ⬅️ Send Action ID
                     });
-
-                    if (spinResultRes && spinResultRes.ok) {
+                    
+                    if (spinResultRes.ok) {
                         const finalPrize = spinResultRes.data.actual_prize; 
                         const prizeIndex = spinResultRes.data.prize_index !== undefined ? spinResultRes.data.prize_index : 0; 
-
+                        
                         const sectorCount = sectors.length; 
                         const arc = 2 * Math.PI / sectorCount; 
-
+                        
                         const winningAngle = prizeIndex * arc + arc / 2; 
-
+                        
                         let rotationToApply = Math.PI / 2 - winningAngle;
-
-                        rotationToApply = rotationToApply + (5 * 2 * Math.PI);
-
+                        
+                        rotationToApply = rotationToApply + (5 * 2 * Math.PI); 
+                        
                         currentAngle += rotationToApply;
 
                         // Ensure transition is applied and trigger layout so animation runs reliably
@@ -2806,33 +2732,37 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         requestAnimationFrame(() => {
                             canvas.style.transform = `rotate(${currentAngle}rad)`;
                         });
-
+                        
                         setTimeout(async ()=>{
                             // After animation completes, clear inline transition so future changes use CSS default
                             canvas.style.transition = '';
                             canvas.classList.remove('spinning');
-
+                            
                             // 6. Update balance and spin count with trusted server values 
                             updateState({ 
                                 balance: spinResultRes.data.new_balance,
                                 spins_today: spinResultRes.data.new_spins_count
                             });
-
-                            spinResult.textContent = `🎉 You won ${finalPrize} SHIB!`;
+                            
+                            spinResult.textContent = `🎉\n\nYou won ${finalPrize} SHIB!`;
+                            // English translation of the Arabic alert message
                             showCustomAlert('Congratulations!', `You won ${finalPrize} SHIB!`, 'success');
-
-                            await loadUserData();
-
+                            
+                            await loadUserData(); 
+                            
                         },4000); 
 
                     } else {
                         canvas.classList.remove('spinning');
                         spinResult.textContent = `❌ ERROR ❌\n\n[STATUS] Error receiving prize. Please try again.`;
                         // Custom Alert for spin result error is handled by fetchApi, but we ensure it here too:
-                        showCustomAlert('Error!', 'Error receiving prize. Please try again.', 'error');
+                        if (!spinResultRes.error.includes('SECURITY ERROR')) { 
+                            // English translation of the Arabic alert message
+                            showCustomAlert('Error!', 'Error receiving prize. Please try again.', 'error');
+                        }
                         await loadUserData(); 
                     }
-
+                    
                     spinning   = false;
                     updateUI(); 
                 })
@@ -2945,24 +2875,25 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
             // Render each entry with ticket icon (15x15) and prize badge per rank
             const html = sorted.map((p, idx) => {
-                // IMPORTANT FIX: do NOT fallback to tgUser.photo_url for missing or null avatars.
-                // Using the same global user photo for missing avatars caused every row to show the same image.
-                // Now we fall back to a neutral placeholder so each player's avatar must be provided by server.
-                const avatar = p.avatar || 'https://via.placeholder.com/50';
+                // Use the provided avatar if available; otherwise fallback to a neutral placeholder (do NOT reuse current user's photo for others)
+                const avatar = (p.avatar && p.avatar.toString().trim().length > 0) ? p.avatar : 'https://via.placeholder.com/50?text=User';
                 const uname = p.username || (`User${p.user_id || ''}`);
                 const uid = p.user_id || '-';
                 const tickets = p.tickets || 0;
                 const rankInfo = PRIZES_BY_RANK[idx] || null;
                 const prizeHTML = rankInfo ? `<div class="rank-prize ${rankInfo.class}">${rankInfo.value}</div>` : '';
+                // ensure avatar is safely escaped in attributes
+                const safeAvatar = avatar.replace(/"/g, '&quot;');
+                const safeName = String(uname).replace(/</g,'&lt;').replace(/>/g,'&gt;');
                 return `
                     <div class="leader-item" data-leader-id="${p.user_id}">
                         <div style="font-weight:800;width:26px;text-align:center">${idx+1}</div>
-                        <div class="leader-avatar"><img src="${avatar}" onerror="this.src='https://via.placeholder.com/50'"></div>
+                        <div class="leader-avatar"><img src="${safeAvatar}" onerror="this.src='https://via.placeholder.com/50?text=User'"></div>
                         <div class="leader-meta">
                             <div style="display:flex;align-items:center;gap:8px;justify-content:space-between">
                                 <div>
-                                    <div class="leader-name" title="${escapeHtml(uname)}">${escapeHtml(uname)}</div>
-                                    <div class="leader-sub">ID: ${escapeHtml(String(uid))}</div>
+                                    <div class="leader-name">${safeName}</div>
+                                    <div class="leader-sub">ID: ${uid}</div>
                                 </div>
                                 ${prizeHTML}
                             </div>
@@ -2982,23 +2913,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     showCustomAlert(`Player: ${name}`, `ID: ${uid}\nTickets: ${t}`, 'warning');
                     // Note: Per request, clicking a leaderboard entry should NOT refresh the leaderboard.
                 });
-            });
-        }
-
-        // small helper to escape HTML in inserted content
-        function escapeHtml(s) {
-            if (!s) return '';
-            return String(s).replace(/[&<>"'`=\/]/g, function (c) {
-                return {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;',
-                    '/': '&#x2F;',
-                    '`': '&#x60;',
-                    '=': '&#x3D;'
-                }[c];
             });
         }
 
@@ -3044,7 +2958,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             // Best-effort server call to get contest data
             try {
                 const res = await fetchApi({ type: 'getContestData' });
-                if (res && res.ok && res.data) {
+                if (res.ok && res.data) {
                     if (res.data.contest_end) contestEndDate = res.data.contest_end;
                     if (res.data.user_tickets !== undefined) userTickets = res.data.user_tickets;
                     if (res.data.total_tickets !== undefined) totalTickets = res.data.total_tickets;
@@ -3082,11 +2996,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             if (!actionId) return;
 
             // Show two ads in sequence like watchAds, then notify server
-            if (typeof show_10245709 !== 'function') {
-                showCustomAlert('Ad Error', 'Ad SDK not available. Please try again later.', 'error');
-                return;
-            }
-
             show_10245709()
                 .then(() => show_10245709())
                 .then(async () => {
@@ -3096,7 +3005,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         action_id: actionId
                     });
 
-                    if (res && res.ok) {
+                    if (res.ok) {
                         // server will return updated counts (preferred)
                         if (res.data) {
                             if (res.data.user_tickets !== undefined) userTickets = res.data.user_tickets;
@@ -3117,7 +3026,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         showCustomAlert('Tickets Received!', '+10 Tickets have been added to your contest balance.', 'success');
                     } else {
                         // If server reported an error, do not increment locally
-                        console.warn('contestAd server error', res ? res.error : 'no response');
+                        console.warn('contestAd server error', res.error || '(no error string)');
                     }
                 })
                 .catch(e => {
@@ -3137,13 +3046,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
             try {
-                if (typeof show_10245709 !== 'function') {
-                    showCustomAlert('Ad Error', 'Ad SDK not available. Please try again later.', 'error');
-                    return;
-                }
                 // We attempt to show a single ad; after success refresh leaderboard from server
                 await show_10245709();
                 // After user watched the ad, trigger server call to credit & refresh leaderboard
+                // We attempt to call the same contestAd flow which is what credits tickets
                 const actionId = await requestActionId('contestAd');
                 if (!actionId) {
                     // If we couldn't get action id, still attempt to refresh data
@@ -3155,7 +3061,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     type: 'contestAd',
                     action_id: actionId
                 });
-                if (res && res.ok) {
+                if (res.ok) {
                     // Update local values from server response and refresh UI
                     if (res.data) {
                         if (res.data.user_tickets !== undefined) userTickets = res.data.user_tickets;
@@ -3194,8 +3100,9 @@ You will earn 40% of the revenue from every referral you bring through ads!
             try {
                 // Best-effort server endpoint that triggers distribution and returns summary
                 const res = await fetchApi({ type: 'distributeContestPrizes' });
-                if (res && res.ok) {
+                if (res.ok) {
                     // Server should return distribution summary and updated balances for this user if they won
+                    // Example expected payload: { distributed: true, winners: [...], your_prize: 500000, new_balance: ... }
                     if (res.data) {
                         // If server returns new balance for current user, update it
                         if (res.data.new_balance !== undefined) {
@@ -3247,8 +3154,9 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
             mainScreen.classList.remove('visible');
-            document.getElementById('contestScreen').style.display = 'flex';
-            document.getElementById('contestScreen').classList.add('visible');
+            // Use class toggling for consistent display, avoid inline display changes
+            const screen = document.getElementById('contestScreen');
+            screen.classList.add('visible');
 
             // Load local contest state and try refresh from server
             loadContestFromStorage();
@@ -3264,7 +3172,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 contestCountdownInterval = null;
             }
             document.getElementById('contestScreen').classList.remove('visible');
-            document.getElementById('contestScreen').style.display = 'none';
             mainScreen.classList.add('visible');
         }
 
@@ -3284,7 +3191,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             document.getElementById('spinScreen').classList.remove('visible');
             mainScreen.classList.add('visible');
         }
-
+        
         function showWithdraw(){
             if (isBanned) {
                  // English translation of the Arabic alert message
@@ -3296,12 +3203,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
             loadUserData();
             displayWithdrawals(); 
         }
-
+        
         function hideWithdraw(){
             document.getElementById('withdrawScreen').classList.remove('visible');
             mainScreen.classList.add('visible');
         }
-
+        
         function displayWithdrawals() {
             // The inline "Recent Withdrawal Summary" was intentionally removed from the withdraw screen.
             // This function will only update if the old container exists (defensive).
@@ -3383,13 +3290,13 @@ You will earn 40% of the revenue from every referral you bring through ads!
                  showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                  return;
             }
-
+            
             // Determine selected method
             const selectedMethod = document.querySelector('input[name="withdrawMethod"]:checked') ? document.querySelector('input[name="withdrawMethod"]:checked').value : 'binance';
             const binanceId = document.getElementById('binanceId').value.trim();
             const faucetpayEmail = document.getElementById('faucetpayEmail').value.trim();
             const amount = parseFloat(document.getElementById('withdrawAmount').value);
-
+            
             if(selectedMethod === 'binance') {
                 if(!binanceId || binanceId.length < 4){ 
                     showCustomAlert('Invalid Input!', 'Please enter a valid Binance User ID.', 'warning'); 
@@ -3413,7 +3320,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 showCustomAlert('Balance Error!', `Your balance is insufficient. Your current balance is ${shibBalance.toLocaleString()} SHIB.`, 'error'); 
                 return; 
             }
-
+            
             // 1. Request Action ID from the Server ⬅️ تم التفعيل على Withdraw
             const actionId = await requestActionId('withdraw');
             if (!actionId) return;
@@ -3433,30 +3340,30 @@ You will earn 40% of the revenue from every referral you bring through ads!
             // 3. Send withdrawal request via API
             const result = await fetchApi(payload);
 
-            if (result && result.ok) {
+            if (result.ok) {
                 // 4. Update balance with trusted server value
                 updateState({ balance: result.data.new_balance });
-
+                
                 // 5. Reload withdrawal history with new data
                 await loadUserData(); 
                 displayWithdrawals(); 
-
+                
                 // English translation of the Arabic alert message
                 const destText = selectedMethod === 'faucetpay' ? `FaucetPay: ${faucetpayEmail}` : `Binance ID: ${binanceId}`;
                 showCustomAlert('Request Sent!', `Details:\n${destText}\nAmount: ${amount.toLocaleString()} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
             }
         }
-
+        
         // Method toggle behavior
         document.addEventListener('click', (e) => {
             const mBin = document.getElementById('methodBinance');
             const mFaucet = document.getElementById('methodFaucetpay');
-            if (e.target.closest && e.target.closest('#methodBinance')) {
+            if (e.target.closest('#methodBinance')) {
                 mBin.classList.add('active');
                 mFaucet.classList.remove('active');
                 document.getElementById('binanceGroup').style.display = 'block';
                 document.getElementById('faucetpayGroup').style.display = 'none';
-            } else if (e.target.closest && e.target.closest('#methodFaucetpay')) {
+            } else if (e.target.closest('#methodFaucetpay')) {
                 mFaucet.classList.add('active');
                 mBin.classList.remove('active');
                 document.getElementById('binanceGroup').style.display = 'none';
