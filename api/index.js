@@ -17,6 +17,7 @@ const RESET_INTERVAL_MS = 6 * 60 * 60 * 1000; // ⬅️ 6 hours in milliseconds
 const MIN_TIME_BETWEEN_ACTIONS_MS = 3000; // 3 seconds minimum time between watchAd/spin requests
 const ACTION_ID_EXPIRY_MS = 60000; // 60 seconds for Action ID to be valid
 const SPIN_SECTORS = [5, 10, 15, 20, 5];
+const TICKETS_PER_AD = 10; // Number of tickets awarded per contest ad/watch
 
 // ===== Task Link Constants =====
 const TASK_LINK_REWARD = 5; // 5 SHIB per task-link click
@@ -26,18 +27,6 @@ const TASK_LINK_DAILY_MAX = 200; // daily max clicks tracked server-side
 // Task Constants
 // ------------------------------------------------------------------
 const TASK_COMPLETIONS_TABLE = 'user_task_completions'; // اسم افتراضي لجدول حفظ إكمال المهام
-
-// ------------------------------------------------------------------
-// Competition constants & assumptions
-// ------------------------------------------------------------------
-// We assume there's a table `competition_entries` with columns:
-// { user_id (int), tickets (int), updated_at (timestamp) }
-// and `users` table contains { id, username, avatar, ... } to join for leaderboard.
-// Optional `competition_settings` table with { id, ends_at } to control end time.
-const COMPETITION_ENTRIES_TABLE = 'competition_entries';
-const COMPETITION_SETTINGS_TABLE = 'competition_settings';
-const COMP_DURATION_DAYS = 15; // fallback duration if no settings row
-// ------------------------------------------------------------------
 
 /**
  * Helper function to randomly select a prize from the defined sectors and return its index.
@@ -86,10 +75,8 @@ async function supabaseFetch(tableName, method, body = null, queryParams = '?sel
       const responseText = await response.text();
       try {
           const jsonResponse = JSON.parse(responseText);
-          // Return parsed JSON (array or object)
-          return jsonResponse;
+          return Array.isArray(jsonResponse) ? jsonResponse : { success: true };
       } catch (e) {
-          // If no JSON body, return a success marker
           return { success: true };
       }
   }
@@ -315,7 +302,7 @@ async function processCommission(referrerId, refereeId, sourceReward) {
         await supabaseFetch('users', 'PATCH', { balance: newBalance }, `?id=eq.${referrerId}`); 
 
         // 5. Add record to commission_history
-        await supabaseFetch('commission_history', 'POST', { referrer_id: referrerId, referee_id: refereeId, amount: commissionAmount, source_reward: sourceReward, created_at: new Date().toISOString() }, '?select=referrer_id');
+        await supabaseFetch('commission_history', 'POST', { referrer_id: referrerId, referee_id: refereeId, amount: commissionAmount, source_reward: sourceReward }, '?select=referrer_id');
         
         return { ok: true, new_referrer_balance: newBalance };
     
@@ -371,7 +358,7 @@ async function handleGenerateActionId(req, res, body) {
     
     try {
         await supabaseFetch('temp_actions', 'POST',
-            { user_id: id, action_id: newActionId, action_type: action_type, created_at: new Date().toISOString() },
+            { user_id: id, action_id: newActionId, action_type: action_type },
             '?select=action_id');
             
         sendSuccess(res, { action_id: newActionId });
@@ -763,7 +750,7 @@ async function handleSpinResult(req, res, body) {
 
         // 9. Save to spin_results
         await supabaseFetch('spin_results', 'POST',
-          { user_id: id, prize, created_at: new Date().toISOString() },
+          { user_id: id, prize },
           '?select=user_id');
 
         // 10. Return the actual, server-calculated prize and index
@@ -942,7 +929,7 @@ async function handleCompleteTask(req, res, body) {
             
         // 10. Mark task as completed (INSERT into the junction table)
         await supabaseFetch(TASK_COMPLETIONS_TABLE, 'POST', 
-            { user_id: id, task_id: taskId, reward_amount: reward, created_at: new Date().toISOString() }, 
+            { user_id: id, task_id: taskId, reward_amount: reward }, 
             '?select=user_id');
 
         // 11. Commission Call
@@ -960,7 +947,6 @@ async function handleCompleteTask(req, res, body) {
         sendError(res, `Failed to complete task: ${error.message}`, 500);
     }
 }
-
 
 /**
  * 8) type: "withdraw"
@@ -1067,207 +1053,275 @@ async function handleWithdraw(req, res, body) {
     }
 }
 
-/* ------------------------------------------------------------------
-   NEW: Competition & Leaderboard API Handlers
-   - getCompetitionData
-   - collectCompetitionTicket
-   Assumptions:
-    - competition_entries table: { user_id, tickets, updated_at }
-    - users table: { id, username, avatar }
-    - Optional competition_settings table has an ends_at timestamp.
-   ------------------------------------------------------------------ */
-
 /**
- * Helper: fetch competition settings ends_at (ISO string) or fallback timestamp
- */
-async function getCompetitionEndsAt() {
-    try {
-        const settings = await supabaseFetch(COMPETITION_SETTINGS_TABLE, 'GET', null, `?select=ends_at&limit=1`);
-        if (Array.isArray(settings) && settings.length > 0 && settings[0].ends_at) {
-            return settings[0].ends_at;
-        }
-    } catch (e) {
-        // ignore and fallback
-        console.warn('Failed to fetch competition settings:', e.message);
-    }
-    const fallback = new Date(Date.now() + COMP_DURATION_DAYS * 24 * 60 * 60 * 1000).toISOString();
-    return fallback;
-}
-
-/**
- * Helper: compute total tickets and top5 entries (with user info)
- */
-async function computeCompetitionSummary() {
-    // 1. Fetch all entries (or at least ordered entries)
-    const entries = await supabaseFetch(COMPETITION_ENTRIES_TABLE, 'GET', null, `?select=user_id,tickets&order=tickets.desc`);
-    const entryArray = Array.isArray(entries) ? entries : [];
-
-    // compute total tickets
-    const totalTickets = entryArray.reduce((s, e) => s + (e.tickets || 0), 0);
-
-    // top5 entries
-    const top5Entries = entryArray.slice(0, 5);
-
-    // fetch user info for top5 user_ids
-    const ids = top5Entries.map(e => e.user_id).filter(Boolean);
-    let users = [];
-    if (ids.length > 0) {
-        const inList = ids.join(',');
-        try {
-            users = await supabaseFetch('users', 'GET', null, `?id=in.(${inList})&select=id,username,avatar`);
-            users = Array.isArray(users) ? users : [];
-        } catch (e) {
-            users = [];
-        }
-    }
-
-    // map top5 with user info and keep ordering
-    const top5 = top5Entries.map((entry, idx) => {
-        const u = users.find(x => x.id === entry.user_id) || {};
-        return {
-            user_id: entry.user_id,
-            username: u.username || `User ${entry.user_id}`,
-            avatar: u.avatar || null,
-            tickets: entry.tickets || 0
-        };
-    });
-
-    return { totalTickets, top5 };
-}
-
-/**
- * HANDLER: type: "getCompetitionData"
- * Returns: { user_tickets, total_tickets, top5: [{user_id,username,avatar,tickets}], ends_at }
- */
-async function handleGetCompetitionData(req, res, body) {
-    const { user_id } = body;
-    const id = parseInt(user_id);
-
-    if (!user_id) {
-        return sendError(res, 'Missing user_id for competition data.', 400);
-    }
-
-    try {
-        // reset any expired limits for user
-        await resetDailyLimitsIfExpired(id);
-
-        // 1. fetch user's tickets from competition_entries
-        let userTickets = 0;
-        try {
-            const userEntry = await supabaseFetch(COMPETITION_ENTRIES_TABLE, 'GET', null, `?user_id=eq.${id}&select=tickets`);
-            if (Array.isArray(userEntry) && userEntry.length > 0) {
-                userTickets = userEntry[0].tickets || 0;
-            }
-        } catch (e) {
-            console.warn('Failed to fetch user competition entry:', e.message);
-        }
-
-        // 2. compute total tickets and top5
-        const { totalTickets, top5 } = await computeCompetitionSummary();
-
-        // 3. read ends_at setting or fallback
-        const endsAt = await getCompetitionEndsAt();
-
-        sendSuccess(res, {
-            user_tickets: userTickets,
-            total_tickets: totalTickets,
-            top5: top5,
-            ends_at: endsAt
-        });
-    } catch (error) {
-        console.error('getCompetitionData failed:', error.message);
-        sendError(res, `Failed to get competition data: ${error.message}`, 500);
-    }
-}
-
-/**
- * HANDLER: type: "collectCompetitionTicket"
+ * NEW: 9) type: "contestAd"
  *
- * Consumes action_id generated with action_type='competitionAd'.
- * Adds one ticket to the user's competition entry and returns updated summary.
+ * - Validates action id 'contestAd'
+ * - Inserts a ticket record into 'ticket_comption' table
+ * - Returns aggregated contest data: user_tickets, total_tickets, optional leaderboard
  */
-async function handleCollectCompetitionTicket(req, res, body) {
+async function handleContestAd(req, res, body) {
     const { user_id, action_id } = body;
     const id = parseInt(user_id);
 
-    if (!user_id) {
-        return sendError(res, 'Missing user_id for collectCompetitionTicket.', 400);
-    }
-
     // Validate and consume action id
-    if (!await validateAndUseActionId(res, id, action_id, 'competitionAd')) return;
+    if (!await validateAndUseActionId(res, id, action_id, 'contestAd')) return;
 
     try {
-        // reset any expired limits for user
+        // Basic checks
+        // Reset limits if necessary (re-use existing function)
         await resetDailyLimitsIfExpired(id);
 
-        // Rate limit check
+        // Check user existence and banned status
+        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=balance,is_banned`);
+        if (!Array.isArray(users) || users.length === 0) {
+            return sendError(res, 'User not found.', 404);
+        }
+        const user = users[0];
+        if (user.is_banned) {
+            return sendError(res, 'User is banned.', 403);
+        }
+
+        // Rate limit check to avoid rapid ticket farming
         const rateLimitResult = await checkRateLimit(id);
         if (!rateLimitResult.ok) {
             return sendError(res, rateLimitResult.message, 429);
         }
 
-        // Check banned
-        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=is_banned`);
-        if (!Array.isArray(users) || users.length === 0) {
-            return sendError(res, 'User not found.', 404);
-        }
-        if (users[0].is_banned) {
-            return sendError(res, 'User is banned.', 403);
+        // Insert a ticket record
+        const ticketRecord = {
+            user_id: id,
+            tickets: TICKETS_PER_AD,
+            action_id: action_id,
+            source: 'contest_ad',
+            created_at: new Date().toISOString()
+        };
+
+        await supabaseFetch('ticket_comption', 'POST', ticketRecord, '?select=id');
+
+        // Aggregate user tickets and total tickets (simple approach: fetch recent rows and aggregate)
+        const allTickets = await supabaseFetch('ticket_comption', 'GET', null, `?select=user_id,tickets,created_at`);
+        const totals = {};
+        if (Array.isArray(allTickets)) {
+            allTickets.forEach(r => {
+                const uid = r.user_id;
+                const t = parseInt(r.tickets) || 0;
+                totals[uid] = (totals[uid] || 0) + t;
+            });
         }
 
-        // Insert or update competition_entries: increment tickets by 1
-        try {
-            // Check existing entry
-            const existing = await supabaseFetch(COMPETITION_ENTRIES_TABLE, 'GET', null, `?user_id=eq.${id}&select=user_id,tickets`);
-            if (Array.isArray(existing) && existing.length > 0) {
-                const currentTickets = existing[0].tickets || 0;
-                const newTickets = currentTickets + 1;
-                await supabaseFetch(COMPETITION_ENTRIES_TABLE, 'PATCH', { tickets: newTickets, updated_at: new Date().toISOString() }, `?user_id=eq.${id}`);
-            } else {
-                // Insert new entry
-                await supabaseFetch(COMPETITION_ENTRIES_TABLE, 'POST', { user_id: id, tickets: 1, updated_at: new Date().toISOString() }, '?select=user_id');
+        const userTickets = totals[id] || 0;
+        const totalTickets = Object.values(totals).reduce((a, b) => a + b, 0);
+
+        // Build leaderboard top 10
+        const leaderboardArr = Object.keys(totals).map(uid => ({ user_id: parseInt(uid), tickets: totals[uid] }));
+        leaderboardArr.sort((a, b) => b.tickets - a.tickets);
+        const topLeaderboard = leaderboardArr.slice(0, 10);
+
+        // Try to enrich leaderboard with basic user info if possible
+        const topIds = topLeaderboard.map(x => x.user_id).filter(Boolean);
+        let enriched = topLeaderboard;
+        if (topIds.length > 0) {
+            try {
+                const inList = topIds.join(',');
+                const usersInfo = await supabaseFetch('users', 'GET', null, `?id=in.(${inList})&select=id,first_name,photo_url`);
+                if (Array.isArray(usersInfo)) {
+                    const infoMap = {};
+                    usersInfo.forEach(u => { infoMap[u.id] = u; });
+                    enriched = topLeaderboard.map(p => {
+                        const info = infoMap[p.user_id] || {};
+                        return {
+                            user_id: p.user_id,
+                            username: info.first_name || `User${p.user_id}`,
+                            avatar: info.photo_url || null,
+                            tickets: p.tickets
+                        };
+                    });
+                } else {
+                    enriched = topLeaderboard.map(p => ({ user_id: p.user_id, username: `User${p.user_id}`, avatar: null, tickets: p.tickets }));
+                }
+            } catch (e) {
+                enriched = topLeaderboard.map(p => ({ user_id: p.user_id, username: `User${p.user_id}`, avatar: null, tickets: p.tickets }));
             }
-        } catch (e) {
-            console.error('Failed to upsert competition entry:', e.message);
-            return sendError(res, 'Failed to record ticket. Please try again.', 500);
         }
 
-        // Update user's last_activity (for rate limit)
-        try {
-            await supabaseFetch('users', 'PATCH', { last_activity: new Date().toISOString() }, `?id=eq.${id}`);
-        } catch (e) {
-            console.warn('Failed to update last_activity after ticket collection:', e.message);
-        }
-
-        // Recompute summary
-        const { totalTickets, top5 } = await computeCompetitionSummary();
-
-        // Get user's tickets to return
-        let userTickets = 0;
-        try {
-            const ue = await supabaseFetch(COMPETITION_ENTRIES_TABLE, 'GET', null, `?user_id=eq.${id}&select=tickets`);
-            if (Array.isArray(ue) && ue.length > 0) userTickets = ue[0].tickets || 0;
-        } catch (e) {}
-
-        const endsAt = await getCompetitionEndsAt();
-
+        // Response contains updated ticket counts and leaderboard snapshot
         sendSuccess(res, {
             user_tickets: userTickets,
             total_tickets: totalTickets,
-            top5: top5,
-            ends_at: endsAt
+            leaderboard: enriched
         });
 
     } catch (error) {
-        console.error('collectCompetitionTicket failed:', error.message);
-        sendError(res, `Failed to collect ticket: ${error.message}`, 500);
+        console.error('contestAd failed:', error.message);
+        sendError(res, `Failed to process contest ad: ${error.message}`, 500);
     }
 }
 
-/* ------------------------------------------------------------------
-   End Competition handlers
-   ------------------------------------------------------------------ */
+/**
+ * NEW: 10) type: "getContestData"
+ *
+ * Returns contest_end (server-calculated if not stored), user aggregated tickets, total tickets, and leaderboard
+ */
+async function handleGetContestData(req, res, body) {
+    const { user_id } = body;
+    const id = user_id ? parseInt(user_id) : null;
+
+    try {
+        // Attempt to read contest end from a settings table (optional); fallback to 15 days from now if not found
+        let contestEnd = null;
+        try {
+            const settings = await supabaseFetch('contest_settings', 'GET', null, `?select=contest_end&limit=1`);
+            if (Array.isArray(settings) && settings.length > 0 && settings[0].contest_end) {
+                contestEnd = settings[0].contest_end;
+            }
+        } catch (e) {
+            // ignore missing table
+        }
+        if (!contestEnd) {
+            const end = new Date();
+            end.setDate(end.getDate() + 15);
+            contestEnd = end.toISOString();
+        }
+
+        // Aggregate ticket_comption table
+        const allTickets = await supabaseFetch('ticket_comption', 'GET', null, `?select=user_id,tickets,created_at`);
+        const totals = {};
+        if (Array.isArray(allTickets)) {
+            allTickets.forEach(r => {
+                const uid = r.user_id;
+                const t = parseInt(r.tickets) || 0;
+                totals[uid] = (totals[uid] || 0) + t;
+            });
+        }
+
+        const totalTickets = Object.values(totals).reduce((a, b) => a + b, 0);
+        const userTickets = id ? (totals[id] || 0) : 0;
+
+        // Build leaderboard top 10
+        const leaderboardArr = Object.keys(totals).map(uid => ({ user_id: parseInt(uid), tickets: totals[uid] }));
+        leaderboardArr.sort((a, b) => b.tickets - a.tickets);
+        const topLeaderboard = leaderboardArr.slice(0, 10);
+
+        // Enrich with user info if any
+        const topIds = topLeaderboard.map(x => x.user_id).filter(Boolean);
+        let enriched = topLeaderboard;
+        if (topIds.length > 0) {
+            try {
+                const inList = topIds.join(',');
+                const usersInfo = await supabaseFetch('users', 'GET', null, `?id=in.(${inList})&select=id,first_name,photo_url`);
+                if (Array.isArray(usersInfo)) {
+                    const infoMap = {};
+                    usersInfo.forEach(u => { infoMap[u.id] = u; });
+                    enriched = topLeaderboard.map(p => {
+                        const info = infoMap[p.user_id] || {};
+                        return {
+                            user_id: p.user_id,
+                            username: info.first_name || `User${p.user_id}`,
+                            avatar: info.photo_url || null,
+                            tickets: p.tickets
+                        };
+                    });
+                } else {
+                    enriched = topLeaderboard.map(p => ({ user_id: p.user_id, username: `User${p.user_id}`, avatar: null, tickets: p.tickets }));
+                }
+            } catch (e) {
+                enriched = topLeaderboard.map(p => ({ user_id: p.user_id, username: `User${p.user_id}`, avatar: null, tickets: p.tickets }));
+            }
+        }
+
+        sendSuccess(res, {
+            contest_end: contestEnd,
+            user_tickets: userTickets,
+            total_tickets: totalTickets,
+            leaderboard: enriched
+        });
+
+    } catch (error) {
+        console.error('getContestData failed:', error.message);
+        sendError(res, `Failed to retrieve contest data: ${error.message}`, 500);
+    }
+}
+
+/**
+ * NEW: 11) type: "distributeContestPrizes"
+ *
+ * - Aggregates tickets, determines top 5, credits prizes to winners.
+ * - Returns distribution summary and if current user won, include your_prize and new_balance.
+ *
+ * NOTE: This function will attempt to update users' balances directly. Ensure you have backups and admin controls in real deployment.
+ */
+async function handleDistributeContestPrizes(req, res, body) {
+    const { user_id } = body;
+    const id = user_id ? parseInt(user_id) : null;
+
+    // Prize mapping - top 5
+    const PRIZES = [500000, 250000, 100000, 100000, 50000];
+
+    try {
+        // 1. Aggregate all tickets
+        const allTickets = await supabaseFetch('ticket_comption', 'GET', null, `?select=user_id,tickets,created_at`);
+        const totals = {};
+        if (Array.isArray(allTickets)) {
+            allTickets.forEach(r => {
+                const uid = r.user_id;
+                const t = parseInt(r.tickets) || 0;
+                totals[uid] = (totals[uid] || 0) + t;
+            });
+        }
+
+        const leaderboardArr = Object.keys(totals).map(uid => ({ user_id: parseInt(uid), tickets: totals[uid] }));
+        leaderboardArr.sort((a, b) => b.tickets - a.tickets);
+        const winners = leaderboardArr.slice(0, PRIZES.length);
+
+        // 2. Credit prizes to winners
+        const distribution = [];
+        for (let i = 0; i < winners.length; i++) {
+            const winner = winners[i];
+            const prize = PRIZES[i] || 0;
+            if (!winner || !winner.user_id || prize <= 0) continue;
+
+            // Fetch winner current balance
+            const users = await supabaseFetch('users', 'GET', null, `?id=eq.${winner.user_id}&select=balance,is_banned`);
+            if (!Array.isArray(users) || users.length === 0 || users[0].is_banned) {
+                distribution.push({ user_id: winner.user_id, tickets: winner.tickets, prize, credited: false, reason: 'User not found or banned' });
+                continue;
+            }
+            const currentBal = users[0].balance || 0;
+            const newBal = currentBal + prize;
+            try {
+                await supabaseFetch('users', 'PATCH', { balance: newBal }, `?id=eq.${winner.user_id}`);
+                distribution.push({ user_id: winner.user_id, tickets: winner.tickets, prize, credited: true, new_balance: newBal });
+            } catch (e) {
+                distribution.push({ user_id: winner.user_id, tickets: winner.tickets, prize, credited: false, reason: e.message });
+            }
+        }
+
+        // 3. Determine your prize if you are among winners
+        let yourPrize = 0;
+        let yourNewBalance = undefined;
+        if (id) {
+            const found = distribution.find(d => d.user_id === id && d.credited);
+            if (found) {
+                yourPrize = found.prize;
+                yourNewBalance = found.new_balance;
+            }
+        }
+
+        // 4. Optionally, mark contest as distributed in a settings table (best-effort)
+        try {
+            await supabaseFetch('contest_settings', 'PATCH', { prizes_distributed: true }, '?select=contest_end');
+        } catch (e) {
+            // ignore if table absent
+        }
+
+        sendSuccess(res, { distributed: true, winners: distribution, your_prize: yourPrize, new_balance: yourNewBalance });
+
+    } catch (error) {
+        console.error('distributeContestPrizes failed:', error.message);
+        sendError(res, `Failed to distribute contest prizes: ${error.message}`, 500);
+    }
+}
 
 // --- Main Handler for Vercel/Serverless ---
 module.exports = async (req, res) => {
@@ -1310,7 +1364,7 @@ module.exports = async (req, res) => {
   }
 
   // initData Security Check
-  if (body.type !== 'commission' && body.type !== 'getCompetitionData' && body.type !== 'collectCompetitionTicket' && (!body.initData || !validateInitData(body.initData))) {
+  if (body.type !== 'commission' && (!body.initData || !validateInitData(body.initData))) {
       return sendError(res, 'Invalid or expired initData. Security check failed.', 401);
   }
 
@@ -1353,12 +1407,14 @@ module.exports = async (req, res) => {
     case 'taskLinkClick': 
       await handleTaskLinkClick(req, res, body);
       break;
-    // NEW competition endpoints
-    case 'getCompetitionData':
-      await handleGetCompetitionData(req, res, body);
+    case 'contestAd':
+      await handleContestAd(req, res, body);
       break;
-    case 'collectCompetitionTicket':
-      await handleCollectCompetitionTicket(req, res, body);
+    case 'getContestData':
+      await handleGetContestData(req, res, body);
+      break;
+    case 'distributeContestPrizes':
+      await handleDistributeContestPrizes(req, res, body);
       break;
     default:
       sendError(res, `Unknown request type: ${body.type}`, 400);
