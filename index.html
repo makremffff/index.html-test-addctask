@@ -747,7 +747,8 @@
         .history-item .amount {font-weight:800;color:#ff2a2a}
         .history-empty {text-align:center;color:#777;padding:30px}
 
-        /* ===== Contest Screen (UPDATED FIXED + SIZING) ===== */
+        /* ===== Contest Screen (NEW) ===== */
+        /* Reduced typography by ~40% to address wide-screen text overflow issue as requested */
         .contest-screen {
             display:flex;
             flex-direction:column;
@@ -758,17 +759,9 @@
             overflow-y: auto;
             background: linear-gradient(180deg,#0b57d0,#007bff); /* blue background per request */
             color: #fff;
-            z-index: 400; /* Ensure on top of other app-screen content */
-        }
-        /* Ensure the contest screen is presented as a contained centered panel so everything fits and is fixed */
-        .contest-screen .contest-panel {
-            width: 100%;
-            max-width: 980px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-            border-radius: 14px;
-            padding: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-            border: 1px solid rgba(255,255,255,0.06);
+            /* Base font-size reduced to 60% to shrink text roughly by 40% */
+            font-size: 60%;
+            line-height: 1.15;
         }
         .contest-header {
             width: 100%;
@@ -778,25 +771,24 @@
             align-items:center;
             gap: 12px;
             margin-bottom: 18px;
-            flex-wrap:wrap;
         }
         .contest-title {
-            font-size: 20px;
+            font-size: 13.2px; /* 22px * 0.6 */
             font-weight: 800;
             color: #fff;
             text-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
         .contest-countdown {
             text-align:center;
-            font-size: 14px;
-            background: rgba(255,255,255,0.06);
-            padding: 8px 10px;
+            font-size: 10.8px; /* 18px * 0.6 */
+            background: rgba(255,255,255,0.08);
+            padding: 10px 14px;
             border-radius: 10px;
-            min-width: 160px;
+            min-width: 220px;
         }
         .contest-main {
             width: 100%;
-            max-width: 980px;
+            max-width: 820px;
             display:grid;
             grid-template-columns: 1fr 360px;
             gap: 16px;
@@ -808,8 +800,8 @@
             gap: 12px;
         }
         .contest-card {
-            background: rgba(255,255,255,0.04);
-            padding: 12px;
+            background: rgba(255,255,255,0.06);
+            padding: 14px;
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 6px 20px rgba(0,0,0,0.12);
@@ -825,12 +817,12 @@
             background: linear-gradient(145deg,#00bfff,#0077b3);
             color: #fff;
             border:none;
-            padding:10px 14px;
+            padding:12px 18px;
             border-radius:10px;
             font-weight:800;
             cursor:pointer;
             box-shadow: 0 8px 0 #005a8d;
-            font-size:14px;
+            font-size: 9px; /* 15px * 0.6 */
             letter-spacing:0.6px;
         }
         .contest-action-btn:active{transform:translateY(3px);box-shadow:0 4px 0 #005a8d}
@@ -841,12 +833,12 @@
             gap:8px;
             align-items:center;
             justify-content:space-between;
-            font-size:13px;
+            font-size:9px; /* 15px * 0.6 */
         }
         .tickets-numbers {
             font-family: 'Courier New', monospace;
             font-weight:800;
-            font-size:14px; /* Reduced size to keep numbers from appearing too large */
+            font-size: 10.8px; /* 18px * 0.6 */
             color:#fff;
         }
 
@@ -872,14 +864,15 @@
             display:flex;
             gap:12px;
             align-items:center;
-            background: rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.04);
             padding:10px;
             border-radius:10px;
             border: 1px solid rgba(255,255,255,0.06);
+            font-size: 8px; /* reduce internal texts */
         }
         .leader-avatar {
-            width:44px;
-            height:44px;
+            width:30px; /* reduced from 50 */
+            height:30px;
             border-radius:50%;
             overflow:hidden;
             flex-shrink:0;
@@ -887,16 +880,16 @@
         }
         .leader-avatar img{width:100%;height:100%;object-fit:cover}
         .leader-meta {flex:1;display:flex;flex-direction:column;gap:4px}
-        .leader-name {font-weight:800;color:#fff;font-size:13px}
-        .leader-sub {font-size:11px;color:#e8f3ff}
+        .leader-name {font-weight:800;color:#fff;font-size:8.4px /* 14px * 0.6 */;}
+        .leader-sub {font-size:7px /* 12px * 0.6 */;color:#e8f3ff}
         /* Ticket block with small icon */
-        .leader-tickets {font-weight:900;color:#ffd700;display:flex;align-items:center;gap:6px;font-size:13px}
-        .leader-tickets img.ticket-icon { width:15px;height:15px;object-fit:cover;display:inline-block }
+        .leader-tickets {font-weight:900;color:#ffd700;display:flex;align-items:center;gap:6px;font-size:8px /* 13px * 0.6 */;}
+        .leader-tickets img.ticket-icon { width:12px;height:12px;object-fit:cover;display:inline-block }
 
         /* Prize badge per rank (small, professional) */
         .rank-prize {
             font-weight:900;
-            font-size:12px;
+            font-size:7.2px; /* 12px * 0.6 */
             padding:6px 8px;
             border-radius:8px;
             color:#111;
@@ -931,7 +924,7 @@
         }
         .prize-label {
             font-weight:800;
-            font-size:14px;
+            font-size:8.4px; /* 14px * 0.6 */
             color:#fff;
             /* use special glyphs style as requested */
             font-family: "Courier New", monospace;
@@ -939,7 +932,7 @@
         .prize-value {
             font-weight:900;
             color:#ffeaa7;
-            font-size:14px;
+            font-size:8.4px; /* 14px * 0.6 */
         }
 
         .contest-bottom {
@@ -957,11 +950,13 @@
             font-weight:900;
             color:#fff;
             box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            font-size: 10px; /* adjusted */
         }
 
         /* small screens fallback */
         @media (max-width: 880px) {
             .contest-main { grid-template-columns: 1fr; }
+            .contest-countdown { min-width: auto; padding: 8px 10px; }
         }
 
         /* Ticket badge small style for inline counters */
@@ -971,9 +966,9 @@
             gap:6px;
             font-weight:900;
             color:#ffd700;
-            font-size:14px;
+            font-size:10px; /* reduced */
         }
-        .ticket-inline img { width:18px; height:18px; object-fit:cover; vertical-align:middle; }
+        .ticket-inline img { width:14px; height:14px; object-fit:cover; vertical-align:middle; }
 
     </style>
 </head>
@@ -1184,110 +1179,108 @@ You will earn 40% of the revenue from every referral you bring through ads!
         <button class="back-btn" onclick="hideInvite()">Back to Main</button>
     </div>
 
-    <!-- NEW: Contest Screen (fixed & sized, no inline display:none) -->
-    <div class="app-screen contest-screen" id="contestScreen">
-        <div class="contest-panel">
-            <div class="contest-header">
-                <div class="contest-title">Contest</div>
-                <div class="contest-countdown" id="contestCountdown">Loading countdown...</div>
-            </div>
+    <!-- NEW: Contest Screen -->
+    <div class="app-screen contest-screen" id="contestScreen" style="display:none;">
+        <div class="contest-header">
+            <div class="contest-title">Contest</div>
+            <div class="contest-countdown" id="contestCountdown">Loading countdown...</div>
+        </div>
 
-            <div class="contest-main">
-                <div class="contest-left">
-                    <div class="contest-card">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-                            <div style="font-weight:800;font-size:14px;display:flex;align-items:center">
-                                <img src="https://files.catbox.moe/ut2ljl.png" width="15" height="15" alt="ticket" style="vertical-align:middle;margin-right:8px;">
-                                Your Tickets
-                            </div>
-                            <div class="tickets-numbers" id="userTicketsDisplay">0</div>
+        <div class="contest-main">
+            <div class="contest-left">
+                <div class="contest-card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                        <div style="font-weight:800;font-size:13px">
+                            <img src="https://files.catbox.moe/ut2ljl.png" width="15" height="15" alt="ticket" style="vertical-align:middle;margin-right:8px;">
+                            Your Tickets
                         </div>
-                        <div class="tickets-summary" style="margin-bottom:12px">
-                            <div style="font-size:13px">Collected by you</div>
-                            <div class="tickets-numbers" id="userTicketsCollected">0</div>
-                        </div>
-
-                        <div class="contest-actions">
-                            <!-- The old "Refresh Leaderboard" was replaced per request with a 'Watch' ad button named only "Watch" -->
-                            <button class="contest-action-btn watch" id="watchLeaderboardBtn" onclick="watchLeaderboardAd()">Watch</button>
-                            <!-- Keep an explicit refresh hidden but available programmatically if needed -->
-                            <button class="contest-action-btn" id="refreshLeaderboardBtn" style="display:none;" onclick="refreshContestData()">Refresh</button>
-                        </div>
+                        <div class="tickets-numbers" id="userTicketsDisplay">0</div>
+                    </div>
+                    <div class="tickets-summary" style="margin-bottom:12px">
+                        <div>Collected by you</div>
+                        <div class="tickets-numbers" id="userTicketsCollected">0</div>
                     </div>
 
-                    <div class="contest-card">
-                        <div style="font-weight:800;margin-bottom:8px">My Tickets Table</div>
-                        <table style="width:100%;border-collapse:collapse;color:#fff;font-size:13px">
-                            <thead>
-                                <tr style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)">
-                                    <th style="padding:6px 0">Type</th>
-                                    <th style="padding:6px 0"><img src="https://files.catbox.moe/ut2ljl.png" width="15" height="15" alt="ticket" style="vertical-align:middle;margin-right:6px">Tickets</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="padding:6px 0">Tickets you collected</td>
-                                    <td style="padding:6px 0" id="myTicketsCount">0</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:6px 0">All tickets collected</td>
-                                    <td style="padding:6px 0" id="totalTicketsCount">0</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="prizes-card">
-                        <div style="font-weight:900;margin-bottom:8px">Prizes</div>
-                        <div class="prize-row">
-                            <div class="prize-label">1st get</div>
-                            <div class="prize-value">500,000 SHIB</div>
-                        </div>
-                        <div class="prize-row">
-                            <div class="prize-label">2nd get</div>
-                            <div class="prize-value">250,000 SHIB</div>
-                        </div>
-                        <div class="prize-row">
-                            <div class="prize-label">3rd get</div>
-                            <div class="prize-value">100,000 SHIB</div>
-                        </div>
-                        <div class="prize-row">
-                            <div class="prize-label">4th get</div>
-                            <div class="prize-value">100,000 SHIB</div>
-                        </div>
-                        <div class="prize-row">
-                            <div class="prize-label">5th get</div>
-                            <div class="prize-value">50,000 SHIB</div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div>
-                    <div class="contest-card leaderboard">
-                        <div class="leaderboard-header">
-                            <div>Top Players (by tickets)</div>
-                            <div style="font-size:12px;opacity:0.95">Top 5</div>
-                        </div>
-
-                        <div class="leaderboard-list" id="leaderboardList">
-                            <!-- entries injected here -->
-                        </div>
-                    </div>
-
-                    <div style="height:12px"></div>
-
-                    <div class="contest-card" style="text-align:center">
-                        <div style="font-weight:900;font-size:18px;margin-bottom:8px">Pool Prize</div>
-                        <div class="contest-prize-big">1M SHIB</div>
+                    <div class="contest-actions">
+                        <!-- The old "Refresh Leaderboard" was replaced per request with a 'Watch' ad button named only "Watch" -->
+                        <button class="contest-action-btn watch" id="watchLeaderboardBtn" onclick="watchLeaderboardAd()">Watch</button>
+                        <!-- Keep an explicit refresh hidden but available programmatically if needed -->
+                        <button class="contest-action-btn" id="refreshLeaderboardBtn" style="display:none;" onclick="refreshContestData()">Refresh</button>
                     </div>
                 </div>
+
+                <div class="contest-card">
+                    <div style="font-weight:800;margin-bottom:8px">My Tickets Table</div>
+                    <table style="width:100%;border-collapse:collapse;color:#fff">
+                        <thead>
+                            <tr style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.06)">
+                                <th style="padding:6px 0">Type</th>
+                                <th style="padding:6px 0"><img src="https://files.catbox.moe/ut2ljl.png" width="15" height="15" alt="ticket" style="vertical-align:middle;margin-right:6px">Tickets</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding:6px 0">Tickets you collected</td>
+                                <td style="padding:6px 0" id="myTicketsCount">0</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:6px 0">All tickets collected</td>
+                                <td style="padding:6px 0" id="totalTicketsCount">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="prizes-card">
+                    <div style="font-weight:900;margin-bottom:8px">Prizes</div>
+                    <div class="prize-row">
+                        <div class="prize-label">1st get</div>
+                        <div class="prize-value">500,000 SHIB</div>
+                    </div>
+                    <div class="prize-row">
+                        <div class="prize-label">2nd get</div>
+                        <div class="prize-value">250,000 SHIB</div>
+                    </div>
+                    <div class="prize-row">
+                        <div class="prize-label">3rd get</div>
+                        <div class="prize-value">100,000 SHIB</div>
+                    </div>
+                    <div class="prize-row">
+                        <div class="prize-label">4th get</div>
+                        <div class="prize-value">100,000 SHIB</div>
+                    </div>
+                    <div class="prize-row">
+                        <div class="prize-label">5th get</div>
+                        <div class="prize-value">50,000 SHIB</div>
+                    </div>
+                </div>
+
             </div>
 
-            <div style="height:18px"></div>
-            <div style="width:100%;display:flex;justify-content:center">
-                <button class="back-btn" onclick="closeContest()">Close</button>
+            <div>
+                <div class="contest-card leaderboard">
+                    <div class="leaderboard-header">
+                        <div>Top Players (by tickets)</div>
+                        <div style="font-size:12px;opacity:0.95">Top 5</div>
+                    </div>
+
+                    <div class="leaderboard-list" id="leaderboardList">
+                        <!-- entries injected here -->
+                    </div>
+                </div>
+
+                <div style="height:12px"></div>
+
+                <div class="contest-card" style="text-align:center">
+                    <div style="font-weight:900;font-size:18px;margin-bottom:8px">Pool Prize</div>
+                    <div class="contest-prize-big">1M SHIB</div>
+                </div>
             </div>
+        </div>
+
+        <div style="height:18px"></div>
+        <div style="width:100%;max-width:820px;display:flex;justify-content:center">
+            <button class="back-btn" onclick="closeContest()">Close</button>
         </div>
     </div>
 
@@ -2856,8 +2849,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const userTicketsCollected = document.getElementById('userTicketsCollected');
 
             // show ticket icon inline before numbers as requested
-            const ticketBadgeHtml = `<span class="ticket-inline"><img src="${TICKET_ICON_URL}" onerror="this.src='https://via.placeholder.com/18'"> ${userTickets}</span>`;
-            const ticketBadgeHtmlTotal = `<span class="ticket-inline"><img src="${TICKET_ICON_URL}" onerror="this.src='https://via.placeholder.com/18'"> ${totalTickets}</span>`;
+            const ticketBadgeHtml = `<span class="ticket-inline"><img src="${TICKET_ICON_URL}" onerror="this.src='https://via.placeholder.com/14'"> ${userTickets}</span>`;
+            const ticketBadgeHtmlTotal = `<span class="ticket-inline"><img src="${TICKET_ICON_URL}" onerror="this.src='https://via.placeholder.com/14'"> ${totalTickets}</span>`;
 
             if (myTicketsCount) myTicketsCount.innerHTML = ticketBadgeHtml;
             if (totalTicketsCount) totalTicketsCount.innerHTML = ticketBadgeHtmlTotal;
@@ -2875,24 +2868,33 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
             // Render each entry with ticket icon (15x15) and prize badge per rank
             const html = sorted.map((p, idx) => {
-                // Use the provided avatar if available; otherwise fallback to a neutral placeholder (do NOT reuse current user's photo for others)
-                const avatar = (p.avatar && p.avatar.toString().trim().length > 0) ? p.avatar : 'https://via.placeholder.com/50?text=User';
+                // Use user-provided avatar if available.
+                // If avatar missing, use placeholder to avoid showing the current user's photo for everyone.
+                // However, if the entry is the current user and p.avatar is missing, use tgUser.photo_url (so self shows profile).
+                let avatar = 'https://via.placeholder.com/50';
+                try {
+                    if (p.avatar && p.avatar.trim() !== '') {
+                        avatar = p.avatar;
+                    } else if (tgUser && p.user_id && parseInt(p.user_id) === tgUser.id && tgUser.photo_url) {
+                        avatar = tgUser.photo_url;
+                    }
+                } catch (e) {
+                    avatar = 'https://via.placeholder.com/50';
+                }
+
                 const uname = p.username || (`User${p.user_id || ''}`);
                 const uid = p.user_id || '-';
                 const tickets = p.tickets || 0;
                 const rankInfo = PRIZES_BY_RANK[idx] || null;
                 const prizeHTML = rankInfo ? `<div class="rank-prize ${rankInfo.class}">${rankInfo.value}</div>` : '';
-                // ensure avatar is safely escaped in attributes
-                const safeAvatar = avatar.replace(/"/g, '&quot;');
-                const safeName = String(uname).replace(/</g,'&lt;').replace(/>/g,'&gt;');
                 return `
                     <div class="leader-item" data-leader-id="${p.user_id}">
                         <div style="font-weight:800;width:26px;text-align:center">${idx+1}</div>
-                        <div class="leader-avatar"><img src="${safeAvatar}" onerror="this.src='https://via.placeholder.com/50?text=User'"></div>
+                        <div class="leader-avatar"><img src="${avatar}" onerror="this.src='https://via.placeholder.com/30'"></div>
                         <div class="leader-meta">
                             <div style="display:flex;align-items:center;gap:8px;justify-content:space-between">
                                 <div>
-                                    <div class="leader-name">${safeName}</div>
+                                    <div class="leader-name">${uname}</div>
                                     <div class="leader-sub">ID: ${uid}</div>
                                 </div>
                                 ${prizeHTML}
@@ -3154,9 +3156,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
             mainScreen.classList.remove('visible');
-            // Use class toggling for consistent display, avoid inline display changes
-            const screen = document.getElementById('contestScreen');
-            screen.classList.add('visible');
+            document.getElementById('contestScreen').style.display = 'flex';
+            document.getElementById('contestScreen').classList.add('visible');
 
             // Load local contest state and try refresh from server
             loadContestFromStorage();
@@ -3172,6 +3173,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 contestCountdownInterval = null;
             }
             document.getElementById('contestScreen').classList.remove('visible');
+            document.getElementById('contestScreen').style.display = 'none';
             mainScreen.classList.add('visible');
         }
 
