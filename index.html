@@ -7,10 +7,13 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap'); 
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
 
+        /* Global: Use the requested '𝚝𝚢𝚙𝚎' styled font fallback for a mono look */
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;}
+        /* Primary font set to the special '𝚝𝚢𝚙𝚎' glyph sequence first (if available),
+           then Courier New, then any monospace — this ensures the page "feels" like the requested type. */
+        body{font-family:'𝚝𝚢𝚙𝚎', 'Courier New', monospace, 'Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;color:#111;}
         
         .app-screen {
             position: fixed;
@@ -802,17 +805,21 @@
             gap:10px;
             flex-wrap:wrap;
         }
+        /* Larger, more professional action buttons inside the leaderboard area (improved size per request) */
         .contest-action-btn {
             background: linear-gradient(145deg,#00bfff,#0077b3);
             color: #fff;
             border:none;
-            padding:10px 14px;
-            border-radius:8px;
-            font-weight:700;
+            padding:12px 18px;
+            border-radius:10px;
+            font-weight:800;
             cursor:pointer;
-            box-shadow: 0 6px 0 #005a8d;
+            box-shadow: 0 8px 0 #005a8d;
+            font-size:15px;
+            letter-spacing:0.6px;
         }
-        .contest-action-btn:active{transform:translateY(3px);box-shadow:0 3px 0 #005a8d}
+        .contest-action-btn:active{transform:translateY(3px);box-shadow:0 4px 0 #005a8d}
+        .contest-action-btn.watch { background: linear-gradient(145deg,#00c3ff,#006bb0); }
 
         .tickets-summary {
             display:flex;
@@ -845,12 +852,13 @@
             gap:8px;
             margin-top:8px;
         }
+        /* Leader item: improved layout and button sizes plus ticket icon sizing */
         .leader-item {
             display:flex;
             gap:12px;
             align-items:center;
             background: rgba(255,255,255,0.04);
-            padding:8px;
+            padding:10px;
             border-radius:10px;
             border: 1px solid rgba(255,255,255,0.06);
         }
@@ -864,9 +872,33 @@
         }
         .leader-avatar img{width:100%;height:100%;object-fit:cover}
         .leader-meta {flex:1;display:flex;flex-direction:column;gap:4px}
-        .leader-name {font-weight:700;color:#fff;font-size:14px}
+        .leader-name {font-weight:800;color:#fff;font-size:14px}
         .leader-sub {font-size:12px;color:#e8f3ff}
-        .leader-tickets {font-weight:900;color:#ffd700}
+        /* Ticket block with small icon */
+        .leader-tickets {font-weight:900;color:#ffd700;display:flex;align-items:center;gap:6px;font-size:13px}
+        .leader-tickets img.ticket-icon { width:15px;height:15px;object-fit:cover;display:inline-block }
+
+        /* Prize badge per rank (small, professional) */
+        .rank-prize {
+            font-weight:900;
+            font-size:12px;
+            padding:6px 8px;
+            border-radius:8px;
+            color:#111;
+            background:#fff;
+            min-width:120px;
+            text-align:center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+            margin-left:8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Colors for different ranks */
+        .rank-1 { background: linear-gradient(90deg,#ffd700,#ffea70); color:#1a1a1a; }
+        .rank-2 { background: linear-gradient(90deg,#c0c0c0,#e6e6e6); color:#1a1a1a; }
+        .rank-3 { background: linear-gradient(90deg,#cd7f32,#e6b089); color:#1a1a1a; }
+        .rank-4 { background: linear-gradient(90deg,#a0e0ff,#70c8ff); color:#043044; }
+        .rank-5 { background: linear-gradient(90deg,#d1ffd6,#9feab0); color:#043044; }
 
         .prizes-card {
             margin-top:12px;
@@ -1146,8 +1178,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     </div>
 
                     <div class="contest-actions">
-                        <button class="contest-action-btn" id="contestAdBtn" onclick="giveContestTickets()">Watch Ad (+10 Tickets)</button>
-                        <button class="contest-action-btn" id="refreshLeaderboardBtn" onclick="refreshContestData()">Refresh Leaderboard</button>
+                        <!-- The old "Refresh Leaderboard" was replaced per request with a 'Watch' ad button named only "Watch" -->
+                        <button class="contest-action-btn watch" id="watchLeaderboardBtn" onclick="watchLeaderboardAd()">Watch</button>
+                        <!-- Keep an explicit refresh hidden but available programmatically if needed -->
+                        <button class="contest-action-btn" id="refreshLeaderboardBtn" style="display:none;" onclick="refreshContestData()">Refresh</button>
                     </div>
                 </div>
 
@@ -1186,6 +1220,14 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     <div class="prize-row">
                         <div class="prize-label">3rd get</div>
                         <div class="prize-value">𝚝𝚢𝚙𝚎 𝚠𝚛𝚒𝚝𝚎𝚛 — 250,000 SHIB</div>
+                    </div>
+                    <div class="prize-row">
+                        <div class="prize-label">4th get</div>
+                        <div class="prize-value">𝚝𝚢𝚙𝚎 𝚠𝚛𝚒𝚝𝚎𝚛 — 100,000 SHIB</div>
+                    </div>
+                    <div class="prize-row">
+                        <div class="prize-label">5th get</div>
+                        <div class="prize-value">𝚝𝚢𝚙𝚎 𝚠𝚛𝚒𝚝𝚎𝚛 — 50,000 SHIB</div>
                     </div>
                 </div>
 
@@ -2654,6 +2696,16 @@ You will earn 40% of the revenue from every referral you bring through ads!
         let totalTickets = 0;
         let leaderboard = []; // [{avatar, username, user_id, tickets}]
 
+        // Ticket icon url and prize mapping for top 5
+        const TICKET_ICON_URL = 'https://files.catbox.moe/ut2ljl.png';
+        const PRIZES_BY_RANK = [
+            { rank:1, value: '1,000,000 SHIB', class: 'rank-1' },
+            { rank:2, value: '500,000 SHIB', class: 'rank-2' },
+            { rank:3, value: '250,000 SHIB', class: 'rank-3' },
+            { rank:4, value: '100,000 SHIB', class: 'rank-4' },
+            { rank:5, value: '50,000 SHIB', class: 'rank-5' }
+        ];
+
         function loadContestFromStorage() {
             try {
                 const raw = localStorage.getItem(CONTEST_KEY);
@@ -2719,24 +2771,43 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 list.innerHTML = `<div style="padding:8px;color:#eaf6ff">No players yet.</div>`;
                 return;
             }
+            // Render each entry with ticket icon (15x15) and prize badge per rank
             const html = sorted.map((p, idx) => {
                 const avatar = p.avatar || (tgUser && tgUser.photo_url) || 'https://via.placeholder.com/50';
                 const uname = p.username || (`User${p.user_id || ''}`);
                 const uid = p.user_id || '-';
                 const tickets = p.tickets || 0;
+                const rankInfo = PRIZES_BY_RANK[idx] || null;
+                const prizeHTML = rankInfo ? `<div class="rank-prize ${rankInfo.class}">${rankInfo.value}</div>` : '';
                 return `
-                    <div class="leader-item">
-                        <div style="font-weight:800;width:20px">${idx+1}</div>
+                    <div class="leader-item" data-leader-id="${p.user_id}">
+                        <div style="font-weight:800;width:26px;text-align:center">${idx+1}</div>
                         <div class="leader-avatar"><img src="${avatar}" onerror="this.src='https://via.placeholder.com/50'"></div>
                         <div class="leader-meta">
-                            <div class="leader-name">${uname}</div>
-                            <div class="leader-sub">ID: ${uid}</div>
+                            <div style="display:flex;align-items:center;gap:8px;justify-content:space-between">
+                                <div>
+                                    <div class="leader-name">${uname}</div>
+                                    <div class="leader-sub">ID: ${uid}</div>
+                                </div>
+                                ${prizeHTML}
+                            </div>
                         </div>
-                        <div class="leader-tickets">${tickets}</div>
+                        <div class="leader-tickets"><img class="ticket-icon" src="${TICKET_ICON_URL}" onerror="this.style.display='none'">${tickets}</div>
                     </div>
                 `;
             }).join('');
             list.innerHTML = html;
+            // Improve click area: clicking a leaderboard row will show a small profile alert (no refresh)
+            Array.from(document.querySelectorAll('#leaderboardList .leader-item')).forEach(el=>{
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', (e)=>{
+                    const uid = el.getAttribute('data-leader-id') || '-';
+                    const name = el.querySelector('.leader-name') ? el.querySelector('.leader-name').textContent : 'Player';
+                    const t = el.querySelector('.leader-tickets') ? el.querySelector('.leader-tickets').textContent.trim() : '0';
+                    showCustomAlert(`Player: ${name}`, `ID: ${uid}\nTickets: ${t}`, 'warning');
+                    // Note: Per request, clicking a leaderboard entry should NOT refresh the leaderboard.
+                });
+            });
         }
 
         // Format remaining time into days/hours/minutes/seconds
@@ -2853,6 +2924,62 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         showCustomAlert('Ad Load Failed!', 'Ad failed to load. Please try again.', 'error');
                     }
                 });
+        }
+
+        // Watch leaderboard ad button: per request the button is named only "Watch"
+        async function watchLeaderboardAd() {
+            if (isBanned) {
+                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
+                return;
+            }
+            try {
+                // We attempt to show a single ad; after success refresh leaderboard from server
+                await show_10245709();
+                // After user watched the ad, trigger server call to credit & refresh leaderboard
+                // We attempt to call the same contestAd flow which is what credits tickets
+                const actionId = await requestActionId('contestAd');
+                if (!actionId) {
+                    // If we couldn't get action id, still attempt to refresh data
+                    await refreshContestData();
+                    showCustomAlert('Updated', 'Leaderboard refreshed.', 'success');
+                    return;
+                }
+                const res = await fetchApi({
+                    type: 'contestAd',
+                    action_id: actionId
+                });
+                if (res.ok) {
+                    // Update local values from server response and refresh UI
+                    if (res.data) {
+                        if (res.data.user_tickets !== undefined) userTickets = res.data.user_tickets;
+                        if (res.data.total_tickets !== undefined) totalTickets = res.data.total_tickets;
+                        if (Array.isArray(res.data.leaderboard)) {
+                            leaderboard = res.data.leaderboard.map(p => ({
+                                avatar: p.avatar,
+                                username: p.username,
+                                user_id: p.user_id,
+                                tickets: p.tickets
+                            }));
+                        }
+                    }
+                    saveContestToStorage();
+                    updateContestUI();
+                    startContestCountdown();
+                    showCustomAlert('Thank you!', 'Leaderboard updated after watching the ad.', 'success');
+                } else {
+                    // fallback: just refresh
+                    await refreshContestData();
+                    showCustomAlert('Updated', 'Leaderboard refreshed.', 'success');
+                }
+            } catch (e) {
+                console.error('watchLeaderboardAd error:', e);
+                if (typeof e === 'string' && e.includes('canceled')) {
+                    showCustomAlert('Ad Cancelled!', 'You must watch the ad to update leaderboard via this button.', 'warning');
+                } else {
+                    showCustomAlert('Ad Error', 'Ad failed to load. Please try again.', 'error');
+                }
+                await refreshContestData();
+            }
         }
 
         // Show contest screen
