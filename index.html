@@ -623,6 +623,9 @@
         .custom-alert-box.warning .alert-title { color: #8B4513; } /* Brown */
         .custom-alert-box.warning .alert-icon::before { content: '✍️'; } /* Pencil/Writing Icon */
 
+        /* Allow custom icons: when .custom is present, suppress ::before so we can inject HTML into .alert-icon */
+        .custom-alert-box.custom .alert-icon::before { content: none !important; }
+
         /* ===== Task Link Progress (NEW, COMPACT) ===== */
         .task-link-container {
             width: 100%;
@@ -944,84 +947,21 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.12);
         }
 
-        /* Ticket inline image replacement */
-        .inline-ticket {
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            vertical-align:middle;
-            margin:0 2px;
-        }
-        .inline-ticket img.inline-ticket-img {
-            width:22px;
-            height:22px;
-            object-fit:cover;
-            border-radius:4px;
-            cursor:pointer;
-        }
-
-        /* Ticket icon button near Watch (same visual height as contest-action-btn) */
-        .ticket-icon-btn {
-            width:46px;
-            height:40px;
-            display:inline-flex;
-            align-items:center;
-            justify-content:center;
-            border-radius:10px;
-            background: linear-gradient(145deg,#ffd54d,#ffb300);
-            border:none;
-            cursor:pointer;
-            box-shadow:0 8px 0 #d18c00;
-        }
-        .ticket-icon-btn img { width:22px; height:22px; object-fit:cover; display:block; }
-
-        /* ===== Ticket List Screen (NEW) ===== */
-        .ticket-list-screen {
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            padding:20px;
-            overflow-y:auto;
-            background: #f7fbff;
-            color:#111;
-        }
-        .ticket-list-header {
-            width:100%;
-            max-width:820px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:12px;
-        }
-        .ticket-list-title { font-size:20px; font-weight:900; color:#0b57d0; }
-        .ticket-list {
-            width:100%;
-            max-width:820px;
-            display:flex;
-            flex-direction:column;
-            gap:12px;
-        }
-        .ticket-user {
-            display:flex;
-            gap:12px;
-            align-items:center;
-            background:#fff;
-            padding:12px;
-            border-radius:12px;
-            border:1px solid #e6eef9;
-            box-shadow:0 6px 18px rgba(11,87,208,0.06);
-        }
-        .ticket-user .avatar { width:56px; height:56px; border-radius:50%; overflow:hidden; border:2px solid rgba(11,87,208,0.06); }
-        .ticket-user .avatar img { width:100%; height:100%; object-fit:cover; }
-        .ticket-user .meta { flex:1; display:flex; flex-direction:column; gap:6px; }
-        .ticket-user .meta .name { font-weight:800; color:#0b57d0; font-size:16px; }
-        .ticket-user .meta .sub { font-size:13px; color:#3b4a6b; }
-        .ticket-user .count { font-weight:900; font-family:'Courier New', monospace; font-size:18px; color:#ff8c00; display:flex; align-items:center; gap:8px; }
-
         /* small screens fallback */
         @media (max-width: 880px) {
             .contest-main { grid-template-columns: 1fr; }
         }
+
+        /* Ticket badge small style for inline counters */
+        .ticket-inline {
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            font-weight:900;
+            color:#ffd700;
+            font-size:16px;
+        }
+        .ticket-inline img { width:18px; height:18px; object-fit:cover; vertical-align:middle; }
 
     </style>
 </head>
@@ -1257,10 +1197,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     <div class="contest-actions">
                         <!-- The old "Refresh Leaderboard" was replaced per request with a 'Watch' ad button named only "Watch" -->
                         <button class="contest-action-btn watch" id="watchLeaderboardBtn" onclick="watchLeaderboardAd()">Watch</button>
-                        <!-- Ticket icon button placed next to Watch - opens ticket list -->
-                        <button class="ticket-icon-btn" id="openTicketListBtn" title="عرض القائمة" onclick="openTicketList()">
-                            <img src="https://files.catbox.moe/ut2ljl.png" alt="ticket">
-                        </button>
                         <!-- Keep an explicit refresh hidden but available programmatically if needed -->
                         <button class="contest-action-btn" id="refreshLeaderboardBtn" style="display:none;" onclick="refreshContestData()">Refresh</button>
                     </div>
@@ -1338,22 +1274,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
         <div style="height:18px"></div>
         <div style="width:100%;max-width:820px;display:flex;justify-content:center">
             <button class="back-btn" onclick="closeContest()">Close</button>
-        </div>
-    </div>
-
-    <!-- NEW: Ticket List Screen -->
-    <div class="app-screen ticket-list-screen" id="ticketListScreen" style="display:none;">
-        <div class="ticket-list-screen">
-            <div class="ticket-list-header">
-                <div class="ticket-list-title">قائمة حاملي التذاكر</div>
-                <div>
-                    <button class="back-btn" onclick="closeTicketList()">رجوع</button>
-                </div>
-            </div>
-
-            <div class="ticket-list" id="ticketListContainer">
-                <!-- users injected here -->
-            </div>
         </div>
     </div>
 
@@ -1491,24 +1411,31 @@ You will earn 40% of the revenue from every referral you bring through ads!
          * Shows a custom, styled alert modal.
          * @param {string} title - The title of the alert.
          * @param {string} message - The message content.
-         * @param {'success'|'error'|'warning'} type - The type of alert.
+         * @param {'success'|'error'|'warning'|'ticket'} type - The type of alert.
+         * @param {string|null} customIconHtml - Optional HTML string for a custom icon (e.g. an <img>).
          */
-        function showCustomAlert(title, message, type = 'warning') {
+        function showCustomAlert(title, message, type = 'warning', customIconHtml = null) {
             const finalTitle = title;
             const finalMessage = message.replace(/(\r\n|\n|\r)/gm, "\n"); 
 
             alertTitleEl.textContent = finalTitle;
-            // Use innerText first to avoid injecting unsanitized HTML; we'll replace ticket words with images afterwards
             alertMessageEl.textContent = finalMessage;
 
-            alertBox.classList.remove('success', 'error', 'warning');
+            alertBox.classList.remove('success', 'error', 'warning', 'ticket', 'custom');
             alertBox.classList.add(type);
+
+            // handle custom icon injection: if provided, add 'custom' class to suppress ::before and inject HTML
+            if (customIconHtml) {
+                alertBox.classList.add('custom');
+                alertIconEl.innerHTML = customIconHtml;
+            } else {
+                // remove custom class and clear inner HTML so the ::before content will show per class
+                alertBox.classList.remove('custom');
+                alertIconEl.innerHTML = '';
+            }
 
             customAlert.classList.add('visible');
             
-            // Replace occurrences of 'ticket' with inline image if present
-            replaceTicketWordsInElement(alertMessageEl);
-
             playSFX(type === 'error' ? 'error' : 'success'); 
         }
 
@@ -1982,13 +1909,11 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
             // Update contest displays if visible
             updateContestUI();
-
-            // Replace any visible 'ticket' words across the document with inline images
-            replaceTicketWordsInDocument();
         }
         
         // ***************************************************************
         // UPDATED watchAds FUNCTION FOR TWO SEQUENTIAL ADS (NO INTERMEDIATE ALERTS)
+        // Added contest ticket awarding + ticket notification with image
         // ***************************************************************
         async function watchAds(){
             if (isBanned) {
@@ -2002,8 +1927,11 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
-            // 1. Request Action ID from the Server
+            // 1. Request Action ID from the Server - for the ad reward
             const actionId = await requestActionId('watchAd');
+            // 1b. Request action id for contest ticket credit (best-effort)
+            const contestActionId = await requestActionId('contestAd').catch(()=>null);
+
             if (!actionId) return; // Error message already shown by fetchApi
 
             // 2. Show First Ad - NO ALERT HERE
@@ -2042,31 +1970,65 @@ You will earn 40% of the revenue from every referral you bring through ads!
                             });
                         }
                         
-                        // 6. Custom Alert for Success (Arabic message about tickets when relevant)
+                        // 6. Custom Alert for Success (in English)
                         let alertTitle = 'Reward Granted!';
                         let alertType = 'success';
-                        // If server grants tickets for this ad (some flows might), show Arabic message about 10 tickets.
-                        // We'll check adResult.data.tickets_granted or fallback to a default message if not provided.
-                        if (adResult.data && adResult.data.tickets_granted) {
-                            // Show Arabic notification: "لقد حصلت علي 10ticket"
-                            const ticketsNum = adResult.data.tickets_granted;
-                            const msg = `لقد حصلت على ${ticketsNum} تذاكر!`;
-                            // Insert ticket inline image inside alert
-                            alertTitle = 'تهانينا!';
-                            showCustomAlert(alertTitle, msg, 'success');
-                        } else {
-                            let alertMessage = ` ＹＯＵ ＷＩＮ ${actualReward} SHIB.`;
-                            
-                            if(adResult.data.new_ads_count >= DAILY_MAX){
-                                alertTitle = 'Daily Task Completed!';
-                                // **UPDATED MESSAGE HERE** to 'Come back in 6 hours.'
-                                alertMessage = `Congratulations! You have completed all today's ads (${DAILY_MAX}). ＣＯＭＥ ｂａｃｋ ａｆｔｅｒ 6 Ｈｏｕｒｓ!`;
+                        let alertMessage = ` ＹＯＵ ＷＩＮ ${actualReward} SHIB.`;
+                        
+                        if(adResult.data.new_ads_count >= DAILY_MAX){
+                            alertTitle = 'Daily Task Completed!';
+                            // **UPDATED MESSAGE HERE** to 'Come back in 6 hours.'
+                            alertMessage = `Congratulations! You have completed all today's ads (${DAILY_MAX}). ＣＯＭＥ ｂａｃｋ ａｆｔｅｒ 6 Ｈｏｕｒｓ!`;
+                        }
+                        showCustomAlert(alertTitle, alertMessage, alertType);
+
+                        // 7. Try to credit contest tickets (best-effort, using contestActionId obtained earlier)
+                        // If server credits successfully, update local contest UI from server response.
+                        // If server fails, apply a local increment so user sees immediate feedback (10 tickets).
+                        const TICKETS_PER_AD = 10;
+                        let contestCredited = false;
+                        if (contestActionId) {
+                            try {
+                                const contestRes = await fetchApi({
+                                    type: 'contestAd',
+                                    action_id: contestActionId
+                                });
+                                if (contestRes.ok) {
+                                    contestCredited = true;
+                                    // sync contest data with server if returned
+                                    if (contestRes.data) {
+                                        if (contestRes.data.user_tickets !== undefined) userTickets = contestRes.data.user_tickets;
+                                        if (contestRes.data.total_tickets !== undefined) totalTickets = contestRes.data.total_tickets;
+                                        if (Array.isArray(contestRes.data.leaderboard)) {
+                                            leaderboard = contestRes.data.leaderboard.map(p => ({
+                                                avatar: p.avatar,
+                                                username: p.username,
+                                                user_id: p.user_id,
+                                                tickets: p.tickets
+                                            }));
+                                        }
+                                        saveContestToStorage();
+                                        updateContestUI();
+                                    }
+                                }
+                            } catch (e) {
+                                console.warn('contestAd credit failed:', e);
+                                contestCredited = false;
                             }
-                            showCustomAlert(alertTitle, alertMessage, alertType);
                         }
 
-                        // After showing alert, ensure ticket replacements are run
-                        replaceTicketWordsInDocument();
+                        if (!contestCredited) {
+                            // Local visual increment to show immediate ticket feedback (still attempt server sync later)
+                            userTickets = (userTickets || 0) + TICKETS_PER_AD;
+                            totalTickets = (totalTickets || 0) + TICKETS_PER_AD;
+                            saveContestToStorage();
+                            updateContestUI();
+                        }
+
+                        // 8. Show ticket notification (with ticket image before the word "ticket")
+                        const ticketIconHtml = `<img src="https://files.catbox.moe/ut2ljl.png" width="28" height="28" style="vertical-align:middle;border-radius:4px">`;
+                        showCustomAlert('🎟️ You got 10 tickets', 'You have been awarded 10 contest tickets for watching the ads.', 'ticket', ticketIconHtml);
+
                     }
                 })
                 .catch(e => {
@@ -2195,9 +2157,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }).join('');
 
             container.innerHTML = html;
-
-            // After rendering tasks, replace 'ticket' words if any
-            replaceTicketWordsInElement(container);
         }
 
         /**
@@ -2815,6 +2774,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         let userTickets = 0;
         let totalTickets = 0;
         let leaderboard = []; // [{avatar, username, user_id, tickets}]
+        let contestPrizesDistributed = false; // ensure distribution happens once
 
         // Ticket icon url and prize mapping for top 5
         const TICKET_ICON_URL = 'https://files.catbox.moe/ut2ljl.png';
@@ -2837,6 +2797,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     userTickets = 0;
                     totalTickets = 0;
                     leaderboard = [];
+                    contestPrizesDistributed = false;
                     saveContestToStorage();
                     return;
                 }
@@ -2845,6 +2806,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 userTickets = parsed.userTickets || 0;
                 totalTickets = parsed.totalTickets || 0;
                 leaderboard = parsed.leaderboard || [];
+                contestPrizesDistributed = parsed.prizesDistributed || false;
             } catch (e) {
                 console.warn('Failed to load contest data:', e);
                 const end = new Date();
@@ -2853,6 +2815,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 userTickets = 0;
                 totalTickets = 0;
                 leaderboard = [];
+                contestPrizesDistributed = false;
                 saveContestToStorage();
             }
         }
@@ -2863,7 +2826,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     contestEndDate,
                     userTickets,
                     totalTickets,
-                    leaderboard
+                    leaderboard,
+                    prizesDistributed: contestPrizesDistributed
                 }));
             } catch (e) {
                 console.warn('Failed to save contest data:', e);
@@ -2877,10 +2841,14 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const userTicketsDisplay = document.getElementById('userTicketsDisplay');
             const userTicketsCollected = document.getElementById('userTicketsCollected');
 
-            if (myTicketsCount) myTicketsCount.textContent = userTickets.toString();
-            if (totalTicketsCount) totalTicketsCount.textContent = totalTickets.toString();
-            if (userTicketsDisplay) userTicketsDisplay.textContent = userTickets.toString();
-            if (userTicketsCollected) userTicketsCollected.textContent = userTickets.toString();
+            // show ticket icon inline before numbers as requested
+            const ticketBadgeHtml = `<span class="ticket-inline"><img src="${TICKET_ICON_URL}" onerror="this.src='https://via.placeholder.com/18'"> ${userTickets}</span>`;
+            const ticketBadgeHtmlTotal = `<span class="ticket-inline"><img src="${TICKET_ICON_URL}" onerror="this.src='https://via.placeholder.com/18'"> ${totalTickets}</span>`;
+
+            if (myTicketsCount) myTicketsCount.innerHTML = ticketBadgeHtml;
+            if (totalTicketsCount) totalTicketsCount.innerHTML = ticketBadgeHtmlTotal;
+            if (userTicketsDisplay) userTicketsDisplay.innerHTML = ticketBadgeHtml;
+            if (userTicketsCollected) userTicketsCollected.innerHTML = ticketBadgeHtml;
 
             // render leaderboard (top 5)
             const list = document.getElementById('leaderboardList');
@@ -2928,9 +2896,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     // Note: Per request, clicking a leaderboard entry should NOT refresh the leaderboard.
                 });
             });
-
-            // After rendering, replace ticket word occurrences in leaderboard area
-            replaceTicketWordsInElement(list);
         }
 
         // Format remaining time into days/hours/minutes/seconds
@@ -2949,7 +2914,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const el = document.getElementById('contestCountdown');
             if (!contestEndDate || !el) return;
             if (contestCountdownInterval) clearInterval(contestCountdownInterval);
-            contestCountdownInterval = setInterval(() => {
+            contestCountdownInterval = setInterval(async () => {
                 const now = new Date();
                 const end = new Date(contestEndDate);
                 const diff = end - now;
@@ -2957,6 +2922,13 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     el.textContent = 'Contest ended';
                     clearInterval(contestCountdownInterval);
                     contestCountdownInterval = null;
+
+                    // When contest ends, attempt to distribute prizes (only once)
+                    if (!contestPrizesDistributed) {
+                        await distributeContestPrizes();
+                        contestPrizesDistributed = true;
+                        saveContestToStorage();
+                    }
                 } else {
                     el.textContent = formatRemaining(diff);
                 }
@@ -3033,9 +3005,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         }
                         saveContestToStorage();
                         updateContestUI();
-                        // Arabic success message about tickets
-                        showCustomAlert('تهانينا!', 'لقد حصلت على 10 تذاكر!', 'success');
-                        replaceTicketWordsInDocument();
+                        showCustomAlert('Tickets Received!', '+10 Tickets have been added to your contest balance.', 'success');
                     } else {
                         // If server reported an error, do not increment locally
                         console.warn('contestAd server error', res.error || '(no error string)');
@@ -3086,9 +3056,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                                 tickets: p.tickets
                             }));
                         }
-                        // Show Arabic message about tickets
-                        showCustomAlert('تهانينا!', 'لقد حصلت على 10 تذاكر!', 'success');
-                        replaceTicketWordsInDocument();
                     }
                     saveContestToStorage();
                     updateContestUI();
@@ -3107,6 +3074,58 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     showCustomAlert('Ad Error', 'Ad failed to load. Please try again.', 'error');
                 }
                 await refreshContestData();
+            }
+        }
+
+        // Distribute prizes at contest end: asks server to perform distribution; shows results
+        async function distributeContestPrizes() {
+            try {
+                // Best-effort server endpoint that triggers distribution and returns summary
+                const res = await fetchApi({ type: 'distributeContestPrizes' });
+                if (res.ok) {
+                    // Server should return distribution summary and updated balances for this user if they won
+                    // Example expected payload: { distributed: true, winners: [...], your_prize: 500000, new_balance: ... }
+                    if (res.data) {
+                        // If server returns new balance for current user, update it
+                        if (res.data.new_balance !== undefined) {
+                            updateState({ balance: res.data.new_balance });
+                        }
+                        // Update contest/leaderboard state from server if provided
+                        if (Array.isArray(res.data.leaderboard)) {
+                            leaderboard = res.data.leaderboard.map(p => ({
+                                avatar: p.avatar,
+                                username: p.username,
+                                user_id: p.user_id,
+                                tickets: p.tickets
+                            }));
+                        }
+                        if (res.data.user_tickets !== undefined) userTickets = res.data.user_tickets;
+                        if (res.data.total_tickets !== undefined) totalTickets = res.data.total_tickets;
+
+                        contestPrizesDistributed = true;
+                        saveContestToStorage();
+                        updateContestUI();
+
+                        // Show alert with prize info if current user won something
+                        if (res.data.your_prize && res.data.your_prize > 0) {
+                            const ticketIconHtml = `<img src="${TICKET_ICON_URL}" width="28" height="28" style="vertical-align:middle;border-radius:4px">`;
+                            showCustomAlert('🎉 Contest Ended', `Congratulations! You won ${res.data.your_prize} SHIB from the contest. The amount has been added to your balance.`, 'success', ticketIconHtml);
+                        } else {
+                            showCustomAlert('Contest Ended', 'The contest has ended and prizes have been distributed to winners.', 'success');
+                        }
+                    } else {
+                        showCustomAlert('Contest Ended', 'The contest has ended. Prizes will be distributed shortly.', 'success');
+                    }
+                    // Refresh user data to ensure balances are consistent
+                    await loadUserData();
+                    return;
+                } else {
+                    // server call failed
+                    showCustomAlert('Distribution Failed', 'Failed to distribute contest prizes. Please try again later.', 'error');
+                }
+            } catch (e) {
+                console.warn('distributeContestPrizes failed:', e);
+                showCustomAlert('Distribution Error', 'An error occurred while distributing prizes. Please try again.', 'error');
             }
         }
 
@@ -3339,170 +3358,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             playBGAudio();
             document.removeEventListener('click', handler); // Remove after first successful click
         });
-
-        /* ===== Ticket replacement & ticket list functions (NEW) ===== */
-
-        /**
-         * Replace occurrences of the word "ticket" (case-insensitive) in a DOM element's text nodes
-         * with an inline span containing the ticket image (clickable) and the word.
-         * This will not modify script/style/input elements.
-         */
-        function replaceTicketWordsInElement(rootEl) {
-            if (!rootEl) return;
-            // Use TreeWalker to traverse text nodes
-            const walker = document.createTreeWalker(rootEl, NodeFilter.SHOW_TEXT, {
-                acceptNode: function(node) {
-                    // Do not process empty or whitespace-only nodes
-                    if (!node.nodeValue || !node.nodeValue.match(/\b(ticket|tickets|تذاكر)\b/i)) return NodeFilter.FILTER_REJECT;
-                    // Ensure parent is not inside script or style or input
-                    const parentTag = node.parentElement ? node.parentElement.tagName.toLowerCase() : '';
-                    if (['script','style','textarea','input'].includes(parentTag)) return NodeFilter.FILTER_REJECT;
-                    return NodeFilter.FILTER_ACCEPT;
-                }
-            });
-
-            const nodes = [];
-            while(walker.nextNode()) {
-                nodes.push(walker.currentNode);
-            }
-
-            nodes.forEach(textNode => {
-                const parent = textNode.parentNode;
-                if (!parent) return;
-                const text = textNode.nodeValue;
-                // Replace occurrences of "ticket", "tickets", or Arabic 'تذاكر' (basic)
-                const parts = text.split(/(\b(ticket|tickets|تذاكر)\b)/ig);
-                if (parts.length <= 1) return;
-                const frag = document.createDocumentFragment();
-                parts.forEach(part => {
-                    if (part.match(/^\b(ticket|tickets|تذاكر)\b$/i)) {
-                        // create inline ticket element
-                        const span = document.createElement('span');
-                        span.className = 'inline-ticket';
-                        const img = document.createElement('img');
-                        img.className = 'inline-ticket-img';
-                        img.src = TICKET_ICON_URL;
-                        img.alt = 'ticket';
-                        img.title = 'View ticket holders';
-                        img.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            openTicketList();
-                        });
-                        span.appendChild(img);
-                        // add text node with the matched word (preserve original)
-                        const t = document.createTextNode(' ' + part + ' ');
-                        span.appendChild(t);
-                        frag.appendChild(span);
-                    } else {
-                        frag.appendChild(document.createTextNode(part));
-                    }
-                });
-                parent.replaceChild(frag, textNode);
-            });
-        }
-
-        function replaceTicketWordsInDocument() {
-            // Replace in main areas where tickets might appear
-            const areas = [
-                document.body,
-                document.getElementById('leaderboardList'),
-                document.getElementById('ticketListContainer'),
-                document.getElementById('taskListContainer'),
-                document.getElementById('alertMessage')
-            ];
-            areas.forEach(a => {
-                try { replaceTicketWordsInElement(a); } catch(e) { /* ignore */ }
-            });
-        }
-
-        // Opens the ticket list screen and populates with users (uses leaderboard if available, otherwise fetches)
-        async function openTicketList() {
-            // Gather data: prefer server-synced leaderboard; if empty try refreshing
-            if ((!leaderboard || leaderboard.length === 0) ) {
-                await refreshContestData();
-            }
-            // Show screen
-            mainScreen.classList.remove('visible');
-            // hide other visible screens
-            document.querySelectorAll('.app-screen.visible').forEach(el=>{
-                if (el.id !== 'ticketListScreen') el.classList.remove('visible');
-            });
-            const screen = document.getElementById('ticketListScreen');
-            screen.style.display = 'flex';
-            screen.classList.add('visible');
-
-            const container = document.getElementById('ticketListContainer');
-            if (!container) return;
-
-            if (!Array.isArray(leaderboard) || leaderboard.length === 0) {
-                container.innerHTML = `<div style="padding:12px;background:#fff;border-radius:10px;border:1px solid #e6eef9">لا يوجد بيانات حاليا</div>`;
-                return;
-            }
-
-            // Render a professional list (sorted by tickets desc)
-            const sorted = leaderboard.slice().sort((a,b)=>b.tickets - a.tickets);
-            const html = sorted.map(u => {
-                const avatar = u.avatar || (tgUser && tgUser.photo_url) || 'https://via.placeholder.com/50';
-                const uname = u.username || `User${u.user_id || ''}`;
-                const uid = u.user_id || '-';
-                const tickets = u.tickets || 0;
-                return `
-                    <div class="ticket-user" data-user-id="${uid}">
-                        <div class="avatar"><img src="${avatar}" onerror="this.src='https://via.placeholder.com/56'"></div>
-                        <div class="meta">
-                            <div class="name">${escapeHtml(uname)}</div>
-                            <div class="sub">ID: ${escapeHtml(String(uid))}</div>
-                        </div>
-                        <div class="count"><img src="${TICKET_ICON_URL}" style="width:18px;height:18px;margin-right:6px">${tickets}</div>
-                    </div>
-                `;
-            }).join('');
-            container.innerHTML = html;
-        }
-
-        function closeTicketList() {
-            const screen = document.getElementById('ticketListScreen');
-            if (!screen) return;
-            screen.classList.remove('visible');
-            screen.style.display = 'none';
-            mainScreen.classList.add('visible');
-        }
-
-        // Utility: escape HTML
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>"'`=\/]/g, function(s) {
-                return ({
-                    '&':'&amp;',
-                    '<':'&lt;',
-                    '>':'&gt;',
-                    '"':'&quot;',
-                    "'":'&#39;',
-                    '/':'&#x2F;',
-                    '`':'&#x60;',
-                    '=':'&#x3D;'
-                })[s];
-            });
-        }
-
-        /* ===== Event delegation for inline ticket images and ticket-icon-btn (global) ===== */
-        document.addEventListener('click', function(e) {
-            const target = e.target;
-            if (!target) return;
-            // If clicked an inline ticket image or ticket icon button, open ticket list
-            if (target.classList && (target.classList.contains('inline-ticket-img') || target.closest('.ticket-icon-btn'))) {
-                openTicketList();
-            }
-        });
-
-        // Ensure initial replacement run after DOM load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Give a slight delay to allow dynamic content to render
-            setTimeout(() => {
-                replaceTicketWordsInDocument();
-            }, 800);
-        });
-
     </script>
 </body>
 </html>
