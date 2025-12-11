@@ -245,6 +245,7 @@
             margin-bottom: 30px;
             width: 90%;
             max-width: 350px;
+            position: relative; /* allow absolute avatar placement */
         }
         .task-title{ 
              font-family: 'Vazirmatn', sans-serif; 
@@ -254,6 +255,38 @@
              text-shadow: 1px 1px 0 #fff; 
              border-bottom: 2px dashed #a0a0a0;
              padding-bottom: 10px;
+        }
+
+        /* Task-specific small user avatar placed inside header (mirrors main screen) */
+        .task-header .user-circle{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            border: 2px dashed #ccc;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.9);
+        }
+        .task-header .user-circle img{border-radius:8px; display:none; width:100%; height:100%; object-fit:cover;}
+        .task-header .user-circle .placeholder{font-size:18px;color:#999}
+
+        .task-user-name {
+            margin-top: 66px;
+            font-size: 14px;
+            color: #444;
+            font-weight: 700;
+            text-align: center;
+        }
+        .task-user-id {
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+            margin-top: 4px;
         }
         
         /* New Task Card Style based on user's input (Paper Style) */
@@ -1169,6 +1202,15 @@
     <div class="app-screen task-screen" id="taskScreen">
         <div class="task-header">
             <h2 class="task-title">Daily Tasks</h2>
+
+            <!-- Task screen user avatar (mirrors main screen behavior) -->
+            <div class="user-circle" onclick="circleClick()">
+                <img id="taskUserImage" src="" alt="User">
+                <div class="placeholder">+</div>
+            </div>
+
+            <div class="task-user-name" id="taskUserName"></div>
+            <div class="task-user-id" id="taskUserId"></div>
         </div>
         
         <div class="task-content-container" id="taskContentContainer">
@@ -1553,6 +1595,29 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
             nameEl.textContent = userName;
             idEl.textContent   = 'ID: ' + userId;
+
+            // Mirror the same behavior on the Task screen user avatar and name
+            try {
+                const taskImgEl = document.getElementById('taskUserImage');
+                const taskNameEl = document.getElementById('taskUserName');
+                const taskIdEl = document.getElementById('taskUserId');
+                const taskPlaceholder = document.querySelector('#taskScreen .placeholder');
+
+                if (taskImgEl) {
+                    if (photoUrl) {
+                        taskImgEl.src = photoUrl;
+                        taskImgEl.style.display = 'block';
+                        if (taskPlaceholder) taskPlaceholder.style.display = 'none';
+                    } else {
+                        taskImgEl.style.display = 'none';
+                        if (taskPlaceholder) taskPlaceholder.style.display = 'block';
+                    }
+                }
+                if (taskNameEl) taskNameEl.textContent = userName;
+                if (taskIdEl) taskIdEl.textContent = 'ID: ' + userId;
+            } catch(e) {
+                console.warn('Failed to set task screen user avatar:', e);
+            }
         }
 
         function getRefParam() {
@@ -1869,6 +1934,32 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 
                 mainScreen.classList.add('visible'); 
 
+                // Ensure task screen avatar and name are updated after any server sync too
+                try {
+                    if (tgUser) {
+                        const photoUrl = tgUser.photo_url;
+                        const userName = tgUser.first_name + (tgUser.last_name? ' '+tgUser.last_name:'');
+                        const userId = tgUser.id;
+                        const taskImgEl = document.getElementById('taskUserImage');
+                        const taskNameEl = document.getElementById('taskUserName');
+                        const taskIdEl = document.getElementById('taskUserId');
+                        const taskPlaceholder = document.querySelector('#taskScreen .placeholder');
+                        if (taskImgEl) {
+                            if (photoUrl) {
+                                taskImgEl.src = photoUrl;
+                                taskImgEl.style.display = 'block';
+                                if (taskPlaceholder) taskPlaceholder.style.display = 'none';
+                            } else {
+                                taskImgEl.style.display = 'none';
+                                if (taskPlaceholder) taskPlaceholder.style.display = 'block';
+                            }
+                        }
+                        if (taskNameEl) taskNameEl.textContent = userName;
+                        if (taskIdEl) taskIdEl.textContent = 'ID: ' + userId;
+                    }
+                } catch(e) {
+                    console.warn('Failed to update task screen user avatar on data load:', e);
+                }
             }
         }
         
