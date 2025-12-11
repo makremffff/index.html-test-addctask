@@ -245,7 +245,6 @@
             margin-bottom: 30px;
             width: 90%;
             max-width: 350px;
-            position: relative; /* allow absolute avatar placement */
         }
         .task-title{ 
              font-family: 'Vazirmatn', sans-serif; 
@@ -255,38 +254,6 @@
              text-shadow: 1px 1px 0 #fff; 
              border-bottom: 2px dashed #a0a0a0;
              padding-bottom: 10px;
-        }
-
-        /* Task-specific small user avatar placed inside header (mirrors main screen) */
-        .task-header .user-circle{
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 52px;
-            height: 52px;
-            border-radius: 12px;
-            border: 2px dashed #ccc;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255,255,255,0.9);
-        }
-        .task-header .user-circle img{border-radius:8px; display:none; width:100%; height:100%; object-fit:cover;}
-        .task-header .user-circle .placeholder{font-size:18px;color:#999}
-
-        .task-user-name {
-            margin-top: 66px;
-            font-size: 14px;
-            color: #444;
-            font-weight: 700;
-            text-align: center;
-        }
-        .task-user-id {
-            font-size: 12px;
-            color: #777;
-            text-align: center;
-            margin-top: 4px;
         }
         
         /* New Task Card Style based on user's input (Paper Style) */
@@ -1004,7 +971,7 @@
         .ad-btn.secondary { background:linear-gradient(135deg,#00bfff,#0077b3); box-shadow:0 8px 0 rgba(0,119,179,0.12); display:none; } /* removed share button visually */
         .ad-btn:active{transform:translateY(2px)}
 
-        /* Right: Participants list (show ALL participants compactly) */
+        /* Right: Top 5 leaderboard */
         .competition-right {
             flex:0 1 360px;
             background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
@@ -1016,25 +983,22 @@
             color: #fff;
         }
         .leader-title { font-size:16px; font-weight:900; color:#ffd47a; margin-bottom:8px; text-align:center; }
-        .leader-list { display:flex; flex-direction:column; gap:8px; max-height:420px; overflow:auto; padding-right:6px; }
+        .leader-list { display:flex; flex-direction:column; gap:10px; }
         .leader-item {
             display:flex;
-            gap:10px;
+            gap:12px;
             align-items:center;
-            padding:8px;
-            border-radius:8px;
+            padding:10px;
+            border-radius:10px;
             background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             border:1px solid rgba(255,255,255,0.03);
-            font-size:13px;
-            line-height:1;
-            justify-content:space-between;
         }
-        .leader-rank { font-weight:900; font-size:14px; color:#ffd47a; width:28px; text-align:center; flex:0 0 28px; }
-        .leader-avatar { width:36px; height:36px; border-radius:8px; overflow:hidden; background:#eee; display:flex; align-items:center; justify-content:center; flex:0 0 36px; }
-        .leader-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
-        .leader-info { display:flex; flex-direction:column; gap:2px; flex:1 1 auto; min-width:0; margin-left:6px; }
-        .leader-name { font-weight:800; color:#fff; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .leader-tickets { font-weight:700; color:#a7ecff; font-size:12px; min-width:72px; text-align:right; flex:0 0 auto; }
+        .leader-rank { font-weight:900; font-size:18px; color:#ffd47a; width:36px; text-align:center; }
+        .leader-avatar { width:64px; height:64px; border-radius:10px; overflow:hidden; background:#eee; display:flex; align-items:center; justify-content:center; }
+        .leader-avatar img { width:100%; height:100%; object-fit:cover; }
+        .leader-info { display:flex; flex-direction:column; gap:4px; }
+        .leader-name { font-weight:800; color:#fff; font-size:16px; }
+        .leader-tickets { font-weight:700; color:#a7ecff; font-size:14px; }
 
         .prize-box {
             margin-top:14px;
@@ -1082,28 +1046,24 @@
             max-width:820px;
             display:flex;
             flex-direction:column;
-            gap:8px;
-            max-height:640px;
-            overflow:auto;
-            padding-right:8px;
+            gap:10px;
         }
         .leaderboard-item {
             display:flex;
             align-items:center;
             gap:12px;
-            padding:10px;
+            padding:12px;
             background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             border: 1px solid rgba(255,255,255,0.03);
             border-radius:10px;
             justify-content:space-between;
-            font-size:13px;
         }
-        .leaderboard-left { display:flex; align-items:center; gap:12px; min-width:0; overflow:hidden; }
-        .leaderboard-rank { font-weight:900; font-size:16px; color:#ffd47a; width:36px; text-align:center; flex:0 0 36px; }
-        .leaderboard-avatar { width:36px; height:36px; border-radius:8px; overflow:hidden; background:#eee; display:flex; align-items:center; justify-content:center; flex:0 0 36px; }
-        .leaderboard-avatar img { width:36px; height:36px; object-fit:cover; display:block; }
-        .leaderboard-name { font-weight:800; color:#fff; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:420px; }
-        .leaderboard-tickets { font-weight:900; color:#a7ecff; font-size:13px; min-width:120px; text-align:right; flex:0 0 120px; }
+        .leaderboard-left { display:flex; align-items:center; gap:12px; }
+        .leaderboard-rank { font-weight:900; font-size:18px; color:#ffd47a; width:36px; text-align:center; }
+        .leaderboard-avatar { width:40px; height:40px; border-radius:8px; overflow:hidden; background:#eee; display:flex; align-items:center; justify-content:center; }
+        .leaderboard-avatar img { width:40px; height:40px; object-fit:cover; }
+        .leaderboard-name { font-weight:800; color:#fff; font-size:15px; }
+        .leaderboard-tickets { font-weight:900; color:#a7ecff; font-size:14px; min-width:120px; text-align:right; }
 
         /* Responsive */
         @media (max-width:900px) {
@@ -1202,15 +1162,6 @@
     <div class="app-screen task-screen" id="taskScreen">
         <div class="task-header">
             <h2 class="task-title">Daily Tasks</h2>
-
-            <!-- Task screen user avatar (mirrors main screen behavior) -->
-            <div class="user-circle" onclick="circleClick()">
-                <img id="taskUserImage" src="" alt="User">
-                <div class="placeholder">+</div>
-            </div>
-
-            <div class="task-user-name" id="taskUserName"></div>
-            <div class="task-user-id" id="taskUserId"></div>
         </div>
         
         <div class="task-content-container" id="taskContentContainer">
@@ -1418,9 +1369,9 @@ You will earn 40% of the revenue from every referral you bring through ads!
             </div>
 
             <div class="competition-right">
-                <div class="leader-title">Participants</div>
+                <div class="leader-title">Top 5 Collectors</div>
                 <div class="leader-list" id="leaderList">
-                    <!-- Items injected here: image + username + tickets -->
+                    <!-- Items injected here: image + username (only) -->
                 </div>
 
                 <div class="prize-box">
@@ -1441,7 +1392,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
     <div class="app-screen leaderboard-screen" id="leaderboardScreen" style="display:none;">
         <div class="leaderboard-header">
             <div>
-                <div class="leaderboard-title">Leaderboard — Participants</div>
+                <div class="leaderboard-title">Leaderboard — Top 5</div>
                 <div class="leaderboard-sub">Players ranked by collected tickets</div>
             </div>
             <div>
@@ -1595,29 +1546,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
             nameEl.textContent = userName;
             idEl.textContent   = 'ID: ' + userId;
-
-            // Mirror the same behavior on the Task screen user avatar and name
-            try {
-                const taskImgEl = document.getElementById('taskUserImage');
-                const taskNameEl = document.getElementById('taskUserName');
-                const taskIdEl = document.getElementById('taskUserId');
-                const taskPlaceholder = document.querySelector('#taskScreen .placeholder');
-
-                if (taskImgEl) {
-                    if (photoUrl) {
-                        taskImgEl.src = photoUrl;
-                        taskImgEl.style.display = 'block';
-                        if (taskPlaceholder) taskPlaceholder.style.display = 'none';
-                    } else {
-                        taskImgEl.style.display = 'none';
-                        if (taskPlaceholder) taskPlaceholder.style.display = 'block';
-                    }
-                }
-                if (taskNameEl) taskNameEl.textContent = userName;
-                if (taskIdEl) taskIdEl.textContent = 'ID: ' + userId;
-            } catch(e) {
-                console.warn('Failed to set task screen user avatar:', e);
-            }
         }
 
         function getRefParam() {
@@ -1934,32 +1862,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 
                 mainScreen.classList.add('visible'); 
 
-                // Ensure task screen avatar and name are updated after any server sync too
-                try {
-                    if (tgUser) {
-                        const photoUrl = tgUser.photo_url;
-                        const userName = tgUser.first_name + (tgUser.last_name? ' '+tgUser.last_name:'');
-                        const userId = tgUser.id;
-                        const taskImgEl = document.getElementById('taskUserImage');
-                        const taskNameEl = document.getElementById('taskUserName');
-                        const taskIdEl = document.getElementById('taskUserId');
-                        const taskPlaceholder = document.querySelector('#taskScreen .placeholder');
-                        if (taskImgEl) {
-                            if (photoUrl) {
-                                taskImgEl.src = photoUrl;
-                                taskImgEl.style.display = 'block';
-                                if (taskPlaceholder) taskPlaceholder.style.display = 'none';
-                            } else {
-                                taskImgEl.style.display = 'none';
-                                if (taskPlaceholder) taskPlaceholder.style.display = 'block';
-                            }
-                        }
-                        if (taskNameEl) taskNameEl.textContent = userName;
-                        if (taskIdEl) taskIdEl.textContent = 'ID: ' + userId;
-                    }
-                } catch(e) {
-                    console.warn('Failed to update task screen user avatar on data load:', e);
-                }
             }
         }
         
@@ -2907,8 +2809,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         let competitionData = {
             user_tickets: 0,
             total_tickets: 0,
-            top5: [], // kept for fallback
-            participants: [] // new: full participants list provided by server
+            top5: [] // each {user_id, username, avatar, tickets}
         };
 
         // default prize split
@@ -2958,16 +2859,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 if (res.ok && res.data) {
                     competitionData.user_tickets = res.data.user_tickets || 0;
                     competitionData.total_tickets = res.data.total_tickets || 0;
-                    // prefer full participants list if provided by server
-                    if (Array.isArray(res.data.participants)) {
-                        competitionData.participants = res.data.participants.slice(); // use full list
-                    } else if (Array.isArray(res.data.top5)) {
-                        competitionData.participants = res.data.top5.slice(0,5);
-                    } else {
-                        competitionData.participants = [];
-                    }
-
-                    competitionData.top5 = Array.isArray(res.data.top5) ? res.data.top5.slice(0,5) : competitionData.participants.slice(0,5);
+                    competitionData.top5 = Array.isArray(res.data.top5) ? res.data.top5.slice(0,5) : [];
 
                     // if server provides an end timestamp use it (ISO or epoch)
                     if (res.data.ends_at) {
@@ -2982,7 +2874,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     // fallback: keep local/zeros
                     competitionData.user_tickets = competitionData.user_tickets || 0;
                     competitionData.total_tickets = competitionData.total_tickets || 0;
-                    competitionData.participants = competitionData.participants || competitionData.top5 || [];
+                    competitionData.top5 = competitionData.top5 || [];
                 }
             } catch (e) {
                 console.warn('Failed to load competition data:', e);
@@ -2994,34 +2886,27 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
         }
 
-        // Render participants list inside competition-right (compact, scrollable)
-        function renderParticipants(participants) {
+        function renderLeaderBoard(top5){
             const list = document.getElementById('leaderList');
             if (!list) return;
-            if (!Array.isArray(participants) || participants.length === 0) {
-                list.innerHTML = `<div class="leader-item"><div style="width:100%;text-align:center;color:#dbeeff">No participants yet.</div></div>`;
+            if (!Array.isArray(top5) || top5.length === 0) {
+                list.innerHTML = `<div class="leader-item"><div style="width:100%;text-align:center;color:#dbeeff">No collectors yet.</div></div>`;
                 return;
             }
 
-            // Sort by tickets desc for display
-            const sorted = participants.slice().sort((a,b) => (b.tickets||0) - (a.tickets||0));
-
-            const html = sorted.map((p, idx) => {
-                const avatar = p.avatar || 'https://via.placeholder.com/36.png?text=U';
+            const html = top5.map((p, idx) => {
+                const avatar = p.avatar || 'https://via.placeholder.com/40.png?text=U';
                 const username = p.username || ('User ' + (p.user_id || (idx+1)));
                 const safeUsername = escapeHtml(username);
-                const tickets = p.tickets || 0;
-                // include image fallback via onerror to avoid broken images; loading lazy
+                // use smaller avatar inside competition right panel
                 return `
-                    <div class="leader-item" title="${safeUsername} — ${tickets} tickets">
-                        <div style="display:flex;align-items:center;min-width:0;overflow:hidden;">
-                            <div class="leader-rank">${idx+1}</div>
-                            <div class="leader-avatar"><img src="${avatar}" alt="${safeUsername}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/36.png?text=U';this.style.objectFit='cover';"></div>
-                            <div class="leader-info">
-                                <div class="leader-name">${safeUsername}</div>
-                            </div>
+                    <div class="leader-item">
+                        <div class="leader-rank">${idx+1}</div>
+                        <div class="leader-avatar" style="width:40px;height:40px;border-radius:8px;overflow:hidden;"><img src="${avatar}" alt="${safeUsername}"></div>
+                        <div class="leader-info">
+                            <div class="leader-name">${safeUsername}</div>
+                            <div class="leader-tickets">${p.tickets || 0} tickets</div>
                         </div>
-                        <div class="leader-tickets">${tickets} ✪</div>
                     </div>
                 `;
             }).join('');
@@ -3031,7 +2916,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         function updateCompetitionUI(){
             document.getElementById('userTickets').textContent = (competitionData.user_tickets || 0);
             document.getElementById('totalTickets').textContent = (competitionData.total_tickets || 0);
-            renderParticipants(competitionData.participants);
+            renderLeaderBoard(competitionData.top5);
             renderPrizeSplit();
         }
 
@@ -3070,11 +2955,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         // Update local competitionData with server authoritative values if provided
                         competitionData.user_tickets = res.data.user_tickets !== undefined ? res.data.user_tickets : competitionData.user_tickets + 1;
                         competitionData.total_tickets = res.data.total_tickets !== undefined ? res.data.total_tickets : competitionData.total_tickets + 1;
-                        if (Array.isArray(res.data.participants)) {
-                            competitionData.participants = res.data.participants.slice();
-                        } else if (res.data.top5) {
-                            competitionData.participants = res.data.top5.slice(0,5);
-                        }
+                        if (res.data.top5) competitionData.top5 = res.data.top5.slice(0,5);
                         updateCompetitionUI();
                         showCustomAlert('Ticket Awarded', 'You received 1 ticket. Good luck!', 'success');
                     } else {
@@ -3099,7 +2980,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             });
         }
 
-        // Open leaderboard full page (NEW). This will show all participants provided by server.
+        // Open leaderboard full page (NEW). This will not generate fake users.
         function openLeaderboard(){
             if (isBanned) {
                 showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
@@ -3131,18 +3012,16 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const container = document.getElementById('leaderboardList');
             if (!container) return;
 
-            const parts = Array.isArray(competitionData.participants) ? competitionData.participants.slice() : [];
+            const top5 = Array.isArray(competitionData.top5) ? competitionData.top5.slice(0,5) : [];
 
-            if (!parts || parts.length === 0) {
+            if (!top5 || top5.length === 0) {
                 container.innerHTML = `<div style="padding:30px;text-align:center;color:#dbeeff">No players yet. Be the first to collect tickets!</div>`;
                 return;
             }
 
-            // Sort by tickets desc
-            const sorted = parts.sort((a,b)=> (b.tickets||0) - (a.tickets||0));
-
-            const html = sorted.map((p, idx) => {
-                const avatar = p.avatar || 'https://via.placeholder.com/36.png?text=U';
+            // Render only real players provided by server. Do not fabricate entries.
+            const html = top5.map((p, idx) => {
+                const avatar = p.avatar || 'https://via.placeholder.com/40.png?text=U';
                 const username = p.username || (`User ${p.user_id || (idx+1)}`);
                 const safeUsername = escapeHtml(username);
                 const tickets = p.tickets || 0;
@@ -3150,7 +3029,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     <div class="leaderboard-item">
                         <div class="leaderboard-left">
                             <div class="leaderboard-rank">${idx+1}</div>
-                            <div class="leaderboard-avatar"><img src="${avatar}" alt="${safeUsername}" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/36.png?text=U';this.style.objectFit='cover';"></div>
+                            <div class="leaderboard-avatar"><img src="${avatar}" alt="${safeUsername}"></div>
                             <div class="leaderboard-name">${safeUsername}</div>
                         </div>
                         <div class="leaderboard-tickets">${tickets} tickets</div>
