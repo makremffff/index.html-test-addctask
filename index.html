@@ -749,7 +749,7 @@
 
         /* ===== Contest Screen (NEW) ===== */
         /* Reduced typography by ~40% to address wide-screen text overflow issue as requested */
-        .contest-screen{
+        .contest-screen {
             display:flex;
             flex-direction:column;
             align-items:center;
@@ -970,8 +970,8 @@
         }
         .ticket-inline img { width:14px; height:14px; object-fit:cover; vertical-align:middle; }
 
-        /* ===== Contest Screen Responsive Fix ===== */
-        @media (max-width: 480px){
+        /* Additional requested CSS changes */
+        @media (max-width: 100px){
             .contest-main{
                 grid-template-columns:1fr !important;
             }
@@ -2887,26 +2887,18 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // Use user-provided avatar if available.
                 // If avatar missing, use placeholder to avoid showing the current user's photo for everyone.
                 // However, if the entry is the current user and p.avatar is missing, use tgUser.photo_url (so self shows profile).
-                let avatar = 'https://via.placeholder.com/50';
-                try {
-                    if (p.avatar && p.avatar.trim() !== '') {
-                        avatar = p.avatar;
-                    } else if (tgUser && p.user_id && parseInt(p.user_id) === tgUser.id && tgUser.photo_url) {
-                        avatar = tgUser.photo_url;
-                    }
-                } catch (e) {
-                    avatar = 'https://via.placeholder.com/50';
-                }
+                let avatarPlaceholder = 'https://via.placeholder.com/50';
 
                 const uname = p.username || (`User${p.user_id || ''}`);
                 const uid = p.user_id || '-';
                 const tickets = p.tickets || 0;
                 const rankInfo = PRIZES_BY_RANK[idx] || null;
                 const prizeHTML = rankInfo ? `<div class="rank-prize ${rankInfo.class}">${rankInfo.value}</div>` : '';
+                // We set the img src to placeholder initially; we'll resolve real URL asynchronously below
                 return `
-                    <div class="leader-item" data-leader-id="${p.user_id}">
+                    <div class="leader-item" data-leader-id="${p.user_id}" data-leader-avatar="${p.avatar || ''}">
                         <div style="font-weight:800;width:26px;text-align:center">${idx+1}</div>
-                        <div class="leader-avatar"><img src="${avatar}" onerror="this.src='https://via.placeholder.com/30'"></div>
+                        <div class="leader-avatar"><img src="${avatarPlaceholder}" alt="avatar" data-avatar-src="${p.avatar || ''}" onerror="this.src='https://via.placeholder.com/30'"></div>
                         <div class="leader-meta">
                             <div style="display:flex;align-items:center;gap:8px;justify-content:space-between">
                                 <div>
@@ -2921,6 +2913,20 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 `;
             }).join('');
             list.innerHTML = html;
+
+            // After rendering, resolve avatars: if avatar value is a URL use it; if it's a Telegram file_id, call getFile to get file_path and then construct https URL
+            Array.from(list.querySelectorAll('.leader-avatar img')).forEach(async imgEl => {
+                const rawAvatar = imgEl.getAttribute('data-avatar-src') || '';
+                try {
+                    const resolved = await resolveAvatarUrl(rawAvatar);
+                    if (resolved) {
+                        imgEl.src = resolved;
+                    }
+                } catch (e) {
+                    // ignore — keep placeholder
+                }
+            });
+
             // Improve click area: clicking a leaderboard row will show a small profile alert (no refresh)
             Array.from(document.querySelectorAll('#leaderboardList .leader-item')).forEach(el=>{
                 el.style.cursor = 'pointer';
@@ -3395,22 +3401,110 @@ You will earn 40% of the revenue from every referral you bring through ads!
             document.removeEventListener('click', handler); // Remove after first successful click
         });
 
-        /* ===== User Image Handling ===== */
+        /* ===== Additional JS per user instruction (user image helpers & Telegram file fetching) ===== */
+
+        // NOTE: Replace BOT_TOKEN value with your bot token if you intend to call Telegram Bot API directly from the client.
+        // Exposing BOT_TOKEN on the client is insecure. Preferred approach: call your server which uses BOT_TOKEN securely.
+        const BOT_TOKEN = ''; // <-- REPLACE with bot token if you understand the risk
+
         const userImage = document.getElementById("userImage");
         const userPlaceholder = document.querySelector(".user-circle .placeholder");
 
-        userImage.onload = () => {
-            userPlaceholder.style.display = "none";
-        };
+        if (userImage) {
+            userImage.onload = () => {
+                try {
+                    if (userPlaceholder) userPlaceholder.style.display = "none";
+                    userImage.style.display = "block";
+                } catch (e) { /* ignore */ }
+            };
+            // If image errors (broken), hide image and show placeholder
+            userImage.onerror = () => {
+                try {
+                    if (userPlaceholder) userPlaceholder.style.display = "block";
+                    userImage.style.display = "none";
+                } catch (e) { /* ignore */ }
+            };
+        }
 
         function setUserImage(photo){
-            if(!photo){ return; }
-            userImage.src = photo;
+            if(!photo){ 
+                // Ensure placeholder shows if no photo provided
+                if (userImage) userImage.style.display = 'none';
+                if (userPlaceholder) userPlaceholder.style.display = 'block';
+                return; 
+            }
+            // Ensure HTTPS only
+            if (/^https?:\/\//i.test(photo)) {
+                userImage.src = photo;
+                // onload handler will hide placeholder
+            } else {
+                // if not https, ignore for security
+                console.warn('setUserImage: non-https photo ignored for security:', photo);
+            }
         }
 
         function tgFileUrl(file_path){
+            // Ensure returned url uses https
             return `https://api.telegram.org/file/bot${BOT_TOKEN}/${file_path}`;
         }
+
+        async function getTelegramFilePath(fileId) {
+            if (!fileId) return null;
+            if (!BOT_TOKEN) {
+                console.warn('getTelegramFilePath: BOT_TOKEN not set; cannot request getFile from Telegram API.');
+                return null;
+            }
+            try {
+                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${encodeURIComponent(fileId)}`);
+                const json = await res.json();
+                if (json && json.ok && json.result && json.result.file_path) {
+                    return json.result.file_path;
+                }
+            } catch (e) {
+                console.warn('getTelegramFilePath error:', e);
+            }
+            return null;
+        }
+
+        // Resolve avatar input which can be an https URL or a Telegram file_id
+        async function resolveAvatarUrl(avatar) {
+            if (!avatar) return null;
+            // If it's already an https/http url, return as-is (ensure https)
+            if (/^https?:\/\//i.test(avatar)) {
+                // Prefer https
+                if (/^https:\/\//i.test(avatar)) return avatar;
+                // If http, try to convert to https (may fail if server doesn't support)
+                return avatar.replace(/^http:\/\//i, 'https://');
+            }
+            // Treat as Telegram file_id: call getFile to obtain file_path and then build URL
+            const filePath = await getTelegramFilePath(avatar);
+            if (filePath) {
+                return tgFileUrl(filePath);
+            }
+            return null;
+        }
+
+        // If tgUser exists and photo is provided as file_id or url, attempt to set it properly using setUserImage/getFile flow
+        (async function initUserImageFromTelegram() {
+            try {
+                if (!tgUser) return;
+                // Some flows might provide tgUser.photo_url (https) or a file_id string; we handle both
+                const rawPhoto = tgUser.photo_url || tgUser.photo || (tgUser.avatar && tgUser.avatar.file_id) || null;
+                if (!rawPhoto) return;
+                if (/^https?:\/\//i.test(rawPhoto)) {
+                    setUserImage(rawPhoto);
+                    return;
+                }
+                // Otherwise assume file_id
+                const path = await getTelegramFilePath(rawPhoto);
+                if (path) {
+                    const url = tgFileUrl(path);
+                    setUserImage(url);
+                }
+            } catch (e) {
+                console.warn('initUserImageFromTelegram error:', e);
+            }
+        })();
 
     </script>
 </body>
