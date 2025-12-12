@@ -760,7 +760,7 @@
             background: linear-gradient(180deg,#0b57d0,#007bff); /* blue background per request */
             color: #fff;
             /* Base font-size reduced to 60% to shrink text roughly by 40% */
-            font-size: 60%;
+            font-size: 100%;
             line-height: 1.15;
         }
         .contest-header {
@@ -784,13 +784,13 @@
             background: rgba(255,255,255,0.08);
             padding: 10px 14px;
             border-radius: 10px;
-            min-width: 100px;
+            min-width: 220px;
         }
         .contest-main {
             width: 100%;
-            max-width: 100px;
+            max-width: 480px;
             display:grid;
-            grid-template-columns: 1fr 360px;
+            grid-template-columns: 1fr 16px;
             gap: 16px;
             align-items:start;
         }
@@ -837,7 +837,7 @@
         }
         .tickets-numbers {
             font-family: 'Courier New', monospace;
-            font-weight:500;
+            font-weight:800;
             font-size: 10.8px; /* 18px * 0.6 */
             color:#fff;
         }
@@ -851,7 +851,7 @@
             display:flex;
             justify-content:space-between;
             align-items:center;
-            font-weight:500;
+            font-weight:800;
         }
         .leaderboard-list {
             display:flex;
@@ -871,8 +871,8 @@
             font-size: 8px; /* reduce internal texts */
         }
         .leader-avatar {
-            width:30px; /* reduced from 50 */
-            height:30px;
+            width:45px; /* reduced from 50 */
+            height:45px;
             border-radius:50%;
             overflow:hidden;
             flex-shrink:0;
