@@ -7,13 +7,10 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap'); 
 
-        /* Global: Use the requested '𝚝𝚢𝚙𝚎' styled font fallback for a mono look */
         *{margin:0;padding:0;box-sizing:border-box}
-        /* Primary font set to the special '𝚝𝚢𝚙𝚎' glyph sequence first (if available),
-           then Courier New, then any monospace — this ensures the page "feels" like the requested type. */
-        body{font-family:'𝚝𝚢𝚙𝚎', 'Courier New', monospace, 'Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;color:#111;}
+        body{font-family:'Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;}
         
         .app-screen {
             position: fixed;
@@ -133,24 +130,24 @@
 
         .balance{position:absolute;top:20px;right:20px;background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:16px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05)}
         
-        /* Contest button placed just under balance */
+        /* Weekly Contest button directly under balance */
         .contest-btn {
-            position:absolute;
-            top:66px; /* slightly under balance */
-            right:20px;
-            background: linear-gradient(145deg,#0056d6,#007bff);
-            color:#fff;
-            border:none;
-            padding:8px 12px;
-            border-radius:10px;
-            font-size:13px;
-            font-weight:700;
-            cursor:pointer;
-            box-shadow:0 5px 0 #0041a8,0 8px 12px rgba(0,0,0,.12);
-            z-index:102;
+            position: absolute;
+            top: 65px;
+            right: 20px;
+            background: linear-gradient(145deg, #0d6efd, #0b5ed7);
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #0647a6, 0 10px 20px rgba(0,0,0,0.12);
+            z-index: 101;
+            font-size: 13px;
         }
-        .contest-btn:active{transform:translateY(2px);box-shadow:0 3px 0 #0041a8}
-
+        .contest-btn:active{transform:translateY(2px);box-shadow:0 3px 0 #0647a6}
+        
         /* Shared Progress Containers */
         .progress-group-container {
             position: absolute;
@@ -623,9 +620,6 @@
         .custom-alert-box.warning .alert-title { color: #8B4513; } /* Brown */
         .custom-alert-box.warning .alert-icon::before { content: '✍️'; } /* Pencil/Writing Icon */
 
-        /* Allow custom icons: when .custom is present, suppress ::before so we can inject HTML into .alert-icon */
-        .custom-alert-box.custom .alert-icon::before { content: none !important; }
-
         /* ===== Task Link Progress (NEW, COMPACT) ===== */
         .task-link-container {
             width: 100%;
@@ -747,220 +741,120 @@
         .history-item .amount {font-weight:800;color:#ff2a2a}
         .history-empty {text-align:center;color:#777;padding:30px}
 
-        /* ===== Contest Screen (SIMPLIFIED & CLEAN) ===== */
-        /* The contest screen was simplified per request:
-           - Keep it visually consistent with other screens
-           - No large typography scaling or heavy visual noise
-           - Use Telegram WebApp user data to show player image and name in header
-           - Keep layout fixed and clear
-        */
-        .contest-screen{
+        /* ===== Weekly Contest Screen Styling ===== */
+        .contest-screen {
             display:flex;
             flex-direction:column;
             align-items:center;
-            justify-content:flex-start;
-            padding: 20px;
-            padding-top: 60px;
+            padding-top: 40px;
+            padding-bottom: 80px;
             overflow-y: auto;
-            background: #ffffff; /* use plain white for clarity */
-            color: #222;
-            font-size: 16px;
-            line-height: 1.35;
+            background: #f7fbff;
         }
-        .contest-header{
-            width:100%;
-            max-width:820px;
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            gap:12px;
-            padding:12px;
-            background: #fafafa;
-            border-radius:10px;
-            border:1px solid #eee;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        .contest-header {
+            text-align: center;
+            margin-bottom: 18px;
+            width: 100%;
+            max-width: 420px;
         }
-        .contest-user {
-            display:flex;
-            align-items:center;
-            gap:10px;
+        .contest-timer {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0b5ed7; /* blue */
+            margin-bottom: 10px;
         }
-        .contest-user img {
-            width:44px;
-            height:44px;
-            border-radius:50%;
-            object-fit:cover;
-            border:1px solid #ddd;
-            background:#fff;
-        }
-        .contest-user .name {
-            font-weight:700;
-            color:#111;
-        }
-        .contest-countdown {
-            text-align:center;
-            font-size:14px;
-            background: rgba(0,0,0,0.03);
-            padding: 8px 10px;
-            border-radius: 8px;
-            min-width: 180px;
-            color:#333;
-            border:1px solid #eee;
-        }
-        .contest-main {
-            width:100%;
-            max-width:820px;
-            display:grid;
-            grid-template-columns: 1fr 320px;
-            gap: 16px;
-            margin-top:14px;
-            align-items:start;
-        }
-        .contest-card {
+        .contest-table {
+            width: 100%;
+            max-width: 420px;
             background: #fff;
+            border-radius: 12px;
             padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #eee;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-            color: #111;
-        }
-        .contest-actions {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            border: 1px solid #e6eefc;
             display:flex;
-            gap:10px;
-            flex-wrap:wrap;
-        }
-        .contest-action-btn {
-            background: linear-gradient(145deg,#00bfff,#0077b3);
-            color: #fff;
-            border:none;
-            padding:8px 12px;
-            border-radius:8px;
-            font-weight:700;
-            cursor:pointer;
-            box-shadow: 0 4px 0 #005a8d;
+            flex-direction:column;
+            gap:8px;
+            align-items:stretch;
             font-size: 14px;
         }
-        .contest-action-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #005a8d}
-        .tickets-summary {
+        .contest-row {
             display:flex;
-            gap:8px;
             align-items:center;
             justify-content:space-between;
-            font-size:14px;
+            gap:8px;
+            padding: 6px 4px;
         }
-        .tickets-numbers {
-            font-family: 'Courier New', monospace;
-            font-weight:800;
-            font-size: 16px;
-            color:#111;
-        }
-        .leaderboard {
+        .contest-row .left {
             display:flex;
-            flex-direction:column;
+            align-items:center;
+            gap:8px;
+            color:#333;
+            font-weight:700;
+        }
+        .contest-row .left img.ticket-icon {
+            width:15px;height:15px;object-fit:contain;
+        }
+        .contest-row .user {
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+        .contest-row .user img.avatar {
+            width:35px;height:35px;object-fit:cover;border-radius:50%;
+            background:#ddd;
+        }
+        .contest-buttons {
+            display:flex;
             gap:10px;
+            justify-content:center;
+            margin-top:12px;
+            width:100%;
+            max-width:420px;
+        }
+        .contest-buttons .btn {
+            background: linear-gradient(145deg, #0d6efd, #0b5ed7);
+            color:#fff;border:none;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer;
+            box-shadow:0 6px 0 #0647a6, 0 12px 30px rgba(0,0,0,0.08);
+            min-width:110px;
+            text-align:center;
+        }
+        .contest-buttons .btn:active{transform:translateY(2px);box-shadow:0 3px 0 #0647a6}
+        .contest-note {
+            margin-top:12px;color:#666;font-size:13px;text-align:center;
+        }
+
+        /* ===== Leaderboard Screen Styling ===== */
+        .leaderboard-screen {
+            display:flex;flex-direction:column;align-items:center;padding-top:30px;padding-bottom:80px;overflow-y:auto;background:#f7fbff;
         }
         .leaderboard-header {
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            font-weight:800;
-            font-size:16px;
+            width:100%;max-width:520px;margin-bottom:12px;padding:8px 12px;text-align:center;
+        }
+        .leaderboard-title {
+            font-size:22px;font-weight:900;color:#0b5ed7;margin-bottom:6px;
         }
         .leaderboard-list {
-            display:flex;
-            flex-direction:column;
-            gap:8px;
-            margin-top:8px;
+            width:100%;max-width:520px;background:#fff;padding:12px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.06);
+            border:1px solid #e6eefc;
+            display:flex;flex-direction:column;gap:8px;
         }
-        .leader-item {
-            display:flex;
-            gap:12px;
-            align-items:center;
-            background: #fafafa;
-            padding:10px;
-            border-radius:8px;
-            border:1px solid #eee;
-            font-size:14px;
+        .leaderboard-item {
+            display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;background:#fbfdff;border:1px solid #eef6ff;
         }
-        .leader-avatar {
-            width:40px;
-            height:40px;
-            border-radius:50%;
-            overflow:hidden;
-            flex-shrink:0;
-            border:1px solid rgba(0,0,0,0.06);
+        .leader-left {display:flex;align-items:center;gap:12px}
+        .leader-avatar {width:45px;height:45px;border-radius:50%;object-fit:cover;background:#ddd}
+        .leader-center {display:flex;flex-direction:column}
+        .leader-username {font-weight:800;color:#222}
+        .leader-tickets {font-weight:700;color:#0b5ed7}
+        .leader-right {text-align:right;font-weight:900;color:#0b5ed7}
+        .rank1-badge {
+            width:70px;height:70px;border-radius:50%;background:linear-gradient(145deg,#ffd700,#ffb700);
+            display:flex;align-items:center;justify-content:center;font-weight:800;color:#222;border:3px solid #fff;
+            box-shadow:0 10px 30px rgba(0,0,0,0.12);
+            flex-direction:column;font-size:11px;text-align:center;padding:8px;
         }
-        .leader-avatar img{width:100%;height:100%;object-fit:cover}
-        .leader-meta {flex:1;display:flex;flex-direction:column;gap:4px}
-        .leader-name {font-weight:700;color:#111;font-size:14px;}
-        .leader-sub {font-size:12px;color:#666}
-        .leader-tickets {font-weight:800;color:#ff2a2a;display:flex;align-items:center;gap:6px;font-size:14px;}
-        .rank-prize {
-            font-weight:800;
-            font-size:13px;
-            padding:6px 8px;
-            border-radius:8px;
-            color:#111;
-            background:#fff;
-            min-width:120px;
-            text-align:center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-            margin-left:8px;
-            font-family: 'Courier New', monospace;
-        }
-        .prizes-card {
-            margin-top:12px;
-            background: #fff;
-            padding:12px;
-            border-radius:8px;
-            border: 1px solid #eee;
-        }
-        .prize-row {
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap:8px;
-            padding:8px 6px;
-        }
-        .prize-label {
-            font-weight:700;
-            font-size:14px;
-            color:#111;
-            font-family: "Courier New", monospace;
-        }
-        .prize-value {
-            font-weight:800;
-            color:#ff8c00;
-            font-size:14px;
-        }
-        .contest-bottom {
-            margin-top:18px;
-            width:100%;
-            max-width:820px;
-            display:flex;
-            justify-content:center;
-            gap:12px;
-        }
-
-        /* small screens fallback */
-        @media (max-width: 880px) {
-            .contest-main { grid-template-columns: 1fr; }
-            .contest-countdown { min-width: auto; padding: 8px 10px; }
-        }
-
-        /* Ticket inline */
-        .ticket-inline {
-            display:inline-flex;
-            align-items:center;
-            gap:6px;
-            font-weight:800;
-            color:#ff2a2a;
-            font-size:14px;
-        }
-        .ticket-inline img { width:16px; height:16px; object-fit:cover; vertical-align:middle; }
-
-        .user-circle img{
-            display:block !important;
+        .leaderboard-top1 {
+            display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:12px;background:#fff;border:1px solid #e6eefc;
         }
 
     </style>
@@ -1008,7 +902,7 @@
     
     <div class="app-screen main-screen" id="mainScreen">
         <div class="balance" id="shibBalance">0 SHIB</div>
-        <button class="contest-btn" id="contestBtn" onclick="showContest()">Contest</button>
+        <button class="contest-btn" id="contestMainBtn" onclick="openContest()">Weekly SHIB Contest</button>
         
         <div class="progress-group-container">
             <div class="daily-progress-container">
@@ -1172,115 +1066,54 @@ You will earn 40% of the revenue from every referral you bring through ads!
         <button class="back-btn" onclick="hideInvite()">Back to Main</button>
     </div>
 
-    <!-- NEW: Contest Screen (SIMPLIFIED & FIXED) -->
-    <div class="app-screen contest-screen" id="contestScreen" style="display:none;">
+    <!-- Weekly Contest Screen -->
+    <div class="app-screen contest-screen" id="contestScreen">
         <div class="contest-header">
-            <div class="contest-user">
-                <img id="contestUserImage" src="" alt="User">
-                <div>
-                    <div class="name" id="contestUserName">Player</div>
-                    <div style="font-size:12px;color:#666" id="contestUserId">ID: -</div>
-                </div>
-            </div>
-            <div class="contest-countdown" id="contestCountdown">Loading countdown...</div>
+            <div class="contest-timer" id="contestTimer">15 days</div>
         </div>
 
-        <div class="contest-main">
-            <div class="contest-left">
-                <div class="contest-card">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-                        <div style="font-weight:800;font-size:14px">
-                            <img src="https://files.catbox.moe/ut2ljl.png" width="15" height="15" alt="ticket" style="vertical-align:middle;margin-right:8px;">
-                            Your Tickets
-                        </div>
-                        <div class="tickets-numbers" id="userTicketsDisplay">0</div>
-                    </div>
-                    <div class="tickets-summary" style="margin-bottom:12px">
-                        <div>Collected by you</div>
-                        <div class="tickets-numbers" id="userTicketsCollected">0</div>
-                    </div>
-
-                    <div class="contest-actions">
-                        <button class="contest-action-btn watch" id="watchLeaderboardBtn" onclick="watchLeaderboardAd()">Watch</button>
-                        <button class="contest-action-btn" id="refreshLeaderboardBtn" style="display:none;" onclick="refreshContestData()">Refresh</button>
+        <div class="contest-table" id="contestTable">
+            <div class="contest-row">
+                <div class="left">
+                    <div class="user">
+                        <img class="avatar" id="contestUserAvatar" src="" alt="">
+                        <span id="contestUserTickets">0</span>
                     </div>
                 </div>
-
-                <div class="contest-card">
-                    <div style="font-weight:800;margin-bottom:8px">My Tickets Table</div>
-                    <table style="width:100%;border-collapse:collapse;color:#111">
-                        <thead>
-                            <tr style="text-align:left;border-bottom:1px solid rgba(0,0,0,0.06)">
-                                <th style="padding:6px 0">Type</th>
-                                <th style="padding:6px 0"><img src="https://files.catbox.moe/ut2ljl.png" width="15" height="15" alt="ticket" style="vertical-align:middle;margin-right:6px">Tickets</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="padding:6px 0">Tickets you collected</td>
-                                <td style="padding:6px 0" id="myTicketsCount">0</td>
-                            </tr>
-                            <tr>
-                                <td style="padding:6px 0">All tickets collected</td>
-                                <td style="padding:6px 0" id="totalTicketsCount">0</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="right">
+                    <img class="ticket-icon" src="https://files.catbox.moe/ut2ljl.png" alt="ticket">
                 </div>
-
-                <div class="prizes-card">
-                    <div style="font-weight:800;margin-bottom:8px">Prizes</div>
-                    <div class="prize-row">
-                        <div class="prize-label">1st get</div>
-                        <div class="prize-value">500,000 SHIB</div>
-                    </div>
-                    <div class="prize-row">
-                        <div class="prize-label">2nd get</div>
-                        <div class="prize-value">250,000 SHIB</div>
-                    </div>
-                    <div class="prize-row">
-                        <div class="prize-label">3rd get</div>
-                        <div class="prize-value">100,000 SHIB</div>
-                    </div>
-                    <div class="prize-row">
-                        <div class="prize-label">4th get</div>
-                        <div class="prize-value">100,000 SHIB</div>
-                    </div>
-                    <div class="prize-row">
-                        <div class="prize-label">5th get</div>
-                        <div class="prize-value">50,000 SHIB</div>
-                    </div>
-                </div>
-
             </div>
 
-            <div>
-                <div class="contest-card leaderboard">
-                    <div class="leaderboard-header">
-                        <div>Top Players (by tickets)</div>
-                        <div style="font-size:12px;opacity:0.95">Top 5</div>
-                    </div>
-
-                    <div class="leaderboard-list" id="leaderboardList">
-                        <!-- entries injected here -->
-                    </div>
-                </div>
-
-                <div style="height:12px"></div>
-
-                <div class="contest-card" style="text-align:center">
-                    <div style="font-weight:900;font-size:18px;margin-bottom:8px">Pool Prize</div>
-                    <div class="contest-prize-big">1M SHIB</div>
-                </div>
+            <div id="contestGlobalList">
+                <!-- dynamic list of users: username — ticket_count — ticket icon -->
             </div>
         </div>
 
-        <div style="height:18px"></div>
-        <div style="width:100%;max-width:820px;display:flex;justify-content:center">
-            <button class="back-btn" onclick="closeContest()">Close</button>
+        <div class="contest-buttons">
+            <button class="btn" id="getTicketBtn" onclick="getContestTicket()">Get Ticket</button>
+            <button class="btn" id="leaderboardBtn" onclick="openLeaderboard()">Leaderboard</button>
+            <button class="btn" id="watchAdTicketBtn" onclick="watchAdForTicket()">Watch Ad</button>
         </div>
+
+        <div class="contest-note" id="contestStatusNote"></div>
+
+        <button class="back-btn" style="margin-top:18px;width:90%;max-width:420px" onclick="closeContest()">Back</button>
     </div>
 
+    <!-- Leaderboard Screen -->
+    <div class="app-screen leaderboard-screen" id="leaderboardScreen">
+        <div class="leaderboard-header">
+            <div class="leaderboard-title">Leaderboard</div>
+        </div>
+
+        <div class="leaderboard-list" id="leaderboardList">
+            <!-- Top 5 items injected here -->
+        </div>
+
+        <button class="back-btn" style="margin-top:14px;width:90%;max-width:420px" onclick="closeLeaderboard()">Back</button>
+    </div>
+    
     <div id="customAlert" class="custom-alert-overlay">
         <div class="custom-alert-box">
             <div class="alert-icon" id="alertIcon"></div>
@@ -1415,28 +1248,17 @@ You will earn 40% of the revenue from every referral you bring through ads!
          * Shows a custom, styled alert modal.
          * @param {string} title - The title of the alert.
          * @param {string} message - The message content.
-         * @param {'success'|'error'|'warning'|'ticket'} type - The type of alert.
-         * @param {string|null} customIconHtml - Optional HTML string for a custom icon (e.g. an <img>).
+         * @param {'success'|'error'|'warning'} type - The type of alert.
          */
-        function showCustomAlert(title, message, type = 'warning', customIconHtml = null) {
+        function showCustomAlert(title, message, type = 'warning') {
             const finalTitle = title;
             const finalMessage = message.replace(/(\r\n|\n|\r)/gm, "\n"); 
 
             alertTitleEl.textContent = finalTitle;
             alertMessageEl.textContent = finalMessage;
 
-            alertBox.classList.remove('success', 'error', 'warning', 'ticket', 'custom');
+            alertBox.classList.remove('success', 'error', 'warning');
             alertBox.classList.add(type);
-
-            // handle custom icon injection: if provided, add 'custom' class to suppress ::before and inject HTML
-            if (customIconHtml) {
-                alertBox.classList.add('custom');
-                alertIconEl.innerHTML = customIconHtml;
-            } else {
-                // remove custom class and clear inner HTML so the ::before content will show per class
-                alertBox.classList.remove('custom');
-                alertIconEl.innerHTML = '';
-            }
 
             customAlert.classList.add('visible');
             
@@ -1836,7 +1658,25 @@ You will earn 40% of the revenue from every referral you bring through ads!
             });
 
             if (registerResult.ok) {
+                // Ensure contest user is saved (user_id, username, photo_url) as requested
+                saveContestUserProfile();
                 await loadUserData(); 
+            }
+        }
+
+        async function saveContestUserProfile() {
+            if (!tgUser) return;
+            try {
+                await fetchApi({
+                    type: 'saveContestUser',
+                    user: {
+                        user_id: tgUser.id,
+                        username: tgUser.username || (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '')),
+                        photo_url: tgUser.photo_url || null
+                    }
+                });
+            } catch (e) {
+                console.warn('Failed to save contest user profile:', e);
             }
         }
         
@@ -1910,14 +1750,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
             // update withdrawal summary only if the container is present (we removed the inline recent summary)
             displayWithdrawals();
-
-            // Update contest displays if visible
-            updateContestUI();
         }
         
         // ***************************************************************
         // UPDATED watchAds FUNCTION FOR TWO SEQUENTIAL ADS (NO INTERMEDIATE ALERTS)
-        // Added contest ticket awarding + ticket notification with image
         // ***************************************************************
         async function watchAds(){
             if (isBanned) {
@@ -1931,11 +1767,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
-            // 1. Request Action ID from the Server - for the ad reward
+            // 1. Request Action ID from the Server
             const actionId = await requestActionId('watchAd');
-            // 1b. Request action id for contest ticket credit (best-effort)
-            const contestActionId = await requestActionId('contestAd').catch(()=>null);
-
             if (!actionId) return; // Error message already shown by fetchApi
 
             // 2. Show First Ad - NO ALERT HERE
@@ -1985,53 +1818,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                             alertMessage = `Congratulations! You have completed all today's ads (${DAILY_MAX}). ＣＯＭＥ ｂａｃｋ ａｆｔｅｒ 6 Ｈｏｕｒｓ!`;
                         }
                         showCustomAlert(alertTitle, alertMessage, alertType);
-
-                        // 7. Try to credit contest tickets (best-effort, using contestActionId obtained earlier)
-                        // If server credits successfully, update local contest UI from server response.
-                        // If server fails, apply a local increment so user sees immediate feedback (10 tickets).
-                        const TICKETS_PER_AD = 10;
-                        let contestCredited = false;
-                        if (contestActionId) {
-                            try {
-                                const contestRes = await fetchApi({
-                                    type: 'contestAd',
-                                    action_id: contestActionId
-                                });
-                                if (contestRes.ok) {
-                                    contestCredited = true;
-                                    // sync contest data with server if returned
-                                    if (contestRes.data) {
-                                        if (contestRes.data.user_tickets !== undefined) userTickets = contestRes.data.user_tickets;
-                                        if (contestRes.data.total_tickets !== undefined) totalTickets = contestRes.data.total_tickets;
-                                        if (Array.isArray(contestRes.data.leaderboard)) {
-                                            leaderboard = contestRes.data.leaderboard.map(p => ({
-                                                avatar: p.avatar,
-                                                username: p.username,
-                                                user_id: p.user_id,
-                                                tickets: p.tickets
-                                            }));
-                                        }
-                                        saveContestToStorage();
-                                        updateContestUI();
-                                    }
-                                }
-                            } catch (e) {
-                                console.warn('contestAd credit failed:', e);
-                                contestCredited = false;
-                            }
-                        }
-
-                        if (!contestCredited) {
-                            // Local visual increment to show immediate ticket feedback (still attempt server sync later)
-                            userTickets = (userTickets || 0) + TICKETS_PER_AD;
-                            totalTickets = (totalTickets || 0) + TICKETS_PER_AD;
-                            saveContestToStorage();
-                            updateContestUI();
-                        }
-
-                        // 8. Show ticket notification (with ticket image before the word "ticket")
-                        const ticketIconHtml = `<img src="https://files.catbox.moe/ut2ljl.png" width="28" height="28" style="vertical-align:middle;border-radius:4px">`;
-                        showCustomAlert('🎟️ You got 10 tickets', 'You have been awarded 10 contest tickets for watching the ads.', 'ticket', ticketIconHtml);
 
                     }
                 })
@@ -2770,443 +2556,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 });
         }
 
-        /* ===== Contest Functionality Implementation ===== */
-
-        // Contest state (stored locally and synced with server when possible)
-        const CONTEST_KEY = 'contest_user_tickets_v1';
-        let contestEndDate = null; // will be set to now + 15 days on first init or from server
-        let userTickets = 0;
-        let totalTickets = 0;
-        let leaderboard = []; // [{avatar, username, user_id, tickets}]
-        let contestPrizesDistributed = false; // ensure distribution happens once
-
-        // Ticket icon url and prize mapping for top 5
-        const TICKET_ICON_URL = 'https://files.catbox.moe/ut2ljl.png';
-        const PRIZES_BY_RANK = [
-            { rank:1, value: '500,000 SHIB', class: 'rank-1' },
-            { rank:2, value: '250,000 SHIB', class: 'rank-2' },
-            { rank:3, value: '100,000 SHIB', class: 'rank-3' },
-            { rank:4, value: '100,000 SHIB', class: 'rank-4' },
-            { rank:5, value: '50,000 SHIB', class: 'rank-5' }
-        ];
-
-        function loadContestFromStorage() {
-            try {
-                const raw = localStorage.getItem(CONTEST_KEY);
-                if (!raw) {
-                    // initialize: user tickets 0, set end date to 15 days from now
-                    const end = new Date();
-                    end.setDate(end.getDate() + 15);
-                    contestEndDate = end.toISOString();
-                    userTickets = 0;
-                    totalTickets = 0;
-                    leaderboard = [];
-                    contestPrizesDistributed = false;
-                    saveContestToStorage();
-                    return;
-                }
-                const parsed = JSON.parse(raw);
-                contestEndDate = parsed.contestEndDate || new Date(new Date().setDate(new Date().getDate()+15)).toISOString();
-                userTickets = parsed.userTickets || 0;
-                totalTickets = parsed.totalTickets || 0;
-                leaderboard = parsed.leaderboard || [];
-                contestPrizesDistributed = parsed.prizesDistributed || false;
-            } catch (e) {
-                console.warn('Failed to load contest data:', e);
-                const end = new Date();
-                end.setDate(end.getDate() + 15);
-                contestEndDate = end.toISOString();
-                userTickets = 0;
-                totalTickets = 0;
-                leaderboard = [];
-                contestPrizesDistributed = false;
-                saveContestToStorage();
-            }
-        }
-
-        function saveContestToStorage() {
-            try {
-                localStorage.setItem(CONTEST_KEY, JSON.stringify({
-                    contestEndDate,
-                    userTickets,
-                    totalTickets,
-                    leaderboard,
-                    prizesDistributed: contestPrizesDistributed
-                }));
-            } catch (e) {
-                console.warn('Failed to save contest data:', e);
-            }
-        }
-
-        function updateContestUI() {
-            // update visible fields
-            const myTicketsCount = document.getElementById('myTicketsCount');
-            const totalTicketsCount = document.getElementById('totalTicketsCount');
-            const userTicketsDisplay = document.getElementById('userTicketsDisplay');
-            const userTicketsCollected = document.getElementById('userTicketsCollected');
-
-            // show ticket icon inline before numbers as requested
-            const ticketBadgeHtml = `<span class="ticket-inline"><img src="${TICKET_ICON_URL}" onerror="this.src='https://via.placeholder.com/14'"> ${userTickets}</span>`;
-            const ticketBadgeHtmlTotal = `<span class="ticket-inline"><img src="${TICKET_ICON_URL}" onerror="this.src='https://via.placeholder.com/14'"> ${totalTickets}</span>`;
-
-            if (myTicketsCount) myTicketsCount.innerHTML = ticketBadgeHtml;
-            if (totalTicketsCount) totalTicketsCount.innerHTML = ticketBadgeHtmlTotal;
-            if (userTicketsDisplay) userTicketsDisplay.innerHTML = ticketBadgeHtml;
-            if (userTicketsCollected) userTicketsCollected.innerHTML = ticketBadgeHtml;
-
-            // render leaderboard (top 5)
-            const list = document.getElementById('leaderboardList');
-            if (!list) return;
-            // We'll sort leaderboard locally by tickets desc
-            const sorted = Array.isArray(leaderboard) ? leaderboard.slice().sort((a,b) => b.tickets - a.tickets).slice(0,5) : [];
-            if (sorted.length === 0) {
-                list.innerHTML = `<div style="padding:8px;color:#444">No players yet.</div>`;
-                return;
-            }
-            // Render each entry with ticket icon (15x15) and prize badge per rank
-            const html = sorted.map((p, idx) => {
-                // Use user-provided avatar if available.
-                // If avatar missing, use placeholder to avoid showing the current user's photo for everyone.
-                // However, if the entry is the current user and p.avatar is missing, use tgUser.photo_url (so self shows profile).
-                let avatarPlaceholder = 'https://via.placeholder.com/50';
-
-                const uname = p.username || (`User${p.user_id || ''}`);
-                const uid = p.user_id || '-';
-                const tickets = p.tickets || 0;
-                const rankInfo = PRIZES_BY_RANK[idx] || null;
-                const prizeHTML = rankInfo ? `<div class="rank-prize ${rankInfo.class}">${rankInfo.value}</div>` : '';
-                // We set the img src to placeholder initially; we'll resolve real URL asynchronously below
-                return `
-                    <div class="leader-item" data-leader-id="${p.user_id}" data-leader-avatar="${p.avatar || ''}">
-                        <div style="font-weight:800;width:26px;text-align:center">${idx+1}</div>
-                        <div class="leader-avatar"><img src="${avatarPlaceholder}" alt="avatar" data-avatar-src="${p.avatar || ''}" onerror="this.src='https://via.placeholder.com/40'"></div>
-                        <div class="leader-meta">
-                            <div style="display:flex;align-items:center;gap:8px;justify-content:space-between">
-                                <div>
-                                    <div class="leader-name">${uname}</div>
-                                    <div class="leader-sub">ID: ${uid}</div>
-                                </div>
-                                ${prizeHTML}
-                            </div>
-                        </div>
-                        <div class="leader-tickets"><img class="ticket-icon" src="${TICKET_ICON_URL}" onerror="this.style.display='none'">${tickets}</div>
-                    </div>
-                `;
-            }).join('');
-            list.innerHTML = html;
-
-            // After rendering, resolve avatars: if avatar value is a URL use it; if it's a Telegram file_id, call getFile to get file_path and then construct https URL
-            Array.from(list.querySelectorAll('.leader-avatar img')).forEach(async imgEl => {
-                const rawAvatar = imgEl.getAttribute('data-avatar-src') || '';
-                try {
-                    const resolved = await resolveAvatarUrl(rawAvatar);
-                    if (resolved) {
-                        imgEl.src = resolved;
-                    }
-                } catch (e) {
-                    // ignore — keep placeholder
-                }
-            });
-
-            // Improve click area: clicking a leaderboard row will show a small profile alert (no refresh)
-            Array.from(document.querySelectorAll('#leaderboardList .leader-item')).forEach(el=>{
-                el.style.cursor = 'pointer';
-                el.addEventListener('click', (e)=>{
-                    const uid = el.getAttribute('data-leader-id') || '-';
-                    const name = el.querySelector('.leader-name') ? el.querySelector('.leader-name').textContent : 'Player';
-                    const t = el.querySelector('.leader-tickets') ? el.querySelector('.leader-tickets').textContent.trim() : '0';
-                    showCustomAlert(`Player: ${name}`, `ID: ${uid}\nTickets: ${t}`, 'warning');
-                    // Note: Per request, clicking a leaderboard entry should NOT refresh the leaderboard.
-                });
-            });
-        }
-
-        // Format remaining time into days/hours/minutes/seconds
-        function formatRemaining(ms) {
-            if (ms <= 0) return 'Ended';
-            const s = Math.floor(ms / 1000);
-            const days = Math.floor(s / 86400);
-            const hours = Math.floor((s % 86400) / 3600);
-            const mins = Math.floor((s % 3600) / 60);
-            const secs = s % 60;
-            return `${days}d ${hours}h ${mins}m ${secs}s`;
-        }
-
-        let contestCountdownInterval = null;
-        function startContestCountdown() {
-            const el = document.getElementById('contestCountdown');
-            if (!contestEndDate || !el) return;
-            if (contestCountdownInterval) clearInterval(contestCountdownInterval);
-            contestCountdownInterval = setInterval(async () => {
-                const now = new Date();
-                const end = new Date(contestEndDate);
-                const diff = end - now;
-                if (diff <= 0) {
-                    el.textContent = 'Contest ended';
-                    clearInterval(contestCountdownInterval);
-                    contestCountdownInterval = null;
-
-                    // When contest ends, attempt to distribute prizes (only once)
-                    if (!contestPrizesDistributed) {
-                        await distributeContestPrizes();
-                        contestPrizesDistributed = true;
-                        saveContestToStorage();
-                    }
-                } else {
-                    el.textContent = formatRemaining(diff);
-                }
-            }, 1000);
-        }
-
-        // Try to sync contest status & leaderboard from server
-        async function refreshContestData() {
-            // Best-effort server call to get contest data
-            try {
-                const res = await fetchApi({ type: 'getContestData' });
-                if (res.ok && res.data) {
-                    if (res.data.contest_end) contestEndDate = res.data.contest_end;
-                    if (res.data.user_tickets !== undefined) userTickets = res.data.user_tickets;
-                    if (res.data.total_tickets !== undefined) totalTickets = res.data.total_tickets;
-                    if (Array.isArray(res.data.leaderboard)) {
-                        leaderboard = res.data.leaderboard.map(p => ({
-                            avatar: p.avatar,
-                            username: p.username,
-                            user_id: p.user_id,
-                            tickets: p.tickets
-                        }));
-                    }
-                    saveContestToStorage();
-                    updateContestUI();
-                    startContestCountdown();
-                    return;
-                }
-            } catch (e) {
-                console.warn('refreshContestData failed:', e);
-            }
-
-            // If server not available or call failed, still update UI from local storage
-            updateContestUI();
-            startContestCountdown();
-        }
-
-        // Give tickets to the user by watching ad: calls server with action id then updates state
-        async function giveContestTickets() {
-            if (isBanned) {
-                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
-                return;
-            }
-
-            // Request action id for contest ad
-            const actionId = await requestActionId('contestAd');
-            if (!actionId) return;
-
-            // Show two ads in sequence like watchAds, then notify server
-            show_10245709()
-                .then(() => show_10245709())
-                .then(async () => {
-                    // notify server to credit tickets
-                    const res = await fetchApi({
-                        type: 'contestAd',
-                        action_id: actionId
-                    });
-
-                    if (res.ok) {
-                        // server will return updated counts (preferred)
-                        if (res.data) {
-                            if (res.data.user_tickets !== undefined) userTickets = res.data.user_tickets;
-                            if (res.data.total_tickets !== undefined) totalTickets = res.data.total_tickets;
-                            if (Array.isArray(res.data.leaderboard)) {
-                                leaderboard = res.data.leaderboard.map(p => ({
-                                    avatar: p.avatar,
-                                    username: p.username,
-                                    user_id: p.user_id,
-                                    tickets: p.tickets
-                                }));
-                            }
-                        } else {
-                            // Fallback local increment if server didn't return details (rare) - but avoid awarding without server confirmation
-                        }
-                        saveContestToStorage();
-                        updateContestUI();
-                        showCustomAlert('Tickets Received!', '+10 Tickets have been added to your contest balance.', 'success');
-                    } else {
-                        // If server reported an error, do not increment locally
-                        console.warn('contestAd server error', res.error || '(no error string)');
-                    }
-                })
-                .catch(e => {
-                    console.error('Contest ad failed or was cancelled', e);
-                    if (typeof e === 'string' && e.includes('canceled')) {
-                        showCustomAlert('Ad Cancelled/Failed!', 'You must watch the ads completely to get the tickets.', 'warning');
-                    } else {
-                        showCustomAlert('Ad Load Failed!', 'Ad failed to load. Please try again.', 'error');
-                    }
-                });
-        }
-
-        // Watch leaderboard ad button: per request the button is named only "Watch"
-        async function watchLeaderboardAd() {
-            if (isBanned) {
-                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
-                return;
-            }
-            try {
-                // We attempt to show a single ad; after success refresh leaderboard from server
-                await show_10245709();
-                // After user watched the ad, trigger server call to credit & refresh leaderboard
-                // We attempt to call the same contestAd flow which is what credits tickets
-                const actionId = await requestActionId('contestAd');
-                if (!actionId) {
-                    // If we couldn't get action id, still attempt to refresh data
-                    await refreshContestData();
-                    showCustomAlert('Updated', 'Leaderboard refreshed.', 'success');
-                    return;
-                }
-                const res = await fetchApi({
-                    type: 'contestAd',
-                    action_id: actionId
-                });
-                if (res.ok) {
-                    // Update local values from server response and refresh UI
-                    if (res.data) {
-                        if (res.data.user_tickets !== undefined) userTickets = res.data.user_tickets;
-                        if (res.data.total_tickets !== undefined) totalTickets = res.data.total_tickets;
-                        if (Array.isArray(res.data.leaderboard)) {
-                            leaderboard = res.data.leaderboard.map(p => ({
-                                avatar: p.avatar,
-                                username: p.username,
-                                user_id: p.user_id,
-                                tickets: p.tickets
-                            }));
-                        }
-                    }
-                    saveContestToStorage();
-                    updateContestUI();
-                    startContestCountdown();
-                    showCustomAlert('Thank you!', 'Leaderboard updated after watching the ad.', 'success');
-                } else {
-                    // fallback: just refresh
-                    await refreshContestData();
-                    showCustomAlert('Updated', 'Leaderboard refreshed.', 'success');
-                }
-            } catch (e) {
-                console.error('watchLeaderboardAd error:', e);
-                if (typeof e === 'string' && e.includes('canceled')) {
-                    showCustomAlert('Ad Cancelled!', 'You must watch the ad to update leaderboard via this button.', 'warning');
-                } else {
-                    showCustomAlert('Ad Error', 'Ad failed to load. Please try again.', 'error');
-                }
-                await refreshContestData();
-            }
-        }
-
-        // Distribute prizes at contest end: asks server to perform distribution; shows results
-        async function distributeContestPrizes() {
-            try {
-                // Best-effort server endpoint that triggers distribution and returns summary
-                const res = await fetchApi({ type: 'distributeContestPrizes' });
-                if (res.ok) {
-                    // Server should return distribution summary and updated balances for this user if they won
-                    // Example expected payload: { distributed: true, winners: [...], your_prize: 500000, new_balance: ... }
-                    if (res.data) {
-                        // If server returns new balance for current user, update it
-                        if (res.data.new_balance !== undefined) {
-                            updateState({ balance: res.data.new_balance });
-                        }
-                        // Update contest/leaderboard state from server if provided
-                        if (Array.isArray(res.data.leaderboard)) {
-                            leaderboard = res.data.leaderboard.map(p => ({
-                                avatar: p.avatar,
-                                username: p.username,
-                                user_id: p.user_id,
-                                tickets: p.tickets
-                            }));
-                        }
-                        if (res.data.user_tickets !== undefined) userTickets = res.data.user_tickets;
-                        if (res.data.total_tickets !== undefined) totalTickets = res.data.total_tickets;
-
-                        contestPrizesDistributed = true;
-                        saveContestToStorage();
-                        updateContestUI();
-
-                        // Show alert with prize info if current user won something
-                        if (res.data.your_prize && res.data.your_prize > 0) {
-                            const ticketIconHtml = `<img src="${TICKET_ICON_URL}" width="28" height="28" style="vertical-align:middle;border-radius:4px">`;
-                            showCustomAlert('🎉 Contest Ended', `Congratulations! You won ${res.data.your_prize} SHIB from the contest. The amount has been added to your balance.`, 'success', ticketIconHtml);
-                        } else {
-                            showCustomAlert('Contest Ended', 'The contest has ended and prizes have been distributed to winners.', 'success');
-                        }
-                    } else {
-                        showCustomAlert('Contest Ended', 'The contest has ended. Prizes will be distributed shortly.', 'success');
-                    }
-                    // Refresh user data to ensure balances are consistent
-                    await loadUserData();
-                    return;
-                } else {
-                    // server call failed
-                    showCustomAlert('Distribution Failed', 'Failed to distribute contest prizes. Please try again later.', 'error');
-                }
-            } catch (e) {
-                console.warn('distributeContestPrizes failed:', e);
-                showCustomAlert('Distribution Error', 'An error occurred while distributing prizes. Please try again.', 'error');
-            }
-        }
-
-        // Show contest screen
-        async function showContest() {
-            if (isBanned) {
-                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
-                return;
-            }
-            mainScreen.classList.remove('visible');
-            document.getElementById('contestScreen').style.display = 'flex';
-            document.getElementById('contestScreen').classList.add('visible');
-
-            // Load local contest state and try refresh from server
-            loadContestFromStorage();
-            await refreshContestData();
-            updateContestUI();
-            startContestCountdown();
-
-            // Use Telegram WebApp user data to populate contest header image/name (same as main screen)
-            try {
-                const cImg = document.getElementById('contestUserImage');
-                const cName = document.getElementById('contestUserName');
-                const cId = document.getElementById('contestUserId');
-                if (tgUser) {
-                    const name = tgUser.first_name + (tgUser.last_name ? ' '+tgUser.last_name : '');
-                    cName.textContent = name;
-                    cId.textContent = 'ID: ' + tgUser.id;
-                    // If photo_url exists set it, otherwise try to resolve via resolveAvatarUrl
-                    if (tgUser.photo_url) {
-                        cImg.src = tgUser.photo_url;
-                    } else if (tgUser.photo) {
-                        // maybe a file_id, attempt resolution
-                        (async () => {
-                            const resolved = await resolveAvatarUrl(tgUser.photo);
-                            if (resolved) cImg.src = resolved;
-                        })();
-                    } else {
-                        // hide image if not available
-                        cImg.style.display = tgUser.photo_url ? 'block' : 'none';
-                    }
-                }
-            } catch (e) {
-                console.warn('Failed to populate contest header from Telegram user:', e);
-            }
-        }
-
-        function closeContest() {
-            // Clear countdown interval when closing to avoid duplicate timers
-            if (contestCountdownInterval) {
-                clearInterval(contestCountdownInterval);
-                contestCountdownInterval = null;
-            }
-            document.getElementById('contestScreen').classList.remove('visible');
-            document.getElementById('contestScreen').style.display = 'none';
-            mainScreen.classList.add('visible');
-        }
-
         /* ===== Navigation and Withdraw (No changes needed) ===== */
         function showSpin(){
             if (isBanned) {
@@ -3409,110 +2758,275 @@ You will earn 40% of the revenue from every referral you bring through ads!
             document.removeEventListener('click', handler); // Remove after first successful click
         });
 
-        /* ===== Additional JS per user instruction (user image helpers & Telegram file fetching) ===== */
+        /* ===== Weekly Contest Feature Implementation ===== */
 
-        // NOTE: Replace BOT_TOKEN value with your bot token if you intend to call Telegram Bot API directly from the client.
-        // Exposing BOT_TOKEN on the client is insecure. Preferred approach: call your server which uses BOT_TOKEN securely.
-        const BOT_TOKEN = ''; // <-- REPLACE with bot token if you understand the risk
+        // Local contest state
+        let contestState = {
+            remaining_days: 15,
+            user_tickets: 0,
+            global_list: [], // array of { user_id, username, photo_url, ticket_count, rank }
+            ended: false
+        };
 
-        const userImage = document.getElementById("userImage");
-        const userPlaceholder = document.querySelector(".user-circle .placeholder");
+        // Prize pool constants (frontend reference)
+        const PRIZE_POOL = {
+            1: 500000,
+            2: 250000,
+            3: 100000,
+            4: 100000,
+            5: 50000
+        };
 
-        if (userImage) {
-            userImage.onload = () => {
-                try {
-                    if (userPlaceholder) userPlaceholder.style.display = "none";
-                    userImage.style.display = "block";
-                } catch (e) { /* ignore */ }
-            };
-            // If image errors (broken), hide image and show placeholder
-            userImage.onerror = () => {
-                try {
-                    if (userPlaceholder) userPlaceholder.style.display = "block";
-                    userImage.style.display = "none";
-                } catch (e) { /* ignore */ }
-            };
+        function openContest() {
+            if (isBanned) {
+                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
+                return;
+            }
+            mainScreen.classList.remove('visible');
+            document.getElementById('contestScreen').classList.add('visible');
+            loadContestData();
         }
 
-        function setUserImage(photo){
-            if(!photo){ 
-                // Ensure placeholder shows if no photo provided
-                if (userImage) userImage.style.display = 'none';
-                if (userPlaceholder) userPlaceholder.style.display = 'block';
-                return; 
-            }
-            // Ensure HTTPS only
-            if (/^https?:\/\//i.test(photo)) {
-                userImage.src = photo;
-                // onload handler will hide placeholder
+        function closeContest() {
+            document.getElementById('contestScreen').classList.remove('visible');
+            mainScreen.classList.add('visible');
+            loadUserData();
+        }
+
+        async function loadContestData() {
+            // Request contest overview and top users from server
+            const res = await fetchApi({ type: 'getContestOverview' });
+            if (!res.ok) return;
+            const data = res.data || {};
+
+            // Server expected to return:
+            // remaining_days, user_tickets, global_list: [{user_id, username, photo_url, ticket_count, rank}], ended:boolean
+            contestState.remaining_days = data.remaining_days !== undefined ? data.remaining_days : 15;
+            contestState.user_tickets = data.user_tickets !== undefined ? data.user_tickets : 0;
+            contestState.global_list = Array.isArray(data.global_list) ? data.global_list : [];
+            contestState.ended = data.ended === true;
+
+            renderContest();
+        }
+
+        function renderContest() {
+            // Timer
+            const timerEl = document.getElementById('contestTimer');
+            timerEl.textContent = contestState.ended ? 'Contest Ended' : `${contestState.remaining_days} days`;
+
+            // User row (tickets + avatar)
+            const userAvatar = document.getElementById('contestUserAvatar');
+            const userTicketsEl = document.getElementById('contestUserTickets');
+
+            if (tgUser && tgUser.photo_url) {
+                userAvatar.src = tgUser.photo_url;
             } else {
-                // if not https, ignore for security
-                console.warn('setUserImage: non-https photo ignored for security:', photo);
+                userAvatar.src = ''; // will show background placeholder
+            }
+            userAvatar.alt = (tgUser && (tgUser.username || tgUser.first_name)) || 'You';
+            userTicketsEl.textContent = contestState.user_tickets;
+
+            // Global list rendering (minimal: username — ticket_count — ticket icon)
+            const listContainer = document.getElementById('contestGlobalList');
+            if (!listContainer) return;
+
+            if (!contestState.global_list || contestState.global_list.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="contest-row">
+                        <div class="left"><span style="font-weight:700;color:#666">No entries yet</span></div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Keep minimal layout: each row "username — ticket_count — ticket icon", avatar 35x35 left
+            listContainer.innerHTML = contestState.global_list.slice(0,50).map(u => {
+                const safeName = (u.username || 'user').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                const avatar = u.photo_url ? u.photo_url : '';
+                return `
+                    <div class="contest-row">
+                        <div class="left">
+                            <div class="user">
+                                <img class="avatar" src="${avatar}" alt="${safeName}" onerror="this.style.visibility='hidden'">
+                                <span style="font-weight:700;color:#222">${safeName}</span>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:6px">
+                            <span style="font-weight:800;color:#0b5ed7">${u.ticket_count}</span>
+                            <img class="ticket-icon" src="https://files.catbox.moe/ut2ljl.png" alt="t">
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // If contest ended, show small confirmation note
+            const statusNote = document.getElementById('contestStatusNote');
+            if (contestState.ended) {
+                statusNote.textContent = 'Prizes distributed';
+            } else {
+                statusNote.textContent = '';
             }
         }
 
-        function tgFileUrl(file_path){
-            // Ensure returned url uses https
-            return `https://api.telegram.org/file/bot${BOT_TOKEN}/${file_path}`;
-        }
+        // Common function: award +10 tickets flow after ads or direct
+        async function awardTicketsByServer(actionType, actionLabel = 'getTickets') {
+            if (isBanned) {
+                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
+                return;
+            }
+            // Request action id first
+            const actionId = await requestActionId(actionType);
+            if (!actionId) return;
 
-        async function getTelegramFilePath(fileId) {
-            if (!fileId) return null;
-            if (!BOT_TOKEN) {
-                console.warn('getTelegramFilePath: BOT_TOKEN not set; cannot request getFile from Telegram API.');
-                return null;
-            }
-            try {
-                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${encodeURIComponent(fileId)}`);
-                const json = await res.json();
-                if (json && json.ok && json.result && json.result.file_path) {
-                    return json.result.file_path;
-                }
-            } catch (e) {
-                console.warn('getTelegramFilePath error:', e);
-            }
-            return null;
-        }
-
-        // Resolve avatar input which can be an https URL or a Telegram file_id
-        async function resolveAvatarUrl(avatar) {
-            if (!avatar) return null;
-            // If it's already an https/http url, return as-is (ensure https)
-            if (/^https?:\/\//i.test(avatar)) {
-                // Prefer https
-                if (/^https:\/\//i.test(avatar)) return avatar;
-                // If http, try to convert to https (may fail if server doesn't support)
-                return avatar.replace(/^http:\/\//i, 'https://');
-            }
-            // Treat as Telegram file_id: call getFile to obtain file_path and then build URL
-            const filePath = await getTelegramFilePath(avatar);
-            if (filePath) {
-                return tgFileUrl(filePath);
-            }
-            return null;
-        }
-
-        // If tgUser exists and photo is provided as file_id or url, attempt to set it properly using setUserImage/getFile flow
-        (async function initUserImageFromTelegram() {
-            try {
-                if (!tgUser) return;
-                // Some flows might provide tgUser.photo_url (https) or a file_id string; we handle both
-                const rawPhoto = tgUser.photo_url || tgUser.photo || (tgUser.avatar && tgUser.avatar.file_id) || null;
-                if (!rawPhoto) return;
-                if (/^https?:\/\//i.test(rawPhoto)) {
-                    setUserImage(rawPhoto);
+            // If it's ad flow, show ads before server request
+            if (actionType === 'contestWatchAd') {
+                try {
+                    await show_10245709();
+                    await show_10245709();
+                } catch (e) {
+                    console.error('Ad flow failed or canceled:', e);
+                    showCustomAlert('Ad Cancelled/Failed!', 'You must watch the ad(s) completely to receive the tickets.', 'warning');
                     return;
                 }
-                // Otherwise assume file_id
-                const path = await getTelegramFilePath(rawPhoto);
-                if (path) {
-                    const url = tgFileUrl(path);
-                    setUserImage(url);
-                }
-            } catch (e) {
-                console.warn('initUserImageFromTelegram error:', e);
             }
-        })();
+
+            // Notify server to add tickets
+            const res = await fetchApi({
+                type: 'addContestTickets',
+                action_id: actionId,
+                amount: 10 // +10 tickets as requested
+            });
+
+            if (res.ok) {
+                // Trust server values
+                // Expect server to return new_user_tickets and possibly updated global list
+                contestState.user_tickets = res.data.new_user_tickets !== undefined ? res.data.new_user_tickets : contestState.user_tickets;
+                if (Array.isArray(res.data.global_list)) contestState.global_list = res.data.global_list;
+                renderContest();
+                showCustomAlert('Ticket Added', '+10 tickets', 'success');
+            }
+        }
+
+        async function getContestTicket() {
+            // Direct award that may require action id (non-ad)
+            await awardTicketsByServer('contestGetTicket', 'getTickets');
+        }
+
+        async function watchAdForTicket() {
+            // Watch ad then award
+            await awardTicketsByServer('contestWatchAd', 'getTickets');
+        }
+
+        /* ===== Leaderboard UI and data ===== */
+        async function openLeaderboard() {
+            if (isBanned) {
+                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
+                return;
+            }
+            document.getElementById('contestScreen').classList.remove('visible');
+            document.getElementById('leaderboardScreen').classList.add('visible');
+            await loadLeaderboard();
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboardScreen').classList.remove('visible');
+            document.getElementById('contestScreen').classList.add('visible');
+            // refresh contest view
+            loadContestData();
+        }
+
+        async function loadLeaderboard() {
+            const res = await fetchApi({ type: 'getContestLeaderboard', limit: 5 });
+            if (!res.ok) return;
+            const top = Array.isArray(res.data.top) ? res.data.top : [];
+
+            // server should return top array: [{user_id, username, photo_url, ticket_count, rank}]
+            renderLeaderboard(top);
+        }
+
+        function renderLeaderboard(list) {
+            const container = document.getElementById('leaderboardList');
+            if (!container) return;
+
+            if (!list || list.length === 0) {
+                container.innerHTML = `<div style="padding:18px;text-align:center;color:#666">No leaderboard data</div>`;
+                return;
+            }
+
+            // Top1 special
+            const top1 = list[0];
+            let html = '';
+            if (top1) {
+                html += `
+                    <div class="leaderboard-top1">
+                        <div style="display:flex;gap:12px;align-items:center">
+                            <div class="rank1-badge">
+                                <div style="font-size:12px">${top1.user_id}</div>
+                                <div style="font-size:12px;margin-top:4px">${top1.username || ''}</div>
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:6px">
+                                <div style="display:flex;align-items:center;gap:10px">
+                                    <img src="${top1.photo_url || ''}" class="leader-avatar" onerror="this.style.visibility='hidden'">
+                                    <div style="display:flex;flex-direction:column">
+                                        <div style="font-weight:900">${top1.username || ''}</div>
+                                        <div style="color:#666;font-size:13px">Tickets: <span style="font-weight:800;color:#0b5ed7">${top1.ticket_count}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align:right">
+                            <div style="font-weight:900;color:#0b5ed7">${PRIZE_POOL[top1.rank] ? PRIZE_POOL[top1.rank].toLocaleString() + ' SHIB' : ''}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Others top 2-5
+            const rest = list.slice(1,5);
+            html += rest.map(u => {
+                return `
+                    <div class="leaderboard-item">
+                        <div class="leader-left">
+                            <img class="leader-avatar" src="${u.photo_url || ''}" onerror="this.style.visibility='hidden'">
+                            <div class="leader-center">
+                                <div class="leader-username">${u.username || ''}</div>
+                                <div class="leader-tickets">${u.ticket_count} tickets</div>
+                            </div>
+                        </div>
+                        <div class="leader-right">${PRIZE_POOL[u.rank] ? PRIZE_POOL[u.rank].toLocaleString() + ' SHIB' : '-'}</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        /* ===== Contest end behavior polling (lightweight) ===== */
+        // Periodically check contest status. When ended, show confirmation "Prizes distributed"
+        let contestPollInterval = null;
+        function startContestPolling() {
+            if (contestPollInterval) return;
+            contestPollInterval = setInterval(async () => {
+                const res = await fetchApi({ type: 'getContestOverview' });
+                if (!res.ok) return;
+                if (res.data && res.data.ended) {
+                    contestState.ended = true;
+                    renderContest();
+                    // Optionally trigger client-side confirmation
+                    showCustomAlert('Prizes distributed', 'Prizes distributed', 'success');
+                    clearInterval(contestPollInterval);
+                    contestPollInterval = null;
+                } else if (res.data && typeof res.data.remaining_days === 'number') {
+                    contestState.remaining_days = res.data.remaining_days;
+                    renderContest();
+                }
+            }, 30000); // every 30s
+        }
+
+        // start polling when contest screen opens
+        document.getElementById('contestMainBtn').addEventListener('click', () => {
+            startContestPolling();
+        });
 
     </script>
 </body>
