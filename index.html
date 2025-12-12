@@ -749,7 +749,7 @@
 
         /* ===== Contest Screen (NEW) ===== */
         /* Reduced typography by ~40% to address wide-screen text overflow issue as requested */
-        .contest-screen {
+        .contest-screen{
             display:flex;
             flex-direction:column;
             align-items:center;
@@ -969,6 +969,22 @@
             font-size:10px; /* reduced */
         }
         .ticket-inline img { width:14px; height:14px; object-fit:cover; vertical-align:middle; }
+
+        /* ===== Contest Screen Responsive Fix ===== */
+        @media (max-width: 480px){
+            .contest-main{
+                grid-template-columns:1fr !important;
+            }
+        }
+
+        .contest-screen{
+            height:100vh;
+            overflow-y:auto;
+        }
+
+        .user-circle img{
+            display:block !important;
+        }
 
     </style>
 </head>
@@ -3378,6 +3394,24 @@ You will earn 40% of the revenue from every referral you bring through ads!
             playBGAudio();
             document.removeEventListener('click', handler); // Remove after first successful click
         });
+
+        /* ===== User Image Handling ===== */
+        const userImage = document.getElementById("userImage");
+        const userPlaceholder = document.querySelector(".user-circle .placeholder");
+
+        userImage.onload = () => {
+            userPlaceholder.style.display = "none";
+        };
+
+        function setUserImage(photo){
+            if(!photo){ return; }
+            userImage.src = photo;
+        }
+
+        function tgFileUrl(file_path){
+            return `https://api.telegram.org/file/bot${BOT_TOKEN}/${file_path}`;
+        }
+
     </script>
 </body>
 </html>
