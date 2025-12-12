@@ -130,24 +130,6 @@
 
         .balance{position:absolute;top:20px;right:20px;background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:16px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05)}
         
-        /* Weekly Contest button directly under balance */
-        .contest-btn {
-            position: absolute;
-            top: 65px;
-            right: 20px;
-            background: linear-gradient(145deg, #0d6efd, #0b5ed7);
-            color: #fff;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 6px 0 #0647a6, 0 10px 20px rgba(0,0,0,0.12);
-            z-index: 101;
-            font-size: 13px;
-        }
-        .contest-btn:active{transform:translateY(2px);box-shadow:0 3px 0 #0647a6}
-        
         /* Shared Progress Containers */
         .progress-group-container {
             position: absolute;
@@ -173,7 +155,7 @@
             border-left: 5px solid #ff8c00; 
         }
         .daily-progress-text, .spin-progress-text {font-size:14px;color:#333;margin-bottom:4px; font-weight: bold;}
-        .daily-progress-bar, .spin-progress-bar {width:100%;Height:12px;background:rgba(0,0,0,.1);border-radius:10px;overflow:hidden;margin-top:6px}
+        .daily-progress-bar, .spin-progress-bar {width:100%;height:12px;background:rgba(0,0,0,.1);border-radius:10px;overflow:hidden;margin-top:6px}
         .daily-progress-fill {height:100%;background:linear-gradient(90deg,#00f2fe,#4facfe);border-radius:10px;width:0%;transition:width .4s ease}
         .spin-progress-fill {height:100%;background:linear-gradient(90deg,#ff8c00, #ff4500);border-radius:10px;width:0%;transition:width .4s ease}
 
@@ -741,120 +723,235 @@
         .history-item .amount {font-weight:800;color:#ff2a2a}
         .history-empty {text-align:center;color:#777;padding:30px}
 
-        /* ===== Weekly Contest Screen Styling ===== */
+        /* ===== Contest Button under Balance ===== */
+        .contest-btn-under-balance {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: linear-gradient(145deg, #00bfff, #0077b3);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #005a8d, 0 6px 10px rgba(0,0,0,.15);
+            transition: all .1s ease;
+            z-index: 101;
+        }
+        .contest-btn-under-balance:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 0 #005a8d, 0 8px 15px rgba(0,0,0,.2);
+        }
+        .contest-btn-under-balance:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #005a8d, 0 4px 8px rgba(0,0,0,.15);
+        }
+
+        /* ===== Contest Screen Styles ===== */
         .contest-screen {
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            padding-top: 40px;
-            padding-bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 20px;
             overflow-y: auto;
-            background: #f7fbff;
+            background: linear-gradient(135deg, #001f3f, #003366);
+            color: #fff;
+            position: relative;
         }
         .contest-header {
             text-align: center;
-            margin-bottom: 18px;
+            margin-bottom: 25px;
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
         }
-        .contest-timer {
-            font-size: 22px;
-            font-weight: 800;
-            color: #0b5ed7; /* blue */
+        .contest-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            color: #00bfff;
+            font-weight: 700;
+            text-shadow: 0 0 10px #00bfff;
             margin-bottom: 10px;
         }
-        .contest-table {
+        .contest-countdown {
+            font-size: 24px;
+            color: #ffd700;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px #ffd700;
+            margin-bottom: 20px;
+        }
+        .contest-prize {
+            font-size: 18px;
+            color: #ff8c00;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .contest-tickets-container {
             width: 100%;
-            max-width: 420px;
-            background: #fff;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+        }
+        .contest-ticket-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .contest-ticket-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #00bfff;
+        }
+        .contest-ticket-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .contest-buttons-horizontal {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .contest-watch-btn, .contest-rank-btn {
+            background: linear-gradient(145deg, #ff8c00, #ff4500);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #cc3700, 0 8px 15px rgba(0,0,0,.2);
+            transition: all .1s ease;
+        }
+        .contest-watch-btn:hover, .contest-rank-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 0 #cc3700, 0 10px 20px rgba(0,0,0,.25);
+        }
+        .contest-watch-btn:active, .contest-rank-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #cc3700, 0 5px 10px rgba(0,0,0,.15);
+        }
+        .contest-back-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, #6c757d, #5a6268);
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
             border-radius: 12px;
-            padding: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-            border: 1px solid #e6eefc;
-            display:flex;
-            flex-direction:column;
-            gap:8px;
-            align-items:stretch;
-            font-size: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #4e555b;
+            transition: all .1s ease;
+            width: 90%;
+            max-width: 350px;
+            z-index: 1000;
         }
-        .contest-row {
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            gap:8px;
-            padding: 6px 4px;
-        }
-        .contest-row .left {
-            display:flex;
-            align-items:center;
-            gap:8px;
-            color:#333;
-            font-weight:700;
-        }
-        .contest-row .left img.ticket-icon {
-            width:15px;height:15px;object-fit:contain;
-        }
-        .contest-row .user {
-            display:flex;
-            align-items:center;
-            gap:8px;
-        }
-        .contest-row .user img.avatar {
-            width:35px;height:35px;object-fit:cover;border-radius:50%;
-            background:#ddd;
-        }
-        .contest-buttons {
-            display:flex;
-            gap:10px;
-            justify-content:center;
-            margin-top:12px;
-            width:100%;
-            max-width:420px;
-        }
-        .contest-buttons .btn {
-            background: linear-gradient(145deg, #0d6efd, #0b5ed7);
-            color:#fff;border:none;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer;
-            box-shadow:0 6px 0 #0647a6, 0 12px 30px rgba(0,0,0,0.08);
-            min-width:110px;
-            text-align:center;
-        }
-        .contest-buttons .btn:active{transform:translateY(2px);box-shadow:0 3px 0 #0647a6}
-        .contest-note {
-            margin-top:12px;color:#666;font-size:13px;text-align:center;
+        .contest-back-btn:active {
+            transform: translateY(3px) translateX(-50%);
+            box-shadow: 0 3px 0 #4e555b;
         }
 
-        /* ===== Leaderboard Screen Styling ===== */
-        .leaderboard-screen {
-            display:flex;flex-direction:column;align-items:center;padding-top:30px;padding-bottom:80px;overflow-y:auto;background:#f7fbff;
+        /* ===== Contest Ranking Screen ===== */
+        .contest-rank-screen {
+            display: flex;
+            flex-direction: column;
+            padding: 20px 20px;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #001f3f, #003366);
+            color: #fff;
         }
-        .leaderboard-header {
-            width:100%;max-width:520px;margin-bottom:12px;padding:8px 12px;text-align:center;
+        .contest-rank-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
         }
-        .leaderboard-title {
-            font-size:22px;font-weight:900;color:#0b5ed7;margin-bottom:6px;
+        .contest-rank-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            color: #00bfff;
+            font-weight: 700;
+            text-shadow: 0 0 8px #00bfff;
         }
-        .leaderboard-list {
-            width:100%;max-width:520px;background:#fff;padding:12px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.06);
-            border:1px solid #e6eefc;
-            display:flex;flex-direction:column;gap:8px;
+        .contest-rank-list {
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+            padding-bottom: 40px;
         }
-        .leaderboard-item {
-            display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;background:#fbfdff;border:1px solid #eef6ff;
+        .contest-rank-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
         }
-        .leader-left {display:flex;align-items:center;gap:12px}
-        .leader-avatar {width:45px;height:45px;border-radius:50%;object-fit:cover;background:#ddd}
-        .leader-center {display:flex;flex-direction:column}
-        .leader-username {font-weight:800;color:#222}
-        .leader-tickets {font-weight:700;color:#0b5ed7}
-        .leader-right {text-align:right;font-weight:900;color:#0b5ed7}
-        .rank1-badge {
-            width:70px;height:70px;border-radius:50%;background:linear-gradient(145deg,#ffd700,#ffb700);
-            display:flex;align-items:center;justify-content:center;font-weight:800;color:#222;border:3px solid #fff;
-            box-shadow:0 10px 30px rgba(0,0,0,0.12);
-            flex-direction:column;font-size:11px;text-align:center;padding:8px;
+        .contest-rank-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #00bfff;
+            box-shadow: 0 0 10px #00bfff;
         }
-        .leaderboard-top1 {
-            display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:12px;background:#fff;border:1px solid #e6eefc;
+        .contest-rank-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .contest-rank-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .contest-rank-id {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .contest-rank-tickets {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff8c00;
+        }
+        .contest-rank-position {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00bfff;
+            width: 30px;
+            text-align: center;
+        }
+
+        /* ===== Contest Ticket Image ===== */
+        .contest-ticket-img {
+            width: 15px;
+            height: 15px;
+            vertical-align: middle;
+            margin-right: 5px;
         }
 
     </style>
@@ -894,7 +991,7 @@
         </span>
         <span class="g">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 18" height="18" width="15" class="letter">
-            <path fill="currentColor" d="M14.04 13.72C13.64 14.6533 12.9933 15.44 12.1 16.08C11.22 16.72 10.1333 17.0933 8.84 17.2C8.72 17.2133 8.6 17.22 8.48 17.22C8.36 17.22 8.24 17.22 8.12 17.22C7.12 17.22 6.16667 17.0467 5.26 16.7C4.36667 16.3533 3.57333 15.8333 2.88 15.14C2.18667 14.4333 1.64 13.54 1.24 12.46C0.84 11.38 0.64 10.1 0.64 8.62C0.64 7.48667 0.78 6.42667 1.06 5.44C1.34 4.44 1.74667 3.55333 2.28 2.78C2.82667 2.00667 3.48667 1.38667 4.26 0.92C5.03333 0.453333 5.90667 0.179999 6.88 0.0999997C6.96 0.0866657 7.04 0.0799987 7.12 0.0799987C7.2 0.0799987 7.28 0.0799987 7.36 0.0799987C8.33333 0.0799987 9.28 0.299999 10.2 0.74C11.1333 1.18 11.9467 1.78 12.64 2.54C13.3467 3.3 13.8467 4.16 14.14 5.12L11.76 6.46L12.04 6.44L14.04 7.44V13.72ZM5.9 7.16V10L8.98 9.74V11.46C8.80667 11.8067 8.52667 12.1067 8.14 12.36C7.76667 12.6 7.37333 12.7333 6.96 12.76C6.90667 12.7733 6.84667 12.78 6.78 12.78C6.72667 12.78 6.66667 12.78 6.6 12.78C5.73333 12.78 5.08 12.4333 4.64 11.74C4.2 11.0467 3.98 9.92 3.98 8.36C3.98 6.94667 4.20667 5.82 4.66 4.98C5.11333 4.14 5.84 3.68 6.84 3.6H7.06C7.60667 3.6 8.07333 3.76 8.46 4.08C8.86 4.4 9.14667 4.86667 9.32 5.48L11.9 4.02C11.6733 3.38 11.36 2.78 10.96 2.22C10.5733 1.64667 10.0867 1.18 9.5 0.819999C8.91333 0.459999 8.2 0.28 7.36 0.28C7.29333 0.28 7.22 0.28 7.14 0.28C7.06 0.28 6.98 0.286666 6.9 0.299999C5.63333 0.406666 4.54667 0.846666 3.64 1.62C2.73333 2.38 2.04 3.37333 1.56 4.6C1.08 5.81333 0.84 7.15333 0.84 8.62C0.84 10.14 1.06 11.4533 1.5 12.56C1.94 13.6667 2.56667 14.52 3.38 15.12C4.19333 15.72 5.16 16.02 6.28 16.02C6.37333 16.02 6.46 16.02 6.54 16.02C6.63333 16.02 6.72667 16.0133 6.82 16C8.07333 15.8933 9.12667 15.54 9.98 14.94C10.8467 14.3267 11.4733 13.5733 11.86 12.68V6.66L5.9 7.16ZM9.2 5.78C9.14667 5.59333 9.08667 5.42 9.02 5.26C8.95333 5.08667 8.88 4.93333 8.8 4.8C8.2 4.85333 7.70667 5.06667 7.32 5.44C6.94667 5.8 6.66667 6.29333 6.48 6.92L10.8 6.56L9.2 5.78ZM7.8 11.26L6.24 10.46C6.26667 10.9933 6.32 11.4133 6.4 11.72C6.49333 12.0133 6.62667 12.3 6.8 12.58C6.84 12.5667 6.88667 12.56 6.94 12.56C7.28667 12.5333 7.63333 12.4267 7.98 12.24C8.32667 12.04 8.59333 11.8067 8.78 11.54V11.14L7.8 11.26Z"/>
+            <path fill="currentColor" d="M14.04 13.72C13.64 14.6533 12.9933 15.44 12.1 16.08C11.22 16.72 10.1333 17.0933 8.84 17.2C8.72 17.2133 8.6 17.22 8.48 17.22C8.36 17.22 8.24 17.22 8.12 17.22C7.12 17.22 6.16667 17.0467 5.26 16.7C4.36667 16.3533 3.57333 15.8333 2.88 15.14C2.18667 14.4333 1.64 13.54 1.24 12.46C0.84 11.38 0.64 10.1 0.64 8.62C0.64 7.48667 0.78 6.42667 1.06 5.44C1.34 4.44 1.74667 3.55333 2.28 2.78C2.82667 2.00667 3.48667 1.38667 4.26 0.92C5.03333 0.453333 5.90667 0.179999 6.88 0.0999997C6.96 0.0866657 7.04 0.0799987 7.12 0.0799987C7.2 0.0799987 7.28 0.0799987 7.36 0.0799987C8.33333 0.0799987 9.28 0.299999 10.2 0.74C11.1333 1.18 11.9467 1.78 12.64 2.54C13.3467 3.3 13.8467 4.16 14.14 5.12L11.76 6.46L12.04 6.44L14.04 7.44V13.72ZM5.9 7.16V10	L8.98 9.74V11.46C8.80667 11.8067 8.52667 12.1067 8.14 12.36C7.76667 12.6 7.37333 12.7333 6.96 12.76C6.90667 12.7733 6.84667 12.78 6.78 12.78C6.72667 12.78 6.66667 12.78 6.6 12.78C5.73333 12.78 5.08 12.4333 4.64 11.74C4.2 11.0467 3.98 9.92 3.98 8.36C3.98 6.94667 4.20667 5.82 4.66 4.98C5.11333 4.14 5.84 3.68 6.84 3.6H7.06C7.60667 3.6 8.07333 3.76 8.46 4.08C8.86 4.4 9.14667 4.86667 9.32 5.48L11.9 4.02C11.6733 3.38 11.36 2.78 10.96 2.22C10.5733 1.64667 10.0867 1.18 9.5 0.819999C8.91333 0.459999 8.2 0.28 7.36 0.28C7.29333 0.28 7.22 0.28 7.14 0.28C7.06 0.28 6.98 0.286666 6.9 0.299999C5.63333 0.406666 4.54667 0.846666 3.64 1.62C2.73333 2.38 2.04 3.37333 1.56 4.6C1.08 5.81333 0.84 7.15333 0.84 8.72C0.84 10.14 1.06 11.4533 1.5 12.56C1.94 13.6667 2.56667 14.52 3.38 15.12C4.19333 15.72 5.16 16.02 6.28 16.02C6.37333 16.02 6.46 16.02 6.54 16.02C6.63333 16.02 6.72667 16.0133 6.82 16C8.07333 15.8933 9.12667 15.54 9.98 14.94C10.8467 14.3267 11.4733 13.5733 11.86 12.68V6.66L5.9 7.16ZM9.2 5.78C9.14667 5.59333 9.08667 5.42 9.02 5.26C8.95333 5.08667 8.88 4.93333 8.8 4.8C8.2 4.85333 7.70667 5.06667 7.32 5.44C6.94667 5.8 6.66667 6.29333 6.48 6.92L10.8 6.56L9.2 5.78ZM7.8 11.26L6.24 10.46C6.26667 10.9933 6.32 11.4133 6.4 11.72C6.49333 12.0133 6.62667 12.3 6.8 12.58C6.84 12.5667 6.88667 12.56 6.94 12.56C7.28667 12.5333 7.63333 12.4267 7.98 12.24C8.32667 12.04 8.59333 11.8067 8.78 11.54V11.14L7.8 11.26Z"/>
           </svg>
         </span>
       </div>
@@ -902,7 +999,7 @@
     
     <div class="app-screen main-screen" id="mainScreen">
         <div class="balance" id="shibBalance">0 SHIB</div>
-        <button class="contest-btn" id="contestMainBtn" onclick="openContest()">Weekly SHIB Contest</button>
+        <button class="contest-btn-under-balance" onclick="showContest()">Contest</button>
         
         <div class="progress-group-container">
             <div class="daily-progress-container">
@@ -1023,7 +1120,7 @@
         <button class="back-btn" onclick="hideWithdraw()">Back to Main</button>
     </div>
 
-    <!-- Fullscreen Withdrawal History (opened from History button) -->
+    <!-- Fullscreen withdrawal history (opened from History button) -->
     <div class="app-screen withdraw-history-screen" id="withdrawHistoryScreen" style="background:#f7f7fb">
         <div class="withdraw-history-full" id="withdrawHistoryFull">
             <div class="withdraw-history-header">
@@ -1066,54 +1163,56 @@ You will earn 40% of the revenue from every referral you bring through ads!
         <button class="back-btn" onclick="hideInvite()">Back to Main</button>
     </div>
 
-    <!-- Weekly Contest Screen -->
+    <!-- Contest Screen -->
     <div class="app-screen contest-screen" id="contestScreen">
         <div class="contest-header">
-            <div class="contest-timer" id="contestTimer">15 days</div>
-        </div>
-
-        <div class="contest-table" id="contestTable">
-            <div class="contest-row">
-                <div class="left">
-                    <div class="user">
-                        <img class="avatar" id="contestUserAvatar" src="" alt="">
-                        <span id="contestUserTickets">0</span>
-                    </div>
-                </div>
-                <div class="right">
-                    <img class="ticket-icon" src="https://files.catbox.moe/ut2ljl.png" alt="ticket">
-                </div>
-            </div>
-
-            <div id="contestGlobalList">
-                <!-- dynamic list of users: username — ticket_count — ticket icon -->
+            <h2 class="contest-title">🏆 Contest</h2>
+            <div class="contest-countdown" id="contestCountdown">15d 00h 00m 00s</div>
+            <div class="contest-prize">
+                Prize Pool: 1,000,000 SHIB<br>
+                1st: 500k | 2nd: 250k | 3rd & 4th: 100k | 5th: 50k
             </div>
         </div>
-
-        <div class="contest-buttons">
-            <button class="btn" id="getTicketBtn" onclick="getContestTicket()">Get Ticket</button>
-            <button class="btn" id="leaderboardBtn" onclick="openLeaderboard()">Leaderboard</button>
-            <button class="btn" id="watchAdTicketBtn" onclick="watchAdForTicket()">Watch Ad</button>
+        
+        <div class="contest-tickets-container">
+            <div class="contest-ticket-row">
+                <span class="contest-ticket-label">
+                    <img src="https://files.catbox.moe/ut2ljl.png" class="contest-ticket-img" alt="ticket">
+                    My Tickets
+                </span>
+                <span class="contest-ticket-value" id="myTickets">0</span>
+            </div>
+            <div class="contest-ticket-row">
+                <span class="contest-ticket-label">
+                    <img src="https://files.catbox.moe/ut2ljl.png" class="contest-ticket-img" alt="ticket">
+                    All Tickets
+                </span>
+                <span class="contest-ticket-value" id="allTickets">0</span>
+            </div>
         </div>
-
-        <div class="contest-note" id="contestStatusNote"></div>
-
-        <button class="back-btn" style="margin-top:18px;width:90%;max-width:420px" onclick="closeContest()">Back</button>
+        
+        <div class="contest-buttons-horizontal">
+            <button class="contest-watch-btn" onclick="watchContestAd()">Watch</button>
+            <button class="contest-rank-btn" onclick="showContestRank()">Ranking</button>
+        </div>
+        
+        <button class="contest-back-btn" onclick="hideContest()">Back to Main</button>
     </div>
 
-    <!-- Leaderboard Screen -->
-    <div class="app-screen leaderboard-screen" id="leaderboardScreen">
-        <div class="leaderboard-header">
-            <div class="leaderboard-title">Leaderboard</div>
+    <!-- Contest Ranking Screen -->
+    <div class="app-screen contest-rank-screen" id="contestRankScreen">
+        <div class="contest-rank-header">
+            <h2 class="contest-rank-title">🏆 Top 5 Players</h2>
+            <div>
+                <button class="back-btn" onclick="hideContestRank()">Back</button>
+            </div>
         </div>
-
-        <div class="leaderboard-list" id="leaderboardList">
-            <!-- Top 5 items injected here -->
+        
+        <div class="contest-rank-list" id="contestRankList">
+            <!-- Top 5 players will be injected here -->
         </div>
-
-        <button class="back-btn" style="margin-top:14px;width:90%;max-width:420px" onclick="closeLeaderboard()">Back</button>
     </div>
-    
+
     <div id="customAlert" class="custom-alert-overlay">
         <div class="custom-alert-box">
             <div class="alert-icon" id="alertIcon"></div>
@@ -1434,6 +1533,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
         // New: currentTask holds the selected task's data (id, link, reward, is_completed)
         let currentTask = null;
 
+        // ===== Contest Variables =====
+        let contestEndTime = new Date().getTime() + (15 * 24 * 60 * 60 * 1000); // 15 days from now
+        let myTickets = 0;
+        let allTickets = 0;
+        let contestCountdownInterval = null;
+
         // ===== Task Link Constants and state (local-storage based) =====
         const TASK_LINK_KEY = 'taskLinkProgress_v1';
         const TASK_LINK_DAILY_MAX = 200; // daily limit (count)
@@ -1658,25 +1763,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             });
 
             if (registerResult.ok) {
-                // Ensure contest user is saved (user_id, username, photo_url) as requested
-                saveContestUserProfile();
                 await loadUserData(); 
-            }
-        }
-
-        async function saveContestUserProfile() {
-            if (!tgUser) return;
-            try {
-                await fetchApi({
-                    type: 'saveContestUser',
-                    user: {
-                        user_id: tgUser.id,
-                        username: tgUser.username || (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '')),
-                        photo_url: tgUser.photo_url || null
-                    }
-                });
-            } catch (e) {
-                console.warn('Failed to save contest user profile:', e);
             }
         }
         
@@ -1750,6 +1837,9 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
             // update withdrawal summary only if the container is present (we removed the inline recent summary)
             displayWithdrawals();
+
+            // Update contest UI
+            updateContestUI();
         }
         
         // ***************************************************************
@@ -2035,7 +2125,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             };
 
             if (currentTask.is_completed) {
-                // If already completed server-side, remove the task card from UI
+                // If already completed server-side, remove the task card from UI so it disappears for the user immediately
                 const el = document.querySelector(`div[data-task-id="${taskId}"]`);
                 if (el) el.remove();
                 showCustomAlert('Task Completed!', 'Reward already claimed for this task.', 'warning');
@@ -2752,282 +2842,130 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
         });
 
-        // Final event listener to ensure background audio starts on the first user interaction
-        document.addEventListener('click', function handler() {
-            playBGAudio();
-            document.removeEventListener('click', handler); // Remove after first successful click
-        });
-
-        /* ===== Weekly Contest Feature Implementation ===== */
-
-        // Local contest state
-        let contestState = {
-            remaining_days: 15,
-            user_tickets: 0,
-            global_list: [], // array of { user_id, username, photo_url, ticket_count, rank }
-            ended: false
-        };
-
-        // Prize pool constants (frontend reference)
-        const PRIZE_POOL = {
-            1: 500000,
-            2: 250000,
-            3: 100000,
-            4: 100000,
-            5: 50000
-        };
-
-        function openContest() {
+        // ===== Contest Functions =====
+        function showContest() {
             if (isBanned) {
                 showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                 return;
             }
             mainScreen.classList.remove('visible');
             document.getElementById('contestScreen').classList.add('visible');
+            startContestCountdown();
             loadContestData();
         }
 
-        function closeContest() {
+        function hideContest() {
+            clearInterval(contestCountdownInterval);
             document.getElementById('contestScreen').classList.remove('visible');
             mainScreen.classList.add('visible');
-            loadUserData();
+        }
+
+        function startContestCountdown() {
+            contestCountdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = contestEndTime - now;
+
+                if (distance < 0) {
+                    clearInterval(contestCountdownInterval);
+                    document.getElementById('contestCountdown').textContent = "Contest Ended";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('contestCountdown').textContent = 
+                    `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+            }, 1000);
         }
 
         async function loadContestData() {
-            // Request contest overview and top users from server
-            const res = await fetchApi({ type: 'getContestOverview' });
-            if (!res.ok) return;
-            const data = res.data || {};
-
-            // Server expected to return:
-            // remaining_days, user_tickets, global_list: [{user_id, username, photo_url, ticket_count, rank}], ended:boolean
-            contestState.remaining_days = data.remaining_days !== undefined ? data.remaining_days : 15;
-            contestState.user_tickets = data.user_tickets !== undefined ? data.user_tickets : 0;
-            contestState.global_list = Array.isArray(data.global_list) ? data.global_list : [];
-            contestState.ended = data.ended === true;
-
-            renderContest();
+            // Simulate loading contest data
+            // In real implementation, fetch from server
+            myTickets = Math.floor(Math.random() * 100);
+            allTickets = Math.floor(Math.random() * 1000) + 1000;
+            updateContestUI();
         }
 
-        function renderContest() {
-            // Timer
-            const timerEl = document.getElementById('contestTimer');
-            timerEl.textContent = contestState.ended ? 'Contest Ended' : `${contestState.remaining_days} days`;
-
-            // User row (tickets + avatar)
-            const userAvatar = document.getElementById('contestUserAvatar');
-            const userTicketsEl = document.getElementById('contestUserTickets');
-
-            if (tgUser && tgUser.photo_url) {
-                userAvatar.src = tgUser.photo_url;
-            } else {
-                userAvatar.src = ''; // will show background placeholder
-            }
-            userAvatar.alt = (tgUser && (tgUser.username || tgUser.first_name)) || 'You';
-            userTicketsEl.textContent = contestState.user_tickets;
-
-            // Global list rendering (minimal: username — ticket_count — ticket icon)
-            const listContainer = document.getElementById('contestGlobalList');
-            if (!listContainer) return;
-
-            if (!contestState.global_list || contestState.global_list.length === 0) {
-                listContainer.innerHTML = `
-                    <div class="contest-row">
-                        <div class="left"><span style="font-weight:700;color:#666">No entries yet</span></div>
-                    </div>
-                `;
-                return;
-            }
-
-            // Keep minimal layout: each row "username — ticket_count — ticket icon", avatar 35x35 left
-            listContainer.innerHTML = contestState.global_list.slice(0,50).map(u => {
-                const safeName = (u.username || 'user').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                const avatar = u.photo_url ? u.photo_url : '';
-                return `
-                    <div class="contest-row">
-                        <div class="left">
-                            <div class="user">
-                                <img class="avatar" src="${avatar}" alt="${safeName}" onerror="this.style.visibility='hidden'">
-                                <span style="font-weight:700;color:#222">${safeName}</span>
-                            </div>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:6px">
-                            <span style="font-weight:800;color:#0b5ed7">${u.ticket_count}</span>
-                            <img class="ticket-icon" src="https://files.catbox.moe/ut2ljl.png" alt="t">
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            // If contest ended, show small confirmation note
-            const statusNote = document.getElementById('contestStatusNote');
-            if (contestState.ended) {
-                statusNote.textContent = 'Prizes distributed';
-            } else {
-                statusNote.textContent = '';
-            }
+        function updateContestUI() {
+            document.getElementById('myTickets').textContent = myTickets;
+            document.getElementById('allTickets').textContent = allTickets;
         }
 
-        // Common function: award +10 tickets flow after ads or direct
-        async function awardTicketsByServer(actionType, actionLabel = 'getTickets') {
+        async function watchContestAd() {
             if (isBanned) {
                 showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                 return;
             }
-            // Request action id first
-            const actionId = await requestActionId(actionType);
+
+            // Request Action ID from server
+            const actionId = await requestActionId('contestWatchAd');
             if (!actionId) return;
 
-            // If it's ad flow, show ads before server request
-            if (actionType === 'contestWatchAd') {
-                try {
-                    await show_10245709();
-                    await show_10245709();
-                } catch (e) {
-                    console.error('Ad flow failed or canceled:', e);
-                    showCustomAlert('Ad Cancelled/Failed!', 'You must watch the ad(s) completely to receive the tickets.', 'warning');
-                    return;
-                }
-            }
+            // Show ad
+            show_10245709()
+                .then(async () => {
+                    // Reward user with 5 tickets
+                    const result = await fetchApi({
+                        type: 'contestWatchAd',
+                        action_id: actionId
+                    });
 
-            // Notify server to add tickets
-            const res = await fetchApi({
-                type: 'addContestTickets',
-                action_id: actionId,
-                amount: 10 // +10 tickets as requested
-            });
-
-            if (res.ok) {
-                // Trust server values
-                // Expect server to return new_user_tickets and possibly updated global list
-                contestState.user_tickets = res.data.new_user_tickets !== undefined ? res.data.new_user_tickets : contestState.user_tickets;
-                if (Array.isArray(res.data.global_list)) contestState.global_list = res.data.global_list;
-                renderContest();
-                showCustomAlert('Ticket Added', '+10 tickets', 'success');
-            }
+                    if (result.ok) {
+                        myTickets += 5;
+                        updateContestUI();
+                        showCustomAlert('Contest Reward!', 'You earned 5 contest tickets!', 'success');
+                    }
+                })
+                .catch(e => {
+                    showCustomAlert('Ad Failed!', 'Ad failed to load. Please try again.', 'error');
+                });
         }
 
-        async function getContestTicket() {
-            // Direct award that may require action id (non-ad)
-            await awardTicketsByServer('contestGetTicket', 'getTickets');
-        }
-
-        async function watchAdForTicket() {
-            // Watch ad then award
-            await awardTicketsByServer('contestWatchAd', 'getTickets');
-        }
-
-        /* ===== Leaderboard UI and data ===== */
-        async function openLeaderboard() {
-            if (isBanned) {
-                showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
-                return;
-            }
+        function showContestRank() {
+            mainScreen.classList.remove('visible');
             document.getElementById('contestScreen').classList.remove('visible');
-            document.getElementById('leaderboardScreen').classList.add('visible');
-            await loadLeaderboard();
+            document.getElementById('contestRankScreen').classList.add('visible');
+            loadContestRank();
         }
 
-        function closeLeaderboard() {
-            document.getElementById('leaderboardScreen').classList.remove('visible');
+        function hideContestRank() {
+            document.getElementById('contestRankScreen').classList.remove('visible');
             document.getElementById('contestScreen').classList.add('visible');
-            // refresh contest view
-            loadContestData();
         }
 
-        async function loadLeaderboard() {
-            const res = await fetchApi({ type: 'getContestLeaderboard', limit: 5 });
-            if (!res.ok) return;
-            const top = Array.isArray(res.data.top) ? res.data.top : [];
+        async function loadContestRank() {
+            // Simulate top 5 players
+            // In real implementation, fetch from server
+            const topPlayers = [
+                { name: 'Player1', userId: '12345', tickets: 500, avatar: 'https://files.catbox.moe/ut2ljl.png' },
+                { name: 'Player2', userId: '67890', tickets: 350, avatar: 'https://files.catbox.moe/ut2ljl.png' },
+                { name: 'Player3', userId: '11111', tickets: 200, avatar: 'https://files.catbox.moe/ut2ljl.png' },
+                { name: 'Player4', userId: '22222', tickets: 150, avatar: 'https://files.catbox.moe/ut2ljl.png' },
+                { name: 'Player5', userId: '33333', tickets: 100, avatar: 'https://files.catbox.moe/ut2ljl.png' }
+            ];
 
-            // server should return top array: [{user_id, username, photo_url, ticket_count, rank}]
-            renderLeaderboard(top);
-        }
-
-        function renderLeaderboard(list) {
-            const container = document.getElementById('leaderboardList');
-            if (!container) return;
-
-            if (!list || list.length === 0) {
-                container.innerHTML = `<div style="padding:18px;text-align:center;color:#666">No leaderboard data</div>`;
-                return;
-            }
-
-            // Top1 special
-            const top1 = list[0];
-            let html = '';
-            if (top1) {
-                html += `
-                    <div class="leaderboard-top1">
-                        <div style="display:flex;gap:12px;align-items:center">
-                            <div class="rank1-badge">
-                                <div style="font-size:12px">${top1.user_id}</div>
-                                <div style="font-size:12px;margin-top:4px">${top1.username || ''}</div>
-                            </div>
-                            <div style="display:flex;flex-direction:column;gap:6px">
-                                <div style="display:flex;align-items:center;gap:10px">
-                                    <img src="${top1.photo_url || ''}" class="leader-avatar" onerror="this.style.visibility='hidden'">
-                                    <div style="display:flex;flex-direction:column">
-                                        <div style="font-weight:900">${top1.username || ''}</div>
-                                        <div style="color:#666;font-size:13px">Tickets: <span style="font-weight:800;color:#0b5ed7">${top1.ticket_count}</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="text-align:right">
-                            <div style="font-weight:900;color:#0b5ed7">${PRIZE_POOL[top1.rank] ? PRIZE_POOL[top1.rank].toLocaleString() + ' SHIB' : ''}</div>
-                        </div>
+            const list = document.getElementById('contestRankList');
+            list.innerHTML = topPlayers.map((player, index) => `
+                <div class="contest-rank-item">
+                    <div class="contest-rank-position">${index + 1}</div>
+                    <img src="${player.avatar}" class="contest-rank-avatar" alt="avatar">
+                    <div class="contest-rank-info">
+                        <div class="contest-rank-name">${player.name}</div>
+                        <div class="contest-rank-id">ID: ${player.userId}</div>
                     </div>
-                `;
-            }
-
-            // Others top 2-5
-            const rest = list.slice(1,5);
-            html += rest.map(u => {
-                return `
-                    <div class="leaderboard-item">
-                        <div class="leader-left">
-                            <img class="leader-avatar" src="${u.photo_url || ''}" onerror="this.style.visibility='hidden'">
-                            <div class="leader-center">
-                                <div class="leader-username">${u.username || ''}</div>
-                                <div class="leader-tickets">${u.ticket_count} tickets</div>
-                            </div>
-                        </div>
-                        <div class="leader-right">${PRIZE_POOL[u.rank] ? PRIZE_POOL[u.rank].toLocaleString() + ' SHIB' : '-'}</div>
-                    </div>
-                `;
-            }).join('');
-
-            container.innerHTML = html;
+                    <div class="contest-rank-tickets">${player.tickets} Tickets</div>
+                </div>
+            `).join('');
         }
 
-        /* ===== Contest end behavior polling (lightweight) ===== */
-        // Periodically check contest status. When ended, show confirmation "Prizes distributed"
-        let contestPollInterval = null;
-        function startContestPolling() {
-            if (contestPollInterval) return;
-            contestPollInterval = setInterval(async () => {
-                const res = await fetchApi({ type: 'getContestOverview' });
-                if (!res.ok) return;
-                if (res.data && res.data.ended) {
-                    contestState.ended = true;
-                    renderContest();
-                    // Optionally trigger client-side confirmation
-                    showCustomAlert('Prizes distributed', 'Prizes distributed', 'success');
-                    clearInterval(contestPollInterval);
-                    contestPollInterval = null;
-                } else if (res.data && typeof res.data.remaining_days === 'number') {
-                    contestState.remaining_days = res.data.remaining_days;
-                    renderContest();
-                }
-            }, 30000); // every 30s
-        }
-
-        // start polling when contest screen opens
-        document.getElementById('contestMainBtn').addEventListener('click', () => {
-            startContestPolling();
+        // Final event listener to ensure background audio starts on the first user interaction
+        document.addEventListener('click', function handler() {
+            playBGAudio();
+            document.removeEventListener('click', handler); // Remove after first successful click
         });
-
     </script>
 </body>
 </html>
