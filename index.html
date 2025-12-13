@@ -946,46 +946,40 @@
             margin: 0 auto;
             padding-bottom: 40px;
             box-sizing: border-box;
-            display: grid;
-            grid-template-columns: 1fr; /* single column list */
-            gap: 12px;
         }
-        /* Updated ranking item: vertical stacked layout: avatar above, then username, then id, then tickets and position */
         .contest-rank-item {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 8px;
-            padding: 14px;
+            gap: 15px;
+            padding: 12px;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.04);
             margin-bottom: 10px;
             backdrop-filter: blur(6px);
             overflow:hidden;
             transition: transform .12s ease, box-shadow .12s ease;
-            text-align: center;
-            position: relative;
         }
         .contest-rank-item:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
 
+        /* Remove circular avatar look - use small rounded rectangle instead */
         .contest-rank-avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            border-radius: 8px; /* changed from 50% to 8px */
             object-fit: cover;
-            border: 3px solid #00bfff;
-            box-shadow: 0 4px 12px rgba(0,191,255,0.18);
-            background: #fff;
+            border: 2px solid #00bfff;
+            /* softer shadow to reduce strong circular emphasis */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
             flex-shrink:0;
+            background: #fff;
         }
         .contest-rank-info {
+            flex: 1;
             display: flex;
             flex-direction: column;
             gap: 4px;
             min-width: 0;
             overflow: hidden;
-            align-items:center;
-            text-align:center;
         }
         .contest-rank-username {
             font-size: 16px;
@@ -994,7 +988,19 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 100%;
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+        .you-badge {
+            background: #ffd700;
+            color: #000;
+            font-weight: 700;
+            border-radius: 8px;
+            padding: 2px 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.12);
         }
         .contest-rank-id {
             font-size: 12px;
@@ -1002,30 +1008,21 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            opacity: 0.9;
         }
         .contest-rank-tickets {
-            font-size: 16px;
-            font-weight: 900;
-            color: #ffd700;
-            flex-shrink:0;
-            white-space: nowrap;
-            margin-top: 6px;
-        }
-        .contest-rank-position {
             font-size: 18px;
             font-weight: bold;
+            color: #ff8c00;
+            flex-shrink:0;
+            white-space: nowrap;
+        }
+        .contest-rank-position {
+            font-size: 20px;
+            font-weight: bold;
             color: #00bfff;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            background: rgba(0,191,255,0.08);
-            border: 2px solid rgba(0,191,255,0.12);
-            position: absolute;
-            left: 12px;
-            top: 12px;
+            width: 36px;
+            text-align: center;
             flex-shrink:0;
         }
 
@@ -1444,7 +1441,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 imgEl.style.display = 'block';
                 placeHolder.style.display = 'none';
             }
-            nameEl.textContent = userName;
+            // show username and id on main screen
+            nameEl.textContent = tgUser.username ? '@' + tgUser.username : userName;
             idEl.textContent   = 'ID: ' + userId;
         }
 
@@ -2841,32 +2839,39 @@ You will earn 40% of the revenue from every referral you bring through ads!
             // Highlight the current user (if known) by comparing tgUser.id to player.userId.
             const currentUserId = tgUser && tgUser.id ? String(tgUser.id) : null;
 
+            // NOTE (server): Prefer returning a 'username' field in each player object.
+            // If the server stores usernames in a 'users' table, include it in getContestRank response:
+            // players: [{ userId, username, avatar, tickets }, ...]
             list.innerHTML = players.map((player, index) => {
                 const pos = index + 1;
                 // support both avatar and photo_url field names
                 const avatar = player.avatar || player.photo_url || '';
                 // prefer username if provided then fallback to name
-                const username = player.username || player.name || (`User ${player.userId}`);
+                let usernameFromServer = player.username || player.name || '';
                 const userIdSafe = String(player.userId || player.user_id || '');
-                const tickets = Number(player.tickets || 0).toLocaleString();
-
-                // sanitize displayed text minimal
-                const nameSafe = String(username).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                // If server did not provide username, but this is current user, use tgUser.username or name
+                if (!usernameFromServer && currentUserId && currentUserId === userIdSafe && tgUser) {
+                    usernameFromServer = tgUser.username ? '@' + tgUser.username : (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : ''));
+                }
+                const nameSafe = String(usernameFromServer || `User ${userIdSafe}`).replace(/</g,'&lt;').replace(/>/g,'&gt;');
                 const idSafe = String(userIdSafe).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                const tickets = Number(player.tickets || 0).toLocaleString();
 
                 // detect if this row belongs to current user
                 const isCurrent = currentUserId !== null && currentUserId === String(userIdSafe);
 
-                // New layout: stacked (avatar above, then username, then id) and show tickets below
+                // Add a small "you" badge for the current user
+                const youBadgeHtml = isCurrent ? `<span class="you-badge">you</span>` : '';
+
                 return `
                     <div class="contest-rank-item ${isCurrent ? 'current-player' : ''}" role="article" aria-label="Player ${pos}">
-                        <div class="contest-rank-position" aria-hidden="true">${pos}</div>
-                        <img src="${avatar || 'https://files.catbox.moe/ut2ljl.png'}" class="contest-rank-avatar" alt="Player avatar" onerror="this.onerror=null;this.src='https://files.catbox.moe/ut2ljl.png'">
+                        <div class="contest-rank-position">${pos}</div>
+                        <img src="${avatar || 'https://files.catbox.moe/ut2ljl.png'}" class="contest-rank-avatar" alt="avatar" onerror="this.onerror=null;this.src='https://files.catbox.moe/ut2ljl.png'">
                         <div class="contest-rank-info">
-                            <div class="contest-rank-username" title="${nameSafe}">${nameSafe}</div>
+                            <div class="contest-rank-username" title="${nameSafe}">${nameSafe} ${youBadgeHtml}</div>
                             <div class="contest-rank-id">ID: ${idSafe}</div>
                         </div>
-                        <div class="contest-rank-tickets" aria-label="${tickets} tickets">${tickets} Tickets</div>
+                        <div class="contest-rank-tickets">${tickets} Tickets</div>
                     </div>
                 `;
             }).join('');
