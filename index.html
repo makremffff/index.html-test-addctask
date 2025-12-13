@@ -7,11 +7,10 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap'); 
 
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;color:#fff;}
+        body{font-family:'Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;color:#111;}
         
         .app-screen {
             position: fixed;
@@ -131,37 +130,6 @@
 
         .balance{position:absolute;top:20px;right:20px;background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:16px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05)}
         
-        /* Contest Button - Circular 50x50 (Updated per request) */
-        .contest-btn-under-balance {
-            position: absolute;
-            top: 60px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(145deg, #00bfff, #0077b3);
-            color: #fff;
-            border: none;
-            padding: 0;
-            border-radius: 50%;
-            font-size: 22px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #005a8d, 0 6px 10px rgba(0,0,0,.15);
-            transition: all .12s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 101;
-        }
-        .contest-btn-under-balance:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 #005a8d, 0 10px 20px rgba(0,0,0,.25);
-        }
-        .contest-btn-under-balance:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #005a8d, 0 6px 10px rgba(0,0,0,.15);
-        }
-
         /* Shared Progress Containers */
         .progress-group-container {
             position: absolute;
@@ -241,7 +209,6 @@
             padding-bottom: 120px; 
             overflow-y: auto;
             background: #ffffed; /* Light, paper-like background */
-            color: #222;
         }
         .task-header{ 
             text-align: center;
@@ -389,7 +356,6 @@
             display:flex;flex-direction:column;align-items:center;padding:20px 20px;
             transition:opacity .3s ease;
             overflow-y: auto;
-            color: #222;
         }
         .withdraw-header{
             text-align: center;
@@ -499,7 +465,6 @@
             display:flex;flex-direction:column;align-items:center;padding:20px 20px;
             transition:opacity .3s ease;
             overflow-y: auto;
-            color: #222;
         }
         .invite-header{ 
             text-align: center;
@@ -758,12 +723,42 @@
         .history-item .amount {font-weight:800;color:#ff2a2a}
         .history-empty {text-align:center;color:#777;padding:30px}
 
-        /* ===== Contest Screen Styles (enhanced & prize breakdown pinned to bottom) ===== */
+        /* ===== Contest Button under Balance (UPDATED TO 45x45 CIRCLE) ===== */
+        .contest-btn-under-balance {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: linear-gradient(145deg, #00bfff, #0077b3);
+            color: #fff;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #005a8d, 0 6px 10px rgba(0,0,0,.15);
+            transition: all .1s ease;
+            z-index: 101;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .contest-btn-under-balance:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 0 #005a8d, 0 8px 15px rgba(0,0,0,.2);
+        }
+        .contest-btn-under-balance:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #005a8d, 0 4px 8px rgba(0,0,0,.15);
+        }
+
+        /* ===== Contest Screen Styles (UPDATED LAYOUT) ===== */
         .contest-screen {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 20px;
+            padding: 20px 14px;
             overflow-y: auto;
             background: linear-gradient(135deg, #001f3f, #003366);
             color: #fff;
@@ -771,14 +766,17 @@
         }
         .contest-header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 18px;
             width: 100%;
-            max-width: 720px;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 15px;
-            border-radius: 15px;
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255,255,255,0.06);
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 14px;
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            align-items:center;
         }
         .contest-title {
             font-family: 'Orbitron', sans-serif;
@@ -786,57 +784,95 @@
             color: #00bfff;
             font-weight: 700;
             text-shadow: 0 0 10px #00bfff;
-            margin-bottom: 10px;
+            margin-bottom: 0;
         }
         .contest-countdown {
-            font-size: 24px;
+            font-size: 20px;
             color: #ffd700;
             font-weight: bold;
-            letter-spacing: 2px;
-            text-shadow: 0 0 8px #ffd700;
-            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 6px #ffd700;
+            margin-bottom: 0;
         }
-        .contest-prize {
-            font-size: 18px;
-            color: #ff8c00;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
+        /* Prize distribution box (vertical, compact, no overflow) */
+        .prize-vertical-box {
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 12px;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.16);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #fff;
+            align-items:stretch;
         }
+        .prize-item {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            font-weight:700;
+            font-size:14px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        .prize-label { color: #e6f7ff; font-weight:700; }
+        .prize-value { color: #ffd700; font-weight:900; }
+        /* ensure content doesn't overflow horizontally on small screens */
+        .prize-item .prize-label, .prize-item .prize-value {
+            max-width: 60%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .contest-tickets-container {
             width: 100%;
             max-width: 420px;
             background: rgba(255, 255, 255, 0.06);
-            padding: 20px;
-            border-radius: 15px;
-            backdrop-filter: blur(6px);
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
+            padding: 12px;
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            margin-bottom: 16px;
+            display:flex;
+            gap:10px;
+            align-items:center;
+            justify-content:space-between;
         }
         .contest-ticket-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
+            display:flex;
+            flex-direction:column;
+            gap:6px;
+            align-items:flex-start;
+            min-width: 0;
         }
         .contest-ticket-label {
-            font-size: 16px;
-            font-weight: bold;
-            color: #00bfff;
+            font-size: 14px;
+            color: #cfeeff;
+            font-weight: 700;
+            display:flex;
+            align-items:center;
+            gap:6px;
         }
         .contest-ticket-value {
             font-size: 18px;
-            font-weight: bold;
             color: #ffd700;
+            font-weight: bold;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
         }
         .contest-buttons-horizontal {
             display: flex;
             gap: 15px;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 6px;
         }
         .contest-watch-btn, .contest-rank-btn {
             background: linear-gradient(145deg, #ff8c00, #ff4500);
@@ -853,10 +889,6 @@
         .contest-watch-btn:hover, .contest-rank-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 0 #cc3700, 0 10px 20px rgba(0,0,0,.25);
-        }
-        .contest-watch-btn:active, .contest-rank-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 3px 0 #cc3700, 0 5px 10px rgba(0,0,0,.15);
         }
         .contest-back-btn {
             position: fixed;
@@ -882,66 +914,24 @@
             box-shadow: 0 3px 0 #4e555b;
         }
 
-        /* Prize breakdown pinned to bottom of contest screen (neat & organized) */
-        .contest-prize-bottom {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 90px; /* sits above the main back button */
-            width: calc(100% - 40px);
-            max-width: 720px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-            border-radius: 14px;
-            padding: 12px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.45);
-            z-index: 200;
-            backdrop-filter: blur(8px);
-        }
-        .prize-table {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            width: 100%;
-            align-items: center;
-        }
-        .prize-cell {
-            background: rgba(0,0,0,0.18);
-            padding: 10px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .prize-cell .pos { font-size: 13px; color: #cfefff; font-weight: 700; }
-        .prize-cell .amt { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #ffd15a; font-weight: 800; margin-top: 6px; }
-
-        /* Use a distinct 'fancy' monospace for the prize and ranking texts (attempt to emulate the requested glyph style) */
-        .fancy-uni {
-            font-family: 'JetBrains Mono', 'Vazirmatn', monospace;
-            letter-spacing: 0.6px;
-            font-variant-ligatures: none;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-        }
-
         /* ===== Contest Ranking Screen ===== */
         .contest-rank-screen {
             display: flex;
             flex-direction: column;
-            padding: 20px 20px;
+            padding: 14px;
             overflow-y: auto;
             background: linear-gradient(135deg, #001f3f, #003366);
             color: #fff;
+            align-items:center;
         }
         .contest-rank-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content:space-between;
+            align-items:center;
             gap: 10px;
-            margin-bottom: 20px;
+            width: 100%;
+            max-width: 720px;
+            margin-bottom: 12px;
         }
         .contest-rank-title {
             font-family: 'Orbitron', sans-serif;
@@ -955,17 +945,18 @@
             max-width: 720px;
             margin: 0 auto;
             padding-bottom: 40px;
+            box-sizing: border-box;
         }
         .contest-rank-item {
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 15px;
+            padding: 12px;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.06);
-            margin-bottom: 15px;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.04);
+            margin-bottom: 10px;
+            backdrop-filter: blur(6px);
+            overflow:hidden;
         }
         .contest-rank-avatar {
             width: 45px;
@@ -974,50 +965,49 @@
             object-fit: cover;
             border: 2px solid #00bfff;
             box-shadow: 0 0 10px #00bfff;
+            flex-shrink:0;
         }
         .contest-rank-info {
             flex: 1;
             display: flex;
             flex-direction: column;
             gap: 5px;
+            min-width: 0;
+            overflow: hidden;
         }
         .contest-rank-name {
             font-size: 16px;
             font-weight: bold;
             color: #ffd700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .contest-rank-id {
             font-size: 12px;
             color: #aaa;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .contest-rank-tickets {
             font-size: 18px;
             font-weight: bold;
             color: #ff8c00;
+            flex-shrink:0;
+            white-space: nowrap;
         }
         .contest-rank-position {
             font-size: 20px;
             font-weight: bold;
             color: #00bfff;
-            width: 30px;
+            width: 36px;
             text-align: center;
+            flex-shrink:0;
         }
 
-        /* Empty state for ranking */
-        .rank-empty {
-            text-align: center;
-            color: rgba(255,255,255,0.7);
-            padding: 30px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        /* ===== Contest Ticket Image ===== */
-        .contest-ticket-img {
-            width: 15px;
-            height: 15px;
-            vertical-align: middle;
-            margin-right: 5px;
-        }
+        /* ensure the whole UI never produces horizontal scroll */
+        html, body { max-width:100%; overflow-x:hidden; }
 
     </style>
 </head>
@@ -1064,7 +1054,7 @@
     
     <div class="app-screen main-screen" id="mainScreen">
         <div class="balance" id="shibBalance">0 SHIB</div>
-        <button class="contest-btn-under-balance" onclick="showContest()" title="Contest">🏆</button>
+        <button class="contest-btn-under-balance" onclick="showContest()">🏆</button>
         
         <div class="progress-group-container">
             <div class="daily-progress-container">
@@ -1233,13 +1223,17 @@ You will earn 40% of the revenue from every referral you bring through ads!
         <div class="contest-header">
             <h2 class="contest-title">🏆 Contest</h2>
             <div class="contest-countdown" id="contestCountdown">15d 00h 00m 00s</div>
-            <div class="contest-prize">
-                Prize Pool: 1,000,000 SHIB<br>
-                1st: 500k | 2nd: 250k | 3rd & 4th: 100k | 5th: 50k
+            <!-- Prize distribution moved to a vertical boxed layout -->
+            <div class="prize-vertical-box" id="prizeBox">
+                <div class="prize-item"><div class="prize-label">1st Place</div><div class="prize-value">500,000 SHIB</div></div>
+                <div class="prize-item"><div class="prize-label">2nd Place</div><div class="prize-value">250,000 SHIB</div></div>
+                <div class="prize-item"><div class="prize-label">3rd Place</div><div class="prize-value">100,000 SHIB</div></div>
+                <div class="prize-item"><div class="prize-label">4th Place</div><div class="prize-value">100,000 SHIB</div></div>
+                <div class="prize-item"><div class="prize-label">5th Place</div><div class="prize-value">50,000 SHIB</div></div>
             </div>
         </div>
         
-        <div class="contest-tickets-container">
+        <div class="contest-tickets-container" role="region" aria-label="Contest Tickets Summary">
             <div class="contest-ticket-row">
                 <span class="contest-ticket-label">
                     <img src="https://files.catbox.moe/ut2ljl.png" class="contest-ticket-img" alt="ticket">
@@ -1247,7 +1241,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 </span>
                 <span class="contest-ticket-value" id="myTickets">0</span>
             </div>
-            <div class="contest-ticket-row">
+            <div class="contest-ticket-row" style="align-items:flex-end;">
                 <span class="contest-ticket-label">
                     <img src="https://files.catbox.moe/ut2ljl.png" class="contest-ticket-img" alt="ticket">
                     All Tickets
@@ -1259,24 +1253,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
         <div class="contest-buttons-horizontal">
             <button class="contest-watch-btn" onclick="watchContestAd()">Watch</button>
             <button class="contest-rank-btn" onclick="showContestRank()">Ranking</button>
-        </div>
-
-        <!-- Prize breakdown pinned near bottom (organized & stylish) -->
-        <div class="contest-prize-bottom fancy-uni" id="contestPrizeBottom">
-            <div style="flex:1">
-                <div style="font-size:14px;color:#cfefff;font-weight:700">Prize Breakdown</div>
-                <div class="prize-table" aria-hidden="false">
-                    <div class="prize-cell"><div class="pos">1st</div><div class="amt">500,000</div></div>
-                    <div class="prize-cell"><div class="pos">2nd</div><div class="amt">250,000</div></div>
-                    <div class="prize-cell"><div class="pos">3rd</div><div class="amt">100,000</div></div>
-                    <div class="prize-cell"><div class="pos">4th</div><div class="amt">100,000</div></div>
-                    <div class="prize-cell"><div class="pos">5th</div><div class="amt">50,000</div></div>
-                </div>
-            </div>
-            <div style="width:200px;text-align:center">
-                <div style="font-size:13px;color:#fff;opacity:0.9;font-weight:700">Waiting for real users?</div>
-                <div style="font-size:12px;color:#ffd700;margin-top:6px" id="prizeStatusText">Live ranking updates will appear here</div>
-            </div>
         </div>
         
         <button class="contest-back-btn" onclick="hideContest()">Back to Main</button>
@@ -1291,9 +1267,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
             </div>
         </div>
         
-        <div class="contest-rank-list" id="contestRankList">
-            <!-- Top players will be injected here from server; no fake users will be shown -->
-            <div class="rank-empty" id="rankEmptyMsg">انتظار مستخدمين حقيقيين... (Waiting for real users)</div>
+        <div class="contest-rank-list" id="contestRankList" aria-live="polite">
+            <!-- Top players will be injected here from server -->
         </div>
     </div>
 
@@ -1325,15 +1300,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
         const loadingScreen = document.getElementById('loadingScreen');
         const mainScreen = document.getElementById('mainScreen');
 
-        // Removed the old loading bar logic
-
         document.addEventListener('DOMContentLoaded',()=>{
             // Simulating a brief loading time for the spinner to be visible
             setTimeout(async ()=>{ 
-                // Wait for init (register + loadUserData) to complete before hiding loading screen
-                // This prevents abrupt immediate transition when loading finishes and ensures UI is ready
                 await initDailyProgress(); 
-                // hide with existing CSS fade
                 loadingScreen.classList.add('hidden');
                 playBGAudio(); 
             }, 7000); 
@@ -1350,24 +1320,17 @@ You will earn 40% of the revenue from every referral you bring through ads!
         const alertMessageEl = document.getElementById('alertMessage');
         const alertIconEl = document.getElementById('alertIcon');
 
-        // Playlist for background: per request use these files
         const bgPlaylist = ['audio.mp3', 'audio2.mp3', 'audio3.mp3', 'audio4.mp3'];
         let currentBgIndex = -1;
 
-        /**
-         * Sequentially play the next background track.
-         * Ensures each track completes fully before the next is started.
-         */
         function playNextBg() {
             if (!Array.isArray(bgPlaylist) || bgPlaylist.length === 0) return;
-            // advance index sequentially (looping)
             currentBgIndex = (currentBgIndex + 1) % bgPlaylist.length;
             const nextSrc = bgPlaylist[currentBgIndex];
             try {
                 bgPlayer.src = nextSrc;
                 bgPlayer.load();
                 bgPlayer.volume = 0.4;
-                // Only attempt to play; browsers may block until user interaction
                 bgPlayer.play().catch(e => {
                     console.log("bgPlayer play blocked (will wait for user interaction):", e);
                 });
@@ -1376,31 +1339,22 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
         }
 
-        // When a track ends, play the next track in sequence
         bgPlayer.addEventListener('ended', () => {
-            // play next sequential track
             playNextBg();
         });
 
-        // If an error occurs, skip to the next track to maintain continuity
         bgPlayer.addEventListener('error', (e) => {
             console.warn('bgPlayer error, advancing to next track', e);
-            // proceed to next track to avoid stopping playback loop
             playNextBg();
         });
 
-        /**
-         * Plays background music. Must be called after user interaction.
-         */
         function playBGAudio() {
             try {
-                // If we haven't started yet, start from the first track
                 if (currentBgIndex === -1) {
                     currentBgIndex = 0;
                     bgPlayer.src = bgPlaylist[currentBgIndex];
                     bgPlayer.load();
                 }
-                // Try to play (may be blocked until user gesture)
                 bgPlayer.volume = 0.4;
                 bgPlayer.play().catch(e => {
                     console.log("Background audio play failed, waiting for user click:", e);
@@ -1410,9 +1364,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
         }
         
-        /**
-         * Plays a sound effect (Success or Error).
-         */
         function playSFX(type) {
             let sfx;
             if (type === 'success') {
@@ -1422,17 +1373,11 @@ You will earn 40% of the revenue from every referral you bring through ads!
             } else {
                 return;
             }
-            sfx.currentTime = 0; // Rewind to start
+            sfx.currentTime = 0;
             sfx.volume = 0.8;
             sfx.play().catch(e => console.log("SFX play failed:", e));
         }
 
-        /**
-         * Shows a custom, styled alert modal.
-         * @param {string} title - The title of the alert.
-         * @param {string} message - The message content.
-         * @param {'success'|'error'|'warning'} type - The type of alert.
-         */
         function showCustomAlert(title, message, type = 'warning') {
             const finalTitle = title;
             const finalMessage = message.replace(/(\r\n|\n|\r)/gm, "\n"); 
@@ -1489,17 +1434,16 @@ You will earn 40% of the revenue from every referral you bring through ads!
         const API_URL = '/api'; 
         
         // ------------------------------------------------------------------
-        // **fetchApi Function** // ------------------------------------------------------------------
+        // **fetchApi Function**
+        // ------------------------------------------------------------------
         async function fetchApi(payload) {
             if (!tgUser) {
-                // English translation of the Arabic alert message
                 showCustomAlert('Critical Error!', 'User data not initialized. Please restart the app. [CODE: U_NIL]', 'error');
                 return { ok: false, error: 'User not initialized' };
             }
 
             const initData = Telegram.WebApp.initData;
             if (!initData) {
-                // English translation of the Arabic alert message
                 showCustomAlert('Critical Error!', 'Initialization data is missing. Please restart the app. [CODE: ID_MS]', 'error');
                 return { ok: false, error: 'InitData missing' };
             }
@@ -1559,7 +1503,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         alertType = 'error';
                         cleanMessage = 'Membership not verified. Please ensure you joined the channel and try again.';
                     } else {
-                        // General error handling (English)
                         alertTitle = 'Operation Failed!';
                         alertType = 'error';
                         cleanMessage = errorMessage;
@@ -1575,7 +1518,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     Telegram.WebApp.hideProgress();
                 }
                 console.error(`General Fetch Error for type ${payload.type}:`, error.message);
-                // English translation of the Arabic alert message
                 showCustomAlert('Connection Error!', 'Could not connect to the server. Please check your internet connection.', 'error');
                 return { ok: false, error: error.message };
             }
@@ -1605,16 +1547,15 @@ You will earn 40% of the revenue from every referral you bring through ads!
         let adsWatchedToday = 0;
         let spinsToday = 0; 
         let taskCompleted = false; 
-        let taskActionState = 'JOIN_OR_CLAIM'; // NEW: State variable for the button's action
+        let taskActionState = 'JOIN_OR_CLAIM';
         let withdrawalHistory = [];
         let referralsCount = 0; 
         let isBanned = false; 
         let isProcessingTask = false; 
-        let countdownInterval = null; // New variable for the countdown interval
+        let countdownInterval = null;
         
         const sectors = [5, 10, 15, 20, 5]; 
 
-        // New: currentTask holds the selected task's data (id, link, reward, is_completed)
         let currentTask = null;
 
         // ===== Contest Variables =====
@@ -1646,7 +1587,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 }
                 const parsed = JSON.parse(raw);
                 if (!parsed || parsed.date !== todayDateString()) {
-                    // reset for new day
                     taskLinkState = { date: todayDateString(), count: 0 };
                     localStorage.setItem(TASK_LINK_KEY, JSON.stringify(taskLinkState));
                     return;
@@ -1675,7 +1615,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
             if (!area || !fill || !countDisplay || !btn) return;
 
-            // show area always (we can hide in future if not needed)
             area.style.display = 'block';
 
             const count = taskLinkState.count || 0;
@@ -1692,28 +1631,18 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
         }
 
-        /**
-         * Handle task link click:
-         * - Request server action id
-         * - Open external link
-         * - Send server notification (taskLinkClick) with action_id & url
-         * - If server returns ok, use server's balance; otherwise fallback to local award
-         * - Show a minimal success alert: title "Reward", message "5 SHIB"
-         */
         async function handleTaskLinkClick() {
             if (isBanned) {
                 showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                 return;
             }
 
-            // If reached daily max
             if (taskLinkState.count >= TASK_LINK_DAILY_MAX) {
                 showCustomAlert('Daily Limit Reached!', `You have reached the daily limit for these instant links (${TASK_LINK_DAILY_MAX}).`, 'warning');
                 updateTaskLinkUI();
                 return;
             }
 
-            // 1. Request Action ID from server (best-effort)
             let actionId = null;
             try {
                 actionId = await requestActionId('taskLink');
@@ -1722,10 +1651,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 actionId = null;
             }
 
-            // 2. Open link (user experience)
             const opened = openExternalLink(TASK_LINK_URL);
 
-            // 3. Try to notify server about the click (if we have an action id)
             let serverResult = { ok: false };
             if (actionId) {
                 try {
@@ -1739,33 +1666,20 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 }
             }
 
-            // 4. If server returned success and provided new_balance, use it and update local progress
             if (serverResult && serverResult.ok) {
                 if (serverResult.data && serverResult.data.new_balance !== undefined) {
                     shibBalance = serverResult.data.new_balance;
-                    
-                    // The server confirmed the award and incremented its counter (new_count)
-                    // We sync our local counter with the server's response to prevent local-storage abuse
                     taskLinkState.count = serverResult.data.new_count;
                     saveTaskLinkProgressToStorage();
-                    
                     updateState({ balance: shibBalance });
                     updateTaskLinkUI();
-
-                    // Minimal success alert as requested: only "Reward" and "5 SHIB"
                     showCustomAlert('Reward', '5 SHIB', 'success');
                 } else {
-                    // Server returned OK but no data: Should not happen, but treat as an error/warning
                     showCustomAlert('Server Sync Warning', 'The server accepted the click but did not return updated data. Please reload the app.', 'warning');
                 }
                 return;
             }
             
-            // 5. If server failed, we should NOT award locally (removed local fallback reward logic)
-            
-            // If the server call failed (and fetchApi showed an error) or if we couldn't get an action ID, 
-            // the user must try again to get the server-side reward. 
-            // We just ensure the UI is updated from the server's side after failure.
             loadUserData();
         }
 
@@ -1778,7 +1692,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             referralsCount = data.referrals_count !== undefined ? data.referrals_count : referralsCount;
             withdrawalHistory = data.withdrawal_history !== undefined ? data.withdrawal_history : withdrawalHistory;
             isBanned = data.is_banned !== undefined ? data.is_banned : isBanned;
-            // Handle taskCompleted update and state reset if successful (legacy)
             if (data.task_completed === true) {
                 taskCompleted = true;
                 taskActionState = 'COMPLETED';
@@ -1798,7 +1711,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 if (result.data.is_banned) {
                     isBanned = true;
                     mainScreen.classList.remove('visible');
-                    // English translation of the Arabic alert message
                     showCustomAlert('Account Banned!', 'This account has been permanently restricted for violating policies. Access to the Mini App is denied.', 'error');
                     return;
                 }
@@ -1809,7 +1721,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     spins_today: result.data.spins_today,
                     referrals_count: result.data.referrals_count,
                     is_banned: false, 
-                    task_completed: result.data.task_completed || false, // Default to false
+                    task_completed: result.data.task_completed || false,
                     withdrawal_history: (result.data.withdrawal_history || []).map(item => ({
                         amount: item.amount,
                         status: item.status,
@@ -1819,17 +1731,14 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     }))
                 });
 
-                // Sync local taskLinkState.count with server data if available
                 if (result.data.task_link_clicks_today !== undefined) {
                     taskLinkState.count = result.data.task_link_clicks_today;
-                    saveTaskLinkProgressToStorage(); // Save the synchronized value
+                    saveTaskLinkProgressToStorage();
                 }
 
-                // Set taskActionState based on loaded data
                 if (taskCompleted) {
                     taskActionState = 'COMPLETED';
                 } else if (taskActionState === 'COMPLETED') { 
-                    // Prevents resetting to COMPLETED if an error occurred during claim
                     taskActionState = 'JOIN_OR_CLAIM';
                 }
                 
@@ -1865,7 +1774,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
             document.getElementById('referralsCountDisplay').textContent = referralsCount.toLocaleString();
             
-            // Attempt to find per-task button for the selected task if exists
             const perTaskBtn = currentTask ? document.querySelector(`button[data-task-id="${currentTask.id}"]`) : null;
 
             if (perTaskBtn) {
@@ -1883,7 +1791,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     perTaskBtn.classList.remove('completed');
 
                     if (isProcessingTask) {
-                        // text managed by claimTaskReward countdown
                     } else if (taskActionState === 'CLAIM') {
                         perTaskBtn.textContent = 'Claim';
                     } else {
@@ -1916,13 +1823,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 }
             }
 
-            // update task link UI as well
             updateTaskLinkUI();
 
-            // update withdrawal summary only if the container is present (we removed the inline recent summary)
             displayWithdrawals();
 
-            // Update contest UI
             updateContestUI();
         }
         
@@ -1931,7 +1835,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
         // ***************************************************************
         async function watchAds(){
             if (isBanned) {
-                 // English translation of the Arabic alert message
                  showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                  return;
             }
@@ -1941,35 +1844,27 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
-            // 1. Request Action ID from the Server
             const actionId = await requestActionId('watchAd');
-            if (!actionId) return; // Error message already shown by fetchApi
+            if (!actionId) return;
 
-            // 2. Show First Ad - NO ALERT HERE
             show_10245709()
                 .then(() => {
-                    // Success for Ad 1 - Immediately start the second ad - NO ALERT HERE
                     return show_10245709();
                 })
                 .then(async () => {
-                    // Success for Ad 2 -> Proceed to reward logic
-                    
-                    // 3. Request ad reward from the server (Server determines reward, checks limits, and validates Action ID)
                     const adResult = await fetchApi({
                         type: 'watchAd',
-                        action_id: actionId // ⬅️ Send Server-Issued ID
+                        action_id: actionId
                     });
 
                     if (adResult.ok) {
                         const actualReward = adResult.data.actual_reward; 
                         
-                        // 4. Update UI with trusted server values
                         updateState({
                             balance: adResult.data.new_balance,
                             ads_watched_today: adResult.data.new_ads_count
                         });
                         
-                        // 5. Referral commission logic
                         if (referrerId) {
                             fetchApi({
                                 type: 'commission',
@@ -1981,14 +1876,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
                             });
                         }
                         
-                        // 6. Custom Alert for Success (in English)
                         let alertTitle = 'Reward Granted!';
                         let alertType = 'success';
                         let alertMessage = ` ＹＯＵ ＷＩＮ ${actualReward} SHIB.`;
                         
                         if(adResult.data.new_ads_count >= DAILY_MAX){
                             alertTitle = 'Daily Task Completed!';
-                            // **UPDATED MESSAGE HERE** to 'Come back in 6 hours.'
                             alertMessage = `Congratulations! You have completed all today's ads (${DAILY_MAX}). ＣＯＭＥ ｂａｃｋ ａｆｔｅｒ 6 Ｈｏｕｒｓ!`;
                         }
                         showCustomAlert(alertTitle, alertMessage, alertType);
@@ -1996,13 +1889,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     }
                 })
                 .catch(e => {
-                    // Catch block handles failure for either Ad 1 or Ad 2
                     console.error("libtl.com Ad sequence failed:", e);
                     if (typeof e === 'string' && e.includes('canceled')) {
-                        // English translation of the Arabic alert message
                         showCustomAlert('Ad Cancelled/Failed!', 'The ad sequence was interrupted. Please watch both ads completely to receive the reward.', 'warning');
                     } else {
-                        // English translation of the Arabic alert message
                         showCustomAlert('Ad Load Failed!', 'One of the ads failed to load. Please try again.', 'error');
                     }
                 });
@@ -2015,10 +1905,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
         /* ===== Task Screen Functions (UPDATED LOGIC with dynamic tasks) ===== */
 
-        /**
-         * fetchTasks - requests tasks list from server (type: 'getTasks')
-         * returns array of tasks or empty array
-         */
         async function fetchTasks() {
             const res = await fetchApi({ type: 'getTasks' });
             if (res.ok && Array.isArray(res.data.tasks)) {
@@ -2027,45 +1913,31 @@ You will earn 40% of the revenue from every referral you bring through ads!
             return [];
         }
 
-        /**
-         * fetchTask - helper to fetch a single task by id.
-         * Uses fetchTasks internally (server does not provide single-task endpoint currently).
-         */
         async function fetchTask(taskId) {
             const tasks = await fetchTasks();
             return tasks.find(t => parseInt(t.task_id) === parseInt(taskId)) || null;
         }
 
-        /**
-         * Normalize a task link (ensure full https://t.me/... if it is t.me/...)
-         */
         function normalizeTaskLink(link) {
             if (!link) return '';
             link = link.trim();
-            // If link starts with t.me/... but without protocol
             if (/^t\.me\//i.test(link)) {
                 return 'https://' + link;
             }
-            // If link starts with @username (unlikely) convert to t.me
             if (/^@/.test(link)) {
                 return 'https://t.me/' + link.substring(1);
             }
-            // If link missing protocol but starts with www or contains t.me anywhere, ensure protocol
             if (!/^https?:\/\//i.test(link)) {
                 return 'https://' + link;
             }
             return link;
         }
 
-        /**
-         * Open a link using Telegram WebApp method when possible, otherwise fallback to window.open
-         */
         function openExternalLink(link) {
             if (!link) return false;
             const normalized = normalizeTaskLink(link);
             try {
                 if (typeof Telegram !== 'undefined' && Telegram.WebApp && typeof Telegram.WebApp.openTelegramLink === 'function') {
-                    // openTelegramLink expects a t.me link or tg:// link
                     Telegram.WebApp.openTelegramLink(normalized);
                     return true;
                 } else {
@@ -2078,24 +1950,14 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
         }
 
-        /**
-         * Renders tasks list into the task screen, keeping the original card appearance.
-         * Each task button now both selects the task and immediately opens the link.
-         *
-         * NOTE: Tasks that are already completed are not shown (they disappear).
-         *
-         * When there are no available tasks, show a minimal English notice ""
-         */
         function renderTasksList(tasks) {
             const container = document.getElementById('taskListContainer');
             const noChannelNotice = document.getElementById('noChannelTasksNotice');
             if (!container) return;
 
-            // Filter out completed tasks so they do not appear to the user
             const availableTasks = Array.isArray(tasks) ? tasks.filter(t => !t.is_completed) : [];
 
             if (!Array.isArray(availableTasks) || availableTasks.length === 0) {
-                // Only show a simple "No tasks now." message as requested (remove Unavailable button)
                 container.innerHTML = `
                     <div class="task-item-card">
                         <span class="task-text-info">No tasks now.</span>
@@ -2123,14 +1985,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             container.innerHTML = html;
         }
 
-        /**
-         * onTaskButtonClick - handles clicks on the per-task button.
-         * Dual behaviour on the same button:
-         * - First click: open the external link (if present) and switch the button to "Claim".
-         * - Second click (when button shows "Claim"): start the verification & claim flow for that task.
-         *
-         * Added: per-button lock to prevent rapid multiple claim requests.
-         */
         async function onTaskButtonClick(event) {
             event = event || window.event;
             const btn = event.currentTarget || event.target;
@@ -2142,27 +1996,21 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
-            // Prevent multiple rapid clicks using dataset lock
             if (btn.dataset.locked === '1') {
-                // Already processing or locked
                 return;
             }
 
-            // If user clicked a button already switched to "Claim", start claim flow
             const btnText = (btn.textContent || '').trim().toLowerCase();
             if (btnText === 'claim') {
-                // Lock the button immediately to prevent multiple claim requests
                 btn.dataset.locked = '1';
                 btn.disabled = true;
 
-                // If already processing globally, release and ignore
                 if (isProcessingTask) {
                     btn.dataset.locked = '0';
                     btn.disabled = false;
                     return;
                 }
 
-                // Set currentTask and trigger claim flow
                 const task = await fetchTask(taskId);
                 if (!task) {
                     btn.dataset.locked = '0';
@@ -2179,7 +2027,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 };
 
                 if (currentTask.is_completed) {
-                    // If already completed server-side, remove element and notify
                     const el = document.querySelector(`div[data-task-id="${taskId}"]`);
                     if (el) el.remove();
                     btn.dataset.locked = '0';
@@ -2188,12 +2035,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     return;
                 }
 
-                // Begin the claim flow using the normal function (which uses currentTask)
                 claimTaskReward();
                 return;
             }
 
-            // Otherwise treat as first click: select task and open link
             const task = await fetchTask(taskId);
             if (!task) {
                 showCustomAlert('Task Error', 'Selected task not found. Please refresh the tasks list.', 'error');
@@ -2209,29 +2054,23 @@ You will earn 40% of the revenue from every referral you bring through ads!
             };
 
             if (currentTask.is_completed) {
-                // If already completed server-side, remove the task card from UI so it disappears for the user immediately
                 const el = document.querySelector(`div[data-task-id="${taskId}"]`);
                 if (el) el.remove();
                 showCustomAlert('Task Completed!', 'Reward already claimed for this task.', 'warning');
                 return;
             }
 
-            // Try to open link immediately
             if (taskLink && taskLink.trim() !== '') {
                 const opened = openExternalLink(taskLink);
                 if (opened) {
-                    // Switch this button to "Claim" (second click will start verification)
                     btn.textContent = 'Claim';
-                    // Provide guidance
                     showCustomAlert('Opened Task', 'The task has been opened. After joining press "Claim" to receive the reward.', 'warning');
-                    // ensure button is enabled for next click (unlock)
                     btn.dataset.locked = '0';
                     btn.disabled = false;
                 } else {
                     showCustomAlert('Open Link Failed', 'Unable to open the link. Please try manually.', 'error');
                 }
             } else {
-                // No link: allow user to attempt direct verification by changing to Claim
                 btn.textContent = 'Claim';
                 showCustomAlert('No Link', 'This task has no join link. Press Claim to attempt verification.', 'warning');
                 btn.dataset.locked = '0';
@@ -2239,10 +2078,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
         }
 
-        /**
-         * selectTask kept for backward compatibility if you want to call directly.
-         * It will now click the matching per-task button if present.
-         */
         async function selectTask(taskId) {
             const btn = document.querySelector(`#taskListContainer button[data-task-id="${taskId}"]`);
             if (btn) {
@@ -2264,7 +2099,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             showCustomAlert('Task Selected', `Selected: ${currentTask.name}\nReward: ${currentTask.reward} SHIB`, 'warning');
         }
 
-        // ** MODIFIED: Now displays the actual task screen and loads tasks **
         async function showTask(){
             if (isBanned) {
                  showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
@@ -2273,36 +2107,30 @@ You will earn 40% of the revenue from every referral you bring through ads!
             mainScreen.classList.remove('visible');
             document.getElementById('taskScreen').classList.add('visible');
 
-            // Load tasks from server and render them
             const tasks = await fetchTasks();
             renderTasksList(tasks);
 
-            // Initialize and update local task-link progress
             loadTaskLinkProgressFromStorage();
             updateTaskLinkUI();
 
-            // Clear currentTask selection
             currentTask = null;
 
             loadUserData();
         }
 
         function hideTask(){
-            // Clear any running countdown when leaving the screen
             if (countdownInterval) {
                 clearInterval(countdownInterval);
                 countdownInterval = null;
                 isProcessingTask = false;
-                taskActionState = currentTask && currentTask.is_completed ? 'COMPLETED' : 'JOIN_OR_CLAIM'; // Reset state
+                taskActionState = currentTask && currentTask.is_completed ? 'COMPLETED' : 'JOIN_OR_CLAIM';
                 updateUI();
             }
             document.getElementById('taskScreen').classList.remove('visible');
             mainScreen.classList.add('visible');
         }
 
-        // Renamed and modified the old completeTask function to use currentTask
         async function claimTaskReward(){
-            // Find per-task button for currentTask if available
             const taskBtn = currentTask ? document.querySelector(`button[data-task-id="${currentTask.id}"]`) : null;
 
             if (isBanned) {
@@ -2315,7 +2143,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
-            // Lock the per-task button to avoid rapid double-submits
             if (taskBtn) {
                 taskBtn.dataset.locked = '1';
                 taskBtn.disabled = true;
@@ -2327,25 +2154,21 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const countdownTime = 5; 
             let countdown = countdownTime; 
             
-            // Start the countdown on the button text (use per-task button if present)
             if (taskBtn) taskBtn.textContent = countdown;
             
             countdownInterval = setInterval(() => {
                 countdown--;
                 if (countdown >= 0) {
                     if (taskBtn) taskBtn.textContent = countdown;
-                    if(countdownTime - countdown > 1){ // Only show alert after 1 second delay
-                        // Show the processing alert (PENCIL STYLE)
+                    if(countdownTime - countdown > 1){
                          showCustomAlert('Verifying Membership...', `Please wait ${countdown} seconds for channel membership verification.`, 'warning');
                     }
                 } else {
-                    // Stop the timer
                     clearInterval(countdownInterval);
                     countdownInterval = null;
                     if (taskBtn) taskBtn.textContent = 'Verifying...';
                     showCustomAlert('Verifying...', 'Contacting server to confirm membership and claim reward.', 'warning');
 
-                    // Proceed to server verification
                     verifyAndClaim();
                 }
             }, 1000);
@@ -2353,7 +2176,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
         }
 
         async function verifyAndClaim() {
-            // Find per-task button for currentTask if available
             const taskBtn = currentTask ? document.querySelector(`button[data-task-id="${currentTask.id}"]`) : null;
 
             if (!currentTask) {
@@ -2368,11 +2190,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
             const taskId = currentTask.id;
 
-            // 1. Request Action ID from the Server (action_type must match server expectation)
             const actionId = await requestActionId(`completeTask_${taskId}`);
             if (!actionId) {
                 isProcessingTask = false;
-                taskActionState = 'JOIN_OR_CLAIM'; // Reset state on error
+                taskActionState = 'JOIN_OR_CLAIM';
                 if (taskBtn) {
                     taskBtn.dataset.locked = '0';
                     taskBtn.disabled = false;
@@ -2381,45 +2202,37 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
-            // 2. Send completeTask request to the server - include task_id
             const result = await fetchApi({
                 type: 'completeTask',
                 action_id: actionId,
                 task_id: taskId
             });
             
-            isProcessingTask = false; // Reset flag
+            isProcessingTask = false;
 
             if (result.ok) {
-                // Update state
                 updateState({ 
                     balance: result.data.new_balance
                 });
 
-                // Mark currentTask as completed locally
                 if (currentTask) currentTask.is_completed = true;
 
-                // Remove task card from DOM so it disappears for the user immediately
                 const el = document.querySelector(`div[data-task-id="${taskId}"]`);
                 if (el) el.remove();
 
-                // Optionally refresh tasks from server (keeps UI consistent)
                 const tasks = await fetchTasks();
                 renderTasksList(tasks);
 
-                // Show success alert
                 showCustomAlert('Reward Claimed!', `You received ${result.data.actual_reward || currentTask.reward} SHIB for completing the task!`, 'success');
                 
             } else {
-                // On error, reload user data and tasks so UI is consistent
                 await loadUserData();
                 const tasks = await fetchTasks();
                 renderTasksList(tasks);
-                taskActionState = 'JOIN_OR_CLAIM'; // Force restart the process
+                taskActionState = 'JOIN_OR_CLAIM';
                 if (taskBtn) taskBtn.textContent = 'Open';
             }
 
-            // Release the per-task button lock (success or failure)
             if (taskBtn) {
                 taskBtn.dataset.locked = '0';
                 taskBtn.disabled = false;
@@ -2428,7 +2241,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             updateUI();
         }
 
-        // handleTaskAction left in place but no longer required for fallback button
         function handleTaskAction() {
             const taskBtn = document.getElementById('taskActionBtn');
 
@@ -2442,12 +2254,11 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
             
-            if (isProcessingTask) return; // Prevent double clicking during claim process
+            if (isProcessingTask) return;
             
             const channelLink = currentTask.link || '';
 
             if (taskActionState === 'JOIN_OR_CLAIM') {
-                // This function may not be used now since per-task buttons manage flow
                 if (channelLink && typeof Telegram.WebApp.openTelegramLink === 'function') {
                      Telegram.WebApp.openTelegramLink(channelLink);
                 } else if (channelLink) {
@@ -2467,7 +2278,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
 
             } else if (taskActionState === 'CLAIM') {
-                // Start the claim flow
                 claimTaskReward();
             }
         }
@@ -2476,7 +2286,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
         
         function inviteFriends() {
             if (isBanned) {
-                 // English translation of the Arabic alert message
                  showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                  return;
             }
@@ -2510,25 +2319,22 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const inviteLink = document.getElementById('referralLinkInput').value;
             
             if (inviteLink === 'User data not available.' || inviteLink === 'Generating Link...') {
-                // English translation of the Arabic alert message
                 showCustomAlert('Error!', 'The referral link is not ready yet. Please wait a moment.', 'warning');
                 return;
             }
 
             navigator.clipboard.writeText(inviteLink).then(() => {
                 Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-                // English translation of the Arabic alert message
                 showCustomAlert('Link Copied!', 'The referral link has been copied to the clipboard.', 'success');
             }).catch(err => {
                 console.error('Failed to copy text: ', err);
-                // English translation of the Arabic alert message
                 showCustomAlert('Copy Failed!', 'Failed to copy the link. Please try again.', 'error');
             });
         }
         /* ===== End of Invite Screen Functions ===== */
 
 
-        /* ===== Spin Wheel (Wheel Code) (Modified to show two ads before spin and nicer effect) ===== */
+        /* ===== Spin Wheel (Wheel Code) ===== */
         const colors = ['#00bfff', '#ff8c00', '#28a745', '#ff4500', '#00f2fe'];
         const prizeValues = sectors; 
         const canvas = document.getElementById('wheelCanvas');
@@ -2547,7 +2353,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            ctx.font = '24px Vazirmatn, sans-serif'; // Set font size for emoji
+            ctx.font = '24px Vazirmatn, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
@@ -2556,7 +2362,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 const start = i * arc - Math.PI / 2; 
                 const end = start + arc;
 
-                // Draw sector background
                 ctx.beginPath();
                 ctx.fillStyle = colors[i % colors.length];
                 ctx.moveTo(centerX, centerY);
@@ -2564,7 +2369,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 ctx.closePath();
                 ctx.fill();
 
-                // Draw sector border
                 ctx.beginPath();
                 ctx.strokeStyle = '#fff'; 
                 ctx.lineWidth = 3;
@@ -2573,22 +2377,18 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 ctx.closePath();
                 ctx.stroke();
 
-                // 🐱 Add Emoji to the sector
-                // Calculate the position for the emoji (midpoint of the arc, halfway to the edge)
                 const angle = start + arc / 2;
                 const textX = centerX + radius * 0.65 * Math.cos(angle);
                 const textY = centerY + radius * 0.65 * Math.sin(angle);
 
-                // Rotate context to align the emoji with the sector
                 ctx.save();
                 ctx.translate(textX, textY);
-                ctx.rotate(angle + Math.PI / 2); // Rotate to be perpendicular to the radius
-                ctx.fillStyle = '#000'; // Color doesn't matter for emoji usually
+                ctx.rotate(angle + Math.PI / 2);
+                ctx.fillStyle = '#000';
                 ctx.fillText('🐱', 0, 0); 
                 ctx.restore();
             });
 
-            // Draw Center Circle
             ctx.beginPath();
             ctx.fillStyle = '#fff';
             ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI); 
@@ -2597,7 +2397,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             ctx.lineWidth = 4;
             ctx.stroke();
             
-            // Draw Mini Circle inside
             ctx.beginPath();
             ctx.fillStyle = '#ff3366';
             ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI); 
@@ -2610,7 +2409,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
             if(spinning) return;
             
             if (isBanned) {
-                 // English translation of the Arabic alert message
                  showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                  return;
             }
@@ -2619,15 +2417,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
             
-            // 1. Request Action ID from the Server for pre-spin (security check)
             const preSpinActionId = await requestActionId('preSpin');
-            if (!preSpinActionId) return; // Error message already shown by fetchApi
+            if (!preSpinActionId) return;
 
-
-            // 2. Request pre-spin registration (Server checks for banned user and consumes the action ID)
             const preSpinReqResult = await fetchApi({ 
                 type: 'preSpin',
-                action_id: preSpinActionId // ⬅️ Send Action ID
+                action_id: preSpinActionId
             });
 
             if (!preSpinReqResult.ok) {
@@ -2635,31 +2430,26 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return; 
             }
             
-            // 3. Request Action ID from the Server for the spin result (prize confirmation)
             const spinResultActionId = await requestActionId('spinResult');
             if (!spinResultActionId) {
-                // English translation of the Arabic alert message
                 showCustomAlert('Security Error!', 'Failed to get confirmation token. Please try again.', 'error');
                 await loadUserData(); 
                 return;
             }
             
-            // 4. Call Ad SDK twice in sequence (no intermediate alerts) - user will see two ads like watchAds
             show_10245709()
                 .then(() => {
                     return show_10245709();
                 })
                 .then(async () => {
-                    // Start spinning visual
                     spinning = true;
                     spinBtn.disabled = true;
                     spinResult.textContent = 'Spinning...'; 
                     canvas.classList.add('spinning');
 
-                    // 5. Request spin result and prize addition (Server runs limits, Rate Limit, and validates Action ID)
                     const spinResultRes = await fetchApi({ 
                         type: 'spinResult',
-                        action_id: spinResultActionId // ⬅️ Send Action ID
+                        action_id: spinResultActionId
                     });
                     
                     if (spinResultRes.ok) {
@@ -2677,25 +2467,21 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         
                         currentAngle += rotationToApply;
 
-                        // Ensure transition is applied and trigger layout so animation runs reliably
                         canvas.style.transition = 'transform 4s cubic-bezier(0.22,0,0.2,1)';
                         requestAnimationFrame(() => {
                             canvas.style.transform = `rotate(${currentAngle}rad)`;
                         });
                         
                         setTimeout(async ()=>{
-                            // After animation completes, clear inline transition so future changes use CSS default
                             canvas.style.transition = '';
                             canvas.classList.remove('spinning');
                             
-                            // 6. Update balance and spin count with trusted server values 
                             updateState({ 
                                 balance: spinResultRes.data.new_balance,
                                 spins_today: spinResultRes.data.new_spins_count
                             });
                             
                             spinResult.textContent = `🎉\n\nYou won ${finalPrize} SHIB!`;
-                            // English translation of the Arabic alert message
                             showCustomAlert('Congratulations!', `You won ${finalPrize} SHIB!`, 'success');
                             
                             await loadUserData(); 
@@ -2705,9 +2491,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     } else {
                         canvas.classList.remove('spinning');
                         spinResult.textContent = `❌ ERROR ❌\n\n[STATUS] Error receiving prize. Please try again.`;
-                        // Custom Alert for spin result error is handled by fetchApi, but we ensure it here too:
                         if (!spinResultRes.error.includes('SECURITY ERROR')) { 
-                            // English translation of the Arabic alert message
                             showCustomAlert('Error!', 'Error receiving prize. Please try again.', 'error');
                         }
                         await loadUserData(); 
@@ -2718,12 +2502,9 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 })
                 .catch(e => {
                     console.error("libtl.com Ad failed to show or was dismissed:", e);
-                    // Ad error/cancellation handling
                     if (typeof e === 'string' && e.includes('canceled')) {
-                        // English translation of the Arabic alert message
                         showCustomAlert('Ad Cancelled/Failed!', 'The ad was not watched completely. The attempt was not counted.', 'warning');
                     } else {
-                        // English translation of the Arabic alert message
                         showCustomAlert('Ad Load Failed!', 'Ad failed to load. The attempt was not counted. Please try again.', 'error');
                     }
                     loadUserData(); 
@@ -2733,7 +2514,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
         /* ===== Navigation and Withdraw (No changes needed) ===== */
         function showSpin(){
             if (isBanned) {
-                 // English translation of the Arabic alert message
                  showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                  return;
             }
@@ -2749,7 +2529,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
         
         function showWithdraw(){
             if (isBanned) {
-                 // English translation of the Arabic alert message
                  showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                  return;
             }
@@ -2765,26 +2544,20 @@ You will earn 40% of the revenue from every referral you bring through ads!
         }
         
         function displayWithdrawals() {
-            // The inline "Recent Withdrawal Summary" was intentionally removed from the withdraw screen.
-            // This function will only update if the old container exists (defensive).
             const container = document.getElementById('withdrawalHistoryContainer');
             if (!container) {
-                // Container removed from withdraw screen — user should open the full history via "Open History" button.
                 return;
             }
             if (!withdrawalHistory || withdrawalHistory.length === 0) {
-                // English translation of the Arabic alert message
                 container.innerHTML = '<div class="no-records">No withdrawal requests currently.</div>';
                 return;
             }
 
             let tableHTML = '<table class="history-table">';
-            // English translation of the Arabic alert message
             tableHTML += '<thead><tr><th>Date</th><th>Amount (SHIB)</th><th>Status</th></tr></thead>';
             tableHTML += '<tbody>';
 
             withdrawalHistory.slice(0,5).forEach(record => {
-                // English translation of the Arabic alert message
                 const statusText = record.status === 'pending' ? 'Pending' : 'Completed';
                 const statusClass = record.status === 'pending' ? 'status-pending' : 'status-completed';
                 const dest = record.binance_id ? record.binance_id : (record.faucetpay_email ? record.faucetpay_email : '-');
@@ -2802,7 +2575,6 @@ You will earn 40% of the revenue from every referral you bring through ads!
         }
 
         function displayWithdrawalsFull() {
-            // open the full-screen history page and populate with full records
             mainScreen.classList.remove('visible');
             document.getElementById('withdrawScreen').classList.remove('visible');
             const screen = document.getElementById('withdrawHistoryScreen');
@@ -2841,12 +2613,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
         async function confirmWithdraw(){
             if (isBanned) {
-                 // English translation of the Arabic alert message
                  showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                  return;
             }
             
-            // Determine selected method
             const selectedMethod = document.querySelector('input[name="withdrawMethod"]:checked') ? document.querySelector('input[name="withdrawMethod"]:checked').value : 'binance';
             const binanceId = document.getElementById('binanceId').value.trim();
             const faucetpayEmail = document.getElementById('faucetpayEmail').value.trim();
@@ -2866,21 +2636,17 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
 
             if(isNaN(amount) || amount < 2000){ 
-                // English translation of the Arabic alert message
                 showCustomAlert('Invalid Amount!', 'The minimum withdrawal amount is 2000 SHIB.', 'warning'); 
                 return; 
             }
             if(amount > shibBalance){ 
-                // English translation of the Arabic alert message
                 showCustomAlert('Balance Error!', `Your balance is insufficient. Your current balance is ${shibBalance.toLocaleString()} SHIB.`, 'error'); 
                 return; 
             }
             
-            // 1. Request Action ID from the Server ⬅️ تم التفعيل على Withdraw
             const actionId = await requestActionId('withdraw');
             if (!actionId) return;
 
-            // 2. Prepare payload depending on selected method
             const payload = {
                 type: 'withdraw',
                 amount: amount,
@@ -2892,24 +2658,19 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 payload.binanceId = binanceId;
             }
 
-            // 3. Send withdrawal request via API
             const result = await fetchApi(payload);
 
             if (result.ok) {
-                // 4. Update balance with trusted server value
                 updateState({ balance: result.data.new_balance });
                 
-                // 5. Reload withdrawal history with new data
                 await loadUserData(); 
                 displayWithdrawals(); 
                 
-                // English translation of the Arabic alert message
                 const destText = selectedMethod === 'faucetpay' ? `FaucetPay: ${faucetpayEmail}` : `Binance ID: ${binanceId}`;
                 showCustomAlert('Request Sent!', `Details:\n${destText}\nAmount: ${amount.toLocaleString()} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
             }
         }
         
-        // Method toggle behavior
         document.addEventListener('click', (e) => {
             const mBin = document.getElementById('methodBinance');
             const mFaucet = document.getElementById('methodFaucetpay');
@@ -2926,7 +2687,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
         });
 
-        // ===== Contest Functions =====
+        // ===== Contest Functions (UPDATED to use server data for tickets and ranking) =====
         function showContest() {
             if (isBanned) {
                 showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
@@ -2965,23 +2726,13 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }, 1000);
         }
 
+        // Load contest data (trusted from server). Server should return { my_tickets, all_tickets }.
         async function loadContestData() {
-            // Fetch contest summary (trusted server values)
-            try {
-                const res = await fetchApi({ type: 'getContestData' });
-                if (res.ok && res.data) {
-                    myTickets = res.data.my_tickets || 0;
-                    allTickets = res.data.all_tickets || 0;
-                    // update status text
-                    const prizeStatus = document.getElementById('prizeStatusText');
-                    if (prizeStatus) prizeStatus.textContent = res.data.status_text || 'Live ranking updates will appear here';
-                } else {
-                    // keep values at zero; server may not provide data yet
-                    myTickets = 0;
-                    allTickets = 0;
-                }
-            } catch (e) {
-                console.warn('Failed to load contest data:', e);
+            const res = await fetchApi({ type: 'getContestData' });
+            if (res.ok && res.data) {
+                myTickets = res.data.my_tickets || 0;
+                allTickets = res.data.all_tickets || 0;
+            } else {
                 myTickets = 0;
                 allTickets = 0;
             }
@@ -2999,22 +2750,24 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
-            // Request Action ID from server
             const actionId = await requestActionId('contestWatchAd');
             if (!actionId) return;
 
-            // Show ad
             show_10245709()
                 .then(async () => {
-                    // Reward user with 5 tickets via server call (server ensures integrity)
                     const result = await fetchApi({
                         type: 'contestWatchAd',
                         action_id: actionId
                     });
 
                     if (result.ok) {
-                        // Use server values if provided
-                        myTickets = result.data.my_tickets !== undefined ? result.data.my_tickets : (myTickets + 5);
+                        // Update tickets from server's authoritative response
+                        if (result.data) {
+                            myTickets = result.data.my_tickets !== undefined ? result.data.my_tickets : myTickets;
+                            allTickets = result.data.all_tickets !== undefined ? result.data.all_tickets : allTickets;
+                        } else {
+                            myTickets += 5; // fallback minimal update if server doesn't return structured data
+                        }
                         updateContestUI();
                         showCustomAlert('Contest Reward!', 'You earned contest tickets!', 'success');
                     }
@@ -3036,57 +2789,47 @@ You will earn 40% of the revenue from every referral you bring through ads!
             document.getElementById('contestScreen').classList.add('visible');
         }
 
+        // Load ranking from server. Server must return { players: [ { name, user_id, tickets, avatar } ] } ordered by rank.
         async function loadContestRank() {
-            // Fetch ranking from server. IMPORTANT: Do NOT show fake users.
-            const list = document.getElementById('contestRankList');
-            const rankEmptyMsg = document.getElementById('rankEmptyMsg');
-            list.innerHTML = ''; // clear previous
-
-            try {
-                const res = await fetchApi({ type: 'getContestRank' });
-                if (res.ok && Array.isArray(res.data.ranks) && res.data.ranks.length > 0) {
-                    // Render only real data from server
-                    const html = res.data.ranks.map((player, index) => `
-                        <div class="contest-rank-item">
-                            <div class="contest-rank-position">${index + 1}</div>
-                            <img src="${player.avatar || 'https://files.catbox.moe/ut2ljl.png'}" class="contest-rank-avatar" alt="avatar">
-                            <div class="contest-rank-info">
-                                <div class="contest-rank-name fancy-uni">${escapeHtml(player.name || 'Unknown')}</div>
-                                <div class="contest-rank-id">ID: ${escapeHtml(String(player.user_id || ''))}</div>
-                            </div>
-                            <div class="contest-rank-tickets fancy-uni">${Number(player.tickets || 0).toLocaleString()} Tickets</div>
-                        </div>
-                    `).join('');
-                    list.innerHTML = html;
-                } else {
-                    // No real users yet - show waiting message (in Arabic as requested)
-                    if (rankEmptyMsg) rankEmptyMsg.style.display = 'block';
-                    // ensure we don't fill with fake users
-                    list.appendChild(rankEmptyMsg);
-                }
-            } catch (e) {
-                console.warn('Failed to load contest rank:', e);
-                if (rankEmptyMsg) {
-                    rankEmptyMsg.style.display = 'block';
-                    list.appendChild(rankEmptyMsg);
-                }
+            const res = await fetchApi({ type: 'getContestRank' });
+            let players = [];
+            if (res.ok && Array.isArray(res.data.players)) {
+                players = res.data.players;
+            } else {
+                players = [];
             }
-        }
 
-        // Utility: escape HTML to avoid injection when rendering server content
-        function escapeHtml(text) {
-            return String(text)
-                .replace(/&/g, '&amp;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
+            const list = document.getElementById('contestRankList');
+            if (!players || players.length === 0) {
+                list.innerHTML = `<div style="text-align:center;color:#cfeeff;padding:20px;border-radius:10px;background:rgba(255,255,255,0.02);">No entries yet.</div>`;
+                return;
+            }
+
+            // Build HTML safely, ensuring no horizontal overflow and using server data only (no fake users).
+            list.innerHTML = players.map((player, index) => {
+                const pos = index + 1;
+                const avatar = player.avatar ? player.avatar : 'https://files.catbox.moe/ut2ljl.png';
+                const nameSafe = String(player.name || ('User ' + player.user_id)).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                const userIdSafe = String(player.user_id || '');
+                const tickets = Number(player.tickets || 0).toLocaleString();
+                return `
+                    <div class="contest-rank-item" role="article" aria-label="Player ${pos}">
+                        <div class="contest-rank-position">${pos}</div>
+                        <img src="${avatar}" class="contest-rank-avatar" alt="avatar">
+                        <div class="contest-rank-info">
+                            <div class="contest-rank-name" title="${nameSafe}">${nameSafe}</div>
+                            <div class="contest-rank-id">ID: ${userIdSafe}</div>
+                        </div>
+                        <div class="contest-rank-tickets">${tickets} Tickets</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // Final event listener to ensure background audio starts on the first user interaction
         document.addEventListener('click', function handler() {
             playBGAudio();
-            document.removeEventListener('click', handler); // Remove after first successful click
+            document.removeEventListener('click', handler);
         });
     </script>
 </body>
