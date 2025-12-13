@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+l<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -947,96 +947,108 @@
             padding-bottom: 40px;
             box-sizing: border-box;
         }
+
+        /* NEW: Ranking row styles to satisfy layout requirements */
         .contest-rank-item {
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding: 12px;
+            gap: 12px;
+            padding: 10px 12px;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.03);
             margin-bottom: 10px;
             backdrop-filter: blur(6px);
-            overflow:hidden;
-            transition: transform .12s ease, box-shadow .12s ease;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
         }
         .contest-rank-item:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
 
-        /* Remove circular avatar look - use small rounded rectangle instead */
+        /* fixed-size circular avatar to avoid layout shifts */
         .contest-rank-avatar {
-            width: 55px;
-            height: 55px;
-            border-radius: 8px; /* changed from 50% to 8px */
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #00bfff;
-            /* softer shadow to reduce strong circular emphasis */
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            flex-shrink:0;
-            background: #fff;
+            flex: 0 0 56px;
+            border: 2px solid rgba(255,255,255,0.06);
+            background: #ffffff;
         }
-        .contest-rank-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 0;
-            overflow: hidden;
-        }
-        .contest-rank-username {
+
+        /* Name column: show first_name, add 'You' note if current */
+        .contest-rank-name {
             font-size: 16px;
             font-weight: 800;
             color: #e6f7ff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            display:flex;
-            align-items:center;
-            gap:8px;
+            min-width: 0;
+            max-width: 36%; /* prevent pushing other columns */
         }
-        .you-badge {
-            background: #ffd700;
-            color: #000;
-            font-weight: 700;
-            border-radius: 8px;
-            padding: 2px 8px;
-            font-size: 12px;
-            text-transform: uppercase;
-            box-shadow: 0 2px 0 rgba(0,0,0,0.12);
-        }
-        .contest-rank-id {
-            font-size: 12px;
+
+        /* user id column */
+        .contest-rank-userid {
+            font-size: 13px;
             color: #cfeeff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            opacity: 0.9;
-        }
-        .contest-rank-tickets {
-            font-size: 18px;
-            font-weight: bold;
-            color: #ff8c00;
-            flex-shrink:0;
-            white-space: nowrap;
-        }
-        .contest-rank-position {
-            font-size: 20px;
-            font-weight: bold;
-            color: #00bfff;
-            width: 36px;
-            text-align: center;
-            flex-shrink:0;
+            min-width: 0;
+            max-width: 20%;
         }
 
-        /* Highlight current user row */
-        .contest-rank-item.current-player {
-            border: 2px solid rgba(255,255,255,0.14);
-            background: linear-gradient(90deg, rgba(0,191,255,0.06), rgba(255,215,0,0.02));
-            box-shadow: 0 10px 30px rgba(0,191,255,0.08);
+        /* tickets */
+        .contest-rank-tickets {
+            font-size: 15px;
+            font-weight: 900;
+            color: #ffd700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: right;
+            min-width: 0;
+            max-width: 18%;
+            margin-left: auto;
         }
-        .contest-rank-item.current-player .contest-rank-username { color: #ffd700; }
+
+        /* position (rank) shown at the far right */
+        .contest-rank-position {
+            font-size: 16px;
+            font-weight: 700;
+            color: #00bfff;
+            width: 44px;
+            text-align: center;
+            flex: 0 0 44px;
+        }
+
+        /* Highlight current user row without changing order/position */
+        .contest-rank-item.current-player {
+            border: 1px solid rgba(255,215,0,0.12);
+            background: linear-gradient(90deg, rgba(255,215,0,0.03), rgba(0,191,255,0.01));
+            box-shadow: 0 8px 20px rgba(0,191,255,0.04);
+        }
+        .contest-rank-item.current-player .contest-rank-name { color: #ffd700; }
         .contest-rank-item.current-player .contest-rank-tickets { color: #ffd700; font-weight:900; }
 
         /* ensure the whole UI never produces horizontal scroll */
         html, body { max-width:100%; overflow-x:hidden; }
+
+        /* Hide top user info when ranking screen is active (added/removed via body class) */
+        .hide-top-user .user-circle,
+        .hide-top-user #userName,
+        .hide-top-user #userId {
+            display: none !important;
+        }
+
+        /* Make ranking list responsive and prevent horizontal overflow */
+        @media (max-width: 420px) {
+            .contest-rank-name { max-width: 40%; font-size: 14px; }
+            .contest-rank-userid { max-width: 22%; font-size: 12px; }
+            .contest-rank-tickets { max-width: 20%; font-size: 14px; }
+            .contest-rank-position { width: 40px; flex: 0 0 40px; }
+            .contest-rank-avatar { width: 48px; height: 48px; flex: 0 0 48px; }
+        }
 
     </style>
 </head>
@@ -1441,8 +1453,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 imgEl.style.display = 'block';
                 placeHolder.style.display = 'none';
             }
-            // show username and id on main screen
-            nameEl.textContent = tgUser.username ? '@' + tgUser.username : userName;
+            nameEl.textContent = userName;
             idEl.textContent   = 'ID: ' + userId;
         }
 
@@ -2811,15 +2822,22 @@ You will earn 40% of the revenue from every referral you bring through ads!
             mainScreen.classList.remove('visible');
             document.getElementById('contestScreen').classList.remove('visible');
             document.getElementById('contestRankScreen').classList.add('visible');
+
+            // Add class to body to hide duplicate top user info as requested
+            document.body.classList.add('hide-top-user');
+
             loadContestRank();
         }
 
         function hideContestRank() {
             document.getElementById('contestRankScreen').classList.remove('visible');
             document.getElementById('contestScreen').classList.add('visible');
+
+            // Remove the hiding class
+            document.body.classList.remove('hide-top-user');
         }
 
-        // Load ranking from server. Server must return { players: [ { name, username, userId, tickets, avatar } ] } ordered by rank.
+        // Load ranking from server. Server must return { players: [ { first_name, photo_url, userId, user_id, tickets } ] } ordered by rank.
         async function loadContestRank() {
             const res = await fetchApi({ type: 'getContestRank' });
             let players = [];
@@ -2835,43 +2853,55 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
-            // Build HTML safely, ensuring avatars, username and full user id are displayed.
-            // Highlight the current user (if known) by comparing tgUser.id to player.userId.
+            // We'll use a single default avatar when photo is missing
+            const DEFAULT_AVATAR = 'https://files.catbox.moe/ut2ljl.png';
+
+            // Current user id from Telegram init data (if available)
             const currentUserId = tgUser && tgUser.id ? String(tgUser.id) : null;
 
-            // NOTE (server): Prefer returning a 'username' field in each player object.
-            // If the server stores usernames in a 'users' table, include it in getContestRank response:
-            // players: [{ userId, username, avatar, tickets }, ...]
+            // Build each row using required order and fields:
+            // [ avatar(circle) | first_name (+ You if current) | user_id | tickets | rank ]
             list.innerHTML = players.map((player, index) => {
                 const pos = index + 1;
-                // support both avatar and photo_url field names
-                const avatar = player.avatar || player.photo_url || '';
-                // prefer username if provided then fallback to name
-                let usernameFromServer = player.username || player.name || '';
-                const userIdSafe = String(player.userId || player.user_id || '');
-                // If server did not provide username, but this is current user, use tgUser.username or name
-                if (!usernameFromServer && currentUserId && currentUserId === userIdSafe && tgUser) {
-                    usernameFromServer = tgUser.username ? '@' + tgUser.username : (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : ''));
+
+                // Prefer explicit first_name sent by server; fallback to name or empty
+                const firstNameRaw = player.first_name || player.name || '';
+                const firstNameSafe = String(firstNameRaw).replace(/</g,'&lt;').replace(/>/g,'&gt;') || 'User';
+
+                // Determine user id field (server may use userId or user_id)
+                const userIdRaw = player.userId !== undefined ? player.userId : (player.user_id !== undefined ? player.user_id : '');
+                const userIdSafe = String(userIdRaw).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+                // Use photo_url field if present; fallback to avatar or default
+                const photoUrl = player.photo_url || player.photo || player.avatar || '';
+
+                // Use the provided photo_url for the current user if available (tgUser.photo_url)
+                let avatarSrc = photoUrl || DEFAULT_AVATAR;
+                if (currentUserId !== null && String(userIdRaw) === currentUserId) {
+                    // override avatar for current user with Telegram WebApp photo_url if available
+                    if (tgUser && tgUser.photo_url) {
+                        avatarSrc = tgUser.photo_url;
+                    }
                 }
-                const nameSafe = String(usernameFromServer || `User ${userIdSafe}`).replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                const idSafe = String(userIdSafe).replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                const tickets = Number(player.tickets || 0).toLocaleString();
 
-                // detect if this row belongs to current user
-                const isCurrent = currentUserId !== null && currentUserId === String(userIdSafe);
+                // Tickets
+                const tickets = Number(player.tickets || player.tickets_count || player.points || 0).toLocaleString();
 
-                // Add a small "you" badge for the current user
-                const youBadgeHtml = isCurrent ? `<span class="you-badge">you</span>` : '';
+                // Detect current user
+                const isCurrent = currentUserId !== null && String(userIdRaw) === currentUserId;
+                const rowClass = isCurrent ? 'contest-rank-item current-player' : 'contest-rank-item';
 
+                // first_name display: show full first_name and append " You" visually next to the name (only text)
+                const displayName = isCurrent ? `${firstNameSafe} (You)` : `${firstNameSafe}`;
+
+                // Construct safe HTML for the row with strict truncation rules applied via CSS
                 return `
-                    <div class="contest-rank-item ${isCurrent ? 'current-player' : ''}" role="article" aria-label="Player ${pos}">
-                        <div class="contest-rank-position">${pos}</div>
-                        <img src="${avatar || 'https://files.catbox.moe/ut2ljl.png'}" class="contest-rank-avatar" alt="avatar" onerror="this.onerror=null;this.src='https://files.catbox.moe/ut2ljl.png'">
-                        <div class="contest-rank-info">
-                            <div class="contest-rank-username" title="${nameSafe}">${nameSafe} ${youBadgeHtml}</div>
-                            <div class="contest-rank-id">ID: ${idSafe}</div>
-                        </div>
+                    <div class="${rowClass}" role="article" aria-label="Player ${pos}">
+                        <img src="${avatarSrc || DEFAULT_AVATAR}" class="contest-rank-avatar" alt="" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
+                        <div class="contest-rank-name" title="${firstNameSafe}">${displayName}</div>
+                        <div class="contest-rank-userid" title="${userIdSafe}">${userIdSafe}</div>
                         <div class="contest-rank-tickets">${tickets} Tickets</div>
+                        <div class="contest-rank-position">${pos}</div>
                     </div>
                 `;
             }).join('');
