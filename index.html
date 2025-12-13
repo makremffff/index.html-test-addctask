@@ -1,4 +1,4 @@
-l<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -946,38 +946,46 @@ l<!DOCTYPE html>
             margin: 0 auto;
             padding-bottom: 40px;
             box-sizing: border-box;
+            display: grid;
+            grid-template-columns: 1fr; /* single column list */
+            gap: 12px;
         }
+        /* Updated ranking item: vertical stacked layout: avatar above, then username, then id, then tickets and position */
         .contest-rank-item {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 15px;
-            padding: 12px;
+            gap: 8px;
+            padding: 14px;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.04);
             margin-bottom: 10px;
             backdrop-filter: blur(6px);
             overflow:hidden;
             transition: transform .12s ease, box-shadow .12s ease;
+            text-align: center;
+            position: relative;
         }
         .contest-rank-item:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
 
         .contest-rank-avatar {
-            width: 55px;
-            height: 55px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #00bfff;
-            box-shadow: 0 0 10px #00bfff;
-            flex-shrink:0;
+            border: 3px solid #00bfff;
+            box-shadow: 0 4px 12px rgba(0,191,255,0.18);
             background: #fff;
+            flex-shrink:0;
         }
         .contest-rank-info {
-            flex: 1;
             display: flex;
             flex-direction: column;
             gap: 4px;
             min-width: 0;
             overflow: hidden;
+            align-items:center;
+            text-align:center;
         }
         .contest-rank-username {
             font-size: 16px;
@@ -986,6 +994,7 @@ l<!DOCTYPE html>
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            max-width: 100%;
         }
         .contest-rank-id {
             font-size: 12px;
@@ -995,18 +1004,28 @@ l<!DOCTYPE html>
             text-overflow: ellipsis;
         }
         .contest-rank-tickets {
-            font-size: 18px;
-            font-weight: bold;
-            color: #ff8c00;
+            font-size: 16px;
+            font-weight: 900;
+            color: #ffd700;
             flex-shrink:0;
             white-space: nowrap;
+            margin-top: 6px;
         }
         .contest-rank-position {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #00bfff;
-            width: 36px;
-            text-align: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background: rgba(0,191,255,0.08);
+            border: 2px solid rgba(0,191,255,0.12);
+            position: absolute;
+            left: 12px;
+            top: 12px;
             flex-shrink:0;
         }
 
@@ -2782,7 +2801,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                             myTickets += 5; // fallback minimal update if server doesn't return structured data
                         }
                         updateContestUI();
-                        showCustomAlert('Contest Reward!', 'You earned contest tickets!', 'success');
+                        showCustomAlert('Contest Reward!', 'You earned 5 tickets!', 'success');
                     }
                 })
                 .catch(e => {
@@ -2838,15 +2857,16 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // detect if this row belongs to current user
                 const isCurrent = currentUserId !== null && currentUserId === String(userIdSafe);
 
+                // New layout: stacked (avatar above, then username, then id) and show tickets below
                 return `
                     <div class="contest-rank-item ${isCurrent ? 'current-player' : ''}" role="article" aria-label="Player ${pos}">
-                        <div class="contest-rank-position">${pos}</div>
-                        <img src="${avatar || 'https://files.catbox.moe/ut2ljl.png'}" class="contest-rank-avatar" alt="avatar" onerror="this.onerror=null;this.src='https://files.catbox.moe/ut2ljl.png'">
+                        <div class="contest-rank-position" aria-hidden="true">${pos}</div>
+                        <img src="${avatar || 'https://files.catbox.moe/ut2ljl.png'}" class="contest-rank-avatar" alt="Player avatar" onerror="this.onerror=null;this.src='https://files.catbox.moe/ut2ljl.png'">
                         <div class="contest-rank-info">
                             <div class="contest-rank-username" title="${nameSafe}">${nameSafe}</div>
                             <div class="contest-rank-id">ID: ${idSafe}</div>
                         </div>
-                        <div class="contest-rank-tickets">${tickets} Tickets</div>
+                        <div class="contest-rank-tickets" aria-label="${tickets} tickets">${tickets} Tickets</div>
                     </div>
                 `;
             }).join('');
