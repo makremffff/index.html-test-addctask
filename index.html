@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+l<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -957,35 +957,39 @@
             margin-bottom: 10px;
             backdrop-filter: blur(6px);
             overflow:hidden;
+            transition: transform .12s ease, box-shadow .12s ease;
         }
+        .contest-rank-item:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+
         .contest-rank-avatar {
-            width: 45px;
-            height: 45px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #00bfff;
             box-shadow: 0 0 10px #00bfff;
             flex-shrink:0;
+            background: #fff;
         }
         .contest-rank-info {
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
             min-width: 0;
             overflow: hidden;
         }
-        .contest-rank-name {
+        .contest-rank-username {
             font-size: 16px;
-            font-weight: bold;
-            color: #ffd700;
+            font-weight: 800;
+            color: #e6f7ff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         .contest-rank-id {
             font-size: 12px;
-            color: #aaa;
+            color: #cfeeff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -1005,6 +1009,15 @@
             text-align: center;
             flex-shrink:0;
         }
+
+        /* Highlight current user row */
+        .contest-rank-item.current-player {
+            border: 2px solid rgba(255,255,255,0.14);
+            background: linear-gradient(90deg, rgba(0,191,255,0.06), rgba(255,215,0,0.02));
+            box-shadow: 0 10px 30px rgba(0,191,255,0.08);
+        }
+        .contest-rank-item.current-player .contest-rank-username { color: #ffd700; }
+        .contest-rank-item.current-player .contest-rank-tickets { color: #ffd700; font-weight:900; }
 
         /* ensure the whole UI never produces horizontal scroll */
         html, body { max-width:100%; overflow-x:hidden; }
@@ -2789,7 +2802,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             document.getElementById('contestScreen').classList.add('visible');
         }
 
-        // Load ranking from server. Server must return { players: [ { name, user_id, tickets, avatar } ] } ordered by rank.
+        // Load ranking from server. Server must return { players: [ { name, username, userId, tickets, avatar } ] } ordered by rank.
         async function loadContestRank() {
             const res = await fetchApi({ type: 'getContestRank' });
             let players = [];
@@ -2805,25 +2818,50 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
-            // Build HTML safely, ensuring no horizontal overflow and using server data only (no fake users).
+            // Build HTML safely, ensuring avatars, username and full user id are displayed.
+            // Highlight the current user (if known) by comparing tgUser.id to player.userId.
+            const currentUserId = tgUser && tgUser.id ? String(tgUser.id) : null;
+
             list.innerHTML = players.map((player, index) => {
                 const pos = index + 1;
-                const avatar = player.avatar ? player.avatar : 'https://files.catbox.moe/ut2ljl.png';
-                const nameSafe = String(player.name || ('User ' + player.user_id)).replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                const userIdSafe = String(player.user_id || '');
+                // support both avatar and photo_url field names
+                const avatar = player.avatar || player.photo_url || '';
+                // prefer username if provided then fallback to name
+                const username = player.username || player.name || (`User ${player.userId}`);
+                const userIdSafe = String(player.userId || player.user_id || '');
                 const tickets = Number(player.tickets || 0).toLocaleString();
+
+                // sanitize displayed text minimal
+                const nameSafe = String(username).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                const idSafe = String(userIdSafe).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+                // detect if this row belongs to current user
+                const isCurrent = currentUserId !== null && currentUserId === String(userIdSafe);
+
                 return `
-                    <div class="contest-rank-item" role="article" aria-label="Player ${pos}">
+                    <div class="contest-rank-item ${isCurrent ? 'current-player' : ''}" role="article" aria-label="Player ${pos}">
                         <div class="contest-rank-position">${pos}</div>
-                        <img src="${avatar}" class="contest-rank-avatar" alt="avatar">
+                        <img src="${avatar || 'https://files.catbox.moe/ut2ljl.png'}" class="contest-rank-avatar" alt="avatar" onerror="this.onerror=null;this.src='https://files.catbox.moe/ut2ljl.png'">
                         <div class="contest-rank-info">
-                            <div class="contest-rank-name" title="${nameSafe}">${nameSafe}</div>
-                            <div class="contest-rank-id">ID: ${userIdSafe}</div>
+                            <div class="contest-rank-username" title="${nameSafe}">${nameSafe}</div>
+                            <div class="contest-rank-id">ID: ${idSafe}</div>
                         </div>
                         <div class="contest-rank-tickets">${tickets} Tickets</div>
                     </div>
                 `;
             }).join('');
+
+            // After rendering, scroll to the current player's position (if present) for visibility
+            if (currentUserId) {
+                // small timeout to ensure DOM paints
+                setTimeout(() => {
+                    const el = list.querySelector('.contest-rank-item.current-player');
+                    if (el) {
+                        // smooth scroll into view within the rank container
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 120);
+            }
         }
 
         // Final event listener to ensure background audio starts on the first user interaction
