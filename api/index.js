@@ -3,8 +3,13 @@ const crypto = require('crypto');
 // Load environment variables for Supabase connection
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Prefer service role key for server-side operations if available
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || null;
 // ⚠️ BOT_TOKEN must be set in Vercel environment variables
 const BOT_TOKEN = process.env.BOT_TOKEN;
+
+// Use the service role key if present, otherwise fall back to anon key (less ideal)
+const SUPABASE_KEY = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
 
 // ------------------------------------------------------------------
 // Fully secured and defined server-side constants
@@ -17,7 +22,6 @@ const RESET_INTERVAL_MS = 6 * 60 * 60 * 1000; // ⬅️ 6 hours in milliseconds
 const MIN_TIME_BETWEEN_ACTIONS_MS = 3000; // 3 seconds minimum time between watchAd/spin requests
 const ACTION_ID_EXPIRY_MS = 60000; // 60 seconds for Action ID to be valid
 const SPIN_SECTORS = [5, 10, 15, 20, 5];
-const TICKETS_PER_AD = 10; // Number of tickets awarded per contest ad/watch
 
 // ===== Task Link Constants =====
 const TASK_LINK_REWARD = 5; // 5 SHIB per task-link click
@@ -49,16 +53,24 @@ function sendError(res, message, statusCode = 400) {
   res.end(JSON.stringify({ ok: false, error: message }));
 }
 
+/**
+ * Lightweight Supabase REST helper using fetch.
+ * - tableName: REST endpoint table
+ * - method: GET | POST | PATCH | DELETE
+ * - body: object or null
+ * - queryParams: string starting with ? for filters/select/order
+ */
 async function supabaseFetch(tableName, method, body = null, queryParams = '?select=*') {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    throw new Error('Supabase environment variables are not configured.');
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    throw new Error('Supabase environment variables are not configured (URL or KEY).');
   }
 
+  // Ensure leading slash not duplicated
   const url = `${SUPABASE_URL}/rest/v1/${tableName}${queryParams}`;
 
   const headers = {
-    'apikey': SUPABASE_ANON_KEY,
-    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
     'Content-Type': 'application/json',
     'Prefer': 'return=representation'
   };
@@ -71,26 +83,22 @@ async function supabaseFetch(tableName, method, body = null, queryParams = '?sel
 
   const response = await fetch(url, options);
 
-  if (response.ok) {
-      const responseText = await response.text();
-      try {
-          const jsonResponse = JSON.parse(responseText);
-          return Array.isArray(jsonResponse) ? jsonResponse : { success: true };
-      } catch (e) {
-          return { success: true };
-      }
+  // Handle no content
+  if (response.status === 204) {
+      return [];
   }
 
-  let data;
+  const text = await response.text().catch(() => null);
+  if (!text) {
+      return [];
+  }
   try {
-      data = await response.json();
+      const json = JSON.parse(text);
+      return json;
   } catch (e) {
-      const errorMsg = `Supabase error: ${response.status} ${response.statusText}`;
-      throw new Error(errorMsg);
+      // If not JSON, return raw text wrapped
+      return text;
   }
-
-  const errorMsg = data.message || `Supabase error: ${response.status} ${response.statusText}`;
-  throw new Error(errorMsg);
 }
 
 /**
@@ -105,7 +113,7 @@ async function checkChannelMembership(userId, channelUsername) {
     // The chat_id must be in the format @username or -100xxxxxxxxxx
     const chatId = channelUsername.startsWith('@') ? channelUsername : `@${channelUsername}`; 
 
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=${chatId}&user_id=${userId}`;
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/getChatMember?chat_id=${encodeURIComponent(chatId)}&user_id=${encodeURIComponent(userId)}`;
     
     try {
         const response = await fetch(url);
@@ -134,7 +142,6 @@ async function checkChannelMembership(userId, channelUsername) {
         return false;
     }
 }
-
 
 /**
  * Limit-Based Reset Logic: Resets counters if the limit was reached AND the interval (6 hours) has passed since.
@@ -232,7 +239,14 @@ function validateInitData(initData) {
         return false;
     }
 
-    const urlParams = new URLSearchParams(initData);
+    // initData may be the raw query string typically provided by Telegram
+    // if user passed an object, convert to query string
+    let raw = initData;
+    if (typeof initData === 'object') {
+        raw = Object.keys(initData).map(k => `${k}=${initData[k]}`).join('&');
+    }
+
+    const urlParams = new URLSearchParams(raw);
     const hash = urlParams.get('hash');
     urlParams.delete('hash');
 
@@ -296,13 +310,13 @@ async function processCommission(referrerId, refereeId, sourceReward) {
         }
         
         // 3. Update balance: newBalance will now include the decimal commission
-        const newBalance = users[0].balance + commissionAmount;
+        const newBalance = (users[0].balance || 0) + commissionAmount;
         
         // 4. Update referrer balance
         await supabaseFetch('users', 'PATCH', { balance: newBalance }, `?id=eq.${referrerId}`); 
 
         // 5. Add record to commission_history
-        await supabaseFetch('commission_history', 'POST', { referrer_id: referrerId, referee_id: refereeId, amount: commissionAmount, source_reward: sourceReward }, '?select=referrer_id');
+        await supabaseFetch('commission_history', 'POST', { referrer_id: referrerId, referee_id: refereeId, amount: commissionAmount, source_reward: sourceReward, created_at: new Date().toISOString() }, '?select=referrer_id');
         
         return { ok: true, new_referrer_balance: newBalance };
     
@@ -337,7 +351,7 @@ async function handleGenerateActionId(req, res, body) {
     
     // Check if the user already has an unexpired ID for this action type
     try {
-        const existingIds = await supabaseFetch('temp_actions', 'GET', null, `?user_id=eq.${id}&action_type=eq.${action_type}&select=action_id,created_at`);
+        const existingIds = await supabaseFetch('temp_actions', 'GET', null, `?user_id=eq.${id}&action_type=eq.${action_type}&select=action_id,created_at,id`);
         
         if (Array.isArray(existingIds) && existingIds.length > 0) {
             const lastIdTime = new Date(existingIds[0].created_at).getTime();
@@ -358,7 +372,7 @@ async function handleGenerateActionId(req, res, body) {
     
     try {
         await supabaseFetch('temp_actions', 'POST',
-            { user_id: id, action_id: newActionId, action_type: action_type },
+            { user_id: id, action_id: newActionId, action_type: action_type, created_at: new Date().toISOString() },
             '?select=action_id');
             
         sendSuccess(res, { action_id: newActionId });
@@ -428,13 +442,13 @@ async function handleGetUserData(req, res, body) {
         // 2. Fetch user data (including new task link fields)
         const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=balance,ads_watched_today,spins_today,is_banned,ref_by,ads_limit_reached_at,spins_limit_reached_at,task_completed,task_link_clicks_today,task_link_limit_reached_at`);
 
-        if (!users || users.length === 0 || users.success) {
+        if (!users || (Array.isArray(users) && users.length === 0)) {
             return sendSuccess(res, {
                 balance: 0, ads_watched_today: 0, spins_today: 0, referrals_count: 0, withdrawal_history: [], is_banned: false, task_completed: false, task_link_clicks_today: 0
             });
         }
 
-        const userData = users[0];
+        const userData = Array.isArray(users) ? users[0] : users;
 
         // 3. Banned Check - Exit immediately if banned
         if (userData.is_banned) {
@@ -447,12 +461,9 @@ async function handleGetUserData(req, res, body) {
         const referralsCount = Array.isArray(referrals) ? referrals.length : 0;
 
         // 5. Fetch withdrawal history
-        //    - Binance withdrawals in 'withdrawals' table (binance_id)
-        //    - FaucetPay withdrawals in separate 'faucet_pay' table (faucetpay_email)
         const binanceRecords = await supabaseFetch('withdrawals', 'GET', null, `?user_id=eq.${id}&select=amount,status,created_at,binance_id&order=created_at.desc`);
         const faucetPayRecords = await supabaseFetch('faucet_pay', 'GET', null, `?user_id=eq.${id}&select=amount,status,created_at,faucetpay_email&order=created_at.desc`);
 
-        // Normalize results into a unified withdrawal history array
         const normalizedBinance = Array.isArray(binanceRecords) ? binanceRecords.map(r => ({
             amount: r.amount,
             status: r.status,
@@ -528,7 +539,6 @@ async function handleGetTasks(req, res, body) {
         sendError(res, `Failed to retrieve tasks: ${error.message}`, 500);
     }
 }
-
 
 /**
  * 1) type: "register"
@@ -611,8 +621,8 @@ async function handleWatchAd(req, res, body) {
         }
 
         // 7. Calculate new values
-        const newBalance = user.balance + reward;
-        const newAdsCount = user.ads_watched_today + 1;
+        const newBalance = (user.balance || 0) + reward;
+        const newAdsCount = (user.ads_watched_today || 0) + 1;
         const updatePayload = {
             balance: newBalance,
             ads_watched_today: newAdsCount,
@@ -689,7 +699,6 @@ async function handlePreSpin(req, res, body) {
     }
 }
 
-
 /**
  * 5) type: "spinResult"
  */
@@ -731,8 +740,8 @@ async function handleSpinResult(req, res, body) {
         // --- All checks passed: Process Spin Result ---
 
         const { prize, prizeIndex } = calculateRandomSpinPrize();
-        const newSpinsCount = user.spins_today + 1;
-        const newBalance = user.balance + prize;
+        const newSpinsCount = (user.spins_today || 0) + 1;
+        const newBalance = (user.balance || 0) + prize;
         
         const updatePayload = {
             balance: newBalance,
@@ -750,7 +759,7 @@ async function handleSpinResult(req, res, body) {
 
         // 9. Save to spin_results
         await supabaseFetch('spin_results', 'POST',
-          { user_id: id, prize },
+          { user_id: id, prize, created_at: new Date().toISOString() },
           '?select=user_id');
 
         // 10. Return the actual, server-calculated prize and index
@@ -807,7 +816,7 @@ async function handleTaskLinkClick(req, res, body) {
 
         // 7. Compute new balance and count
         const reward = TASK_LINK_REWARD;
-        const newBalance = user.balance + reward;
+        const newBalance = (user.balance || 0) + reward;
         const newCount = currentCount + 1;
 
         const updatePayload = {
@@ -891,7 +900,7 @@ async function handleCompleteTask(req, res, body) {
         
         // 6. التحقق من الانضمام بناءً على نوع المهمة
         if (taskType === 'channel') {
-            const channelUsernameMatch = taskLink.match(/t\.me\/([a-zA-Z0-9_]+)/);
+            const channelUsernameMatch = taskLink && taskLink.match(/t\.me\/([a-zA-Z0-9_]+)/);
             
             if (channelUsernameMatch) {
                 const channelUsername = `@${channelUsernameMatch[1]}`;
@@ -917,7 +926,7 @@ async function handleCompleteTask(req, res, body) {
         }
         
         const referrerId = user.ref_by;
-        const newBalance = user.balance + reward;
+        const newBalance = (user.balance || 0) + (reward || 0);
         
         // 9. Update balance and last_activity
         await supabaseFetch('users', 'PATCH', 
@@ -929,7 +938,7 @@ async function handleCompleteTask(req, res, body) {
             
         // 10. Mark task as completed (INSERT into the junction table)
         await supabaseFetch(TASK_COMPLETIONS_TABLE, 'POST', 
-            { user_id: id, task_id: taskId, reward_amount: reward }, 
+            { user_id: id, task_id: taskId, reward_amount: reward, created_at: new Date().toISOString() }, 
             '?select=user_id');
 
         // 11. Commission Call
@@ -950,13 +959,6 @@ async function handleCompleteTask(req, res, body) {
 
 /**
  * 8) type: "withdraw"
- *
- * Supports two destination types:
- * - binanceId (string) -> saved into 'withdrawals' table
- * - faucetpay_email (string, email) -> saved into separate 'faucet_pay' table
- *
- * The request should include action_id (validateAndUseActionId).
- * At least one of binanceId or faucetpay_email must be provided.
  */
 async function handleWithdraw(req, res, body) {
     const { user_id, binanceId, faucetpay_email, amount, action_id } = body;
@@ -986,7 +988,7 @@ async function handleWithdraw(req, res, body) {
         }
         
         // 4. Check sufficient balance
-        if (user.balance < withdrawalAmount) {
+        if ((user.balance || 0) < withdrawalAmount) {
             return sendError(res, 'Insufficient balance.', 400);
         }
 
@@ -1008,7 +1010,7 @@ async function handleWithdraw(req, res, body) {
         }
 
         // 6. Calculate new balance
-        const newBalance = user.balance - withdrawalAmount;
+        const newBalance = (user.balance || 0) - withdrawalAmount;
 
         // 7. Update user balance
         await supabaseFetch('users', 'PATCH',
@@ -1054,274 +1056,141 @@ async function handleWithdraw(req, res, body) {
 }
 
 /**
- * NEW: 9) type: "contestAd"
- *
- * - Validates action id 'contestAd'
- * - Inserts a ticket record into 'ticket_comption' table
- * - Returns aggregated contest data: user_tickets, total_tickets, optional leaderboard
- */
-async function handleContestAd(req, res, body) {
-    const { user_id, action_id } = body;
-    const id = parseInt(user_id);
-
-    // Validate and consume action id
-    if (!await validateAndUseActionId(res, id, action_id, 'contestAd')) return;
-
-    try {
-        // Basic checks
-        // Reset limits if necessary (re-use existing function)
-        await resetDailyLimitsIfExpired(id);
-
-        // Check user existence and banned status
-        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=balance,is_banned`);
-        if (!Array.isArray(users) || users.length === 0) {
-            return sendError(res, 'User not found.', 404);
-        }
-        const user = users[0];
-        if (user.is_banned) {
-            return sendError(res, 'User is banned.', 403);
-        }
-
-        // Rate limit check to avoid rapid ticket farming
-        const rateLimitResult = await checkRateLimit(id);
-        if (!rateLimitResult.ok) {
-            return sendError(res, rateLimitResult.message, 429);
-        }
-
-        // Insert a ticket record
-        const ticketRecord = {
-            user_id: id,
-            tickets: TICKETS_PER_AD,
-            action_id: action_id,
-            source: 'contest_ad',
-            created_at: new Date().toISOString()
-        };
-
-        await supabaseFetch('ticket_comption', 'POST', ticketRecord, '?select=id');
-
-        // Aggregate user tickets and total tickets (simple approach: fetch recent rows and aggregate)
-        const allTickets = await supabaseFetch('ticket_comption', 'GET', null, `?select=user_id,tickets,created_at`);
-        const totals = {};
-        if (Array.isArray(allTickets)) {
-            allTickets.forEach(r => {
-                const uid = r.user_id;
-                const t = parseInt(r.tickets) || 0;
-                totals[uid] = (totals[uid] || 0) + t;
-            });
-        }
-
-        const userTickets = totals[id] || 0;
-        const totalTickets = Object.values(totals).reduce((a, b) => a + b, 0);
-
-        // Build leaderboard top 10
-        const leaderboardArr = Object.keys(totals).map(uid => ({ user_id: parseInt(uid), tickets: totals[uid] }));
-        leaderboardArr.sort((a, b) => b.tickets - a.tickets);
-        const topLeaderboard = leaderboardArr.slice(0, 10);
-
-        // Try to enrich leaderboard with basic user info if possible
-        const topIds = topLeaderboard.map(x => x.user_id).filter(Boolean);
-        let enriched = topLeaderboard;
-        if (topIds.length > 0) {
-            try {
-                const inList = topIds.join(',');
-                const usersInfo = await supabaseFetch('users', 'GET', null, `?id=in.(${inList})&select=id,first_name,photo_url`);
-                if (Array.isArray(usersInfo)) {
-                    const infoMap = {};
-                    usersInfo.forEach(u => { infoMap[u.id] = u; });
-                    enriched = topLeaderboard.map(p => {
-                        const info = infoMap[p.user_id] || {};
-                        return {
-                            user_id: p.user_id,
-                            username: info.first_name || `User${p.user_id}`,
-                            avatar: info.photo_url || null,
-                            tickets: p.tickets
-                        };
-                    });
-                } else {
-                    enriched = topLeaderboard.map(p => ({ user_id: p.user_id, username: `User${p.user_id}`, avatar: null, tickets: p.tickets }));
-                }
-            } catch (e) {
-                enriched = topLeaderboard.map(p => ({ user_id: p.user_id, username: `User${p.user_id}`, avatar: null, tickets: p.tickets }));
-            }
-        }
-
-        // Response contains updated ticket counts and leaderboard snapshot
-        sendSuccess(res, {
-            user_tickets: userTickets,
-            total_tickets: totalTickets,
-            leaderboard: enriched
-        });
-
-    } catch (error) {
-        console.error('contestAd failed:', error.message);
-        sendError(res, `Failed to process contest ad: ${error.message}`, 500);
-    }
-}
-
-/**
- * NEW: 10) type: "getContestData"
- *
- * Returns contest_end (server-calculated if not stored), user aggregated tickets, total tickets, and leaderboard
+ * NEW: 9) type: "getContestData"
+ * Returns user's tickets and total tickets across users.
  */
 async function handleGetContestData(req, res, body) {
     const { user_id } = body;
-    const id = user_id ? parseInt(user_id) : null;
-
+    const id = parseInt(user_id);
     try {
-        // Attempt to read contest end from a settings table (optional); fallback to 15 days from now if not found
-        let contestEnd = null;
-        try {
-            const settings = await supabaseFetch('contest_settings', 'GET', null, `?select=contest_end&limit=1`);
-            if (Array.isArray(settings) && settings.length > 0 && settings[0].contest_end) {
-                contestEnd = settings[0].contest_end;
-            }
-        } catch (e) {
-            // ignore missing table
-        }
-        if (!contestEnd) {
-            const end = new Date();
-            end.setDate(end.getDate() + 15);
-            contestEnd = end.toISOString();
-        }
+        // Sum tickets for the user
+        const userTicketsRows = await supabaseFetch('ticket_comp', 'GET', null, `?user_id=eq.${id}&select=tickets`);
+        const myTickets = Array.isArray(userTicketsRows) ? userTicketsRows.reduce((s, r) => s + (r.tickets || 0), 0) : 0;
 
-        // Aggregate ticket_comption table
-        const allTickets = await supabaseFetch('ticket_comption', 'GET', null, `?select=user_id,tickets,created_at`);
-        const totals = {};
-        if (Array.isArray(allTickets)) {
-            allTickets.forEach(r => {
-                const uid = r.user_id;
-                const t = parseInt(r.tickets) || 0;
-                totals[uid] = (totals[uid] || 0) + t;
-            });
-        }
+        // Sum tickets for all users
+        const allTicketsRows = await supabaseFetch('ticket_comp', 'GET', null, `?select=tickets`);
+        const allTickets = Array.isArray(allTicketsRows) ? allTicketsRows.reduce((s, r) => s + (r.tickets || 0), 0) : 0;
 
-        const totalTickets = Object.values(totals).reduce((a, b) => a + b, 0);
-        const userTickets = id ? (totals[id] || 0) : 0;
-
-        // Build leaderboard top 10
-        const leaderboardArr = Object.keys(totals).map(uid => ({ user_id: parseInt(uid), tickets: totals[uid] }));
-        leaderboardArr.sort((a, b) => b.tickets - a.tickets);
-        const topLeaderboard = leaderboardArr.slice(0, 10);
-
-        // Enrich with user info if any
-        const topIds = topLeaderboard.map(x => x.user_id).filter(Boolean);
-        let enriched = topLeaderboard;
-        if (topIds.length > 0) {
-            try {
-                const inList = topIds.join(',');
-                const usersInfo = await supabaseFetch('users', 'GET', null, `?id=in.(${inList})&select=id,first_name,photo_url`);
-                if (Array.isArray(usersInfo)) {
-                    const infoMap = {};
-                    usersInfo.forEach(u => { infoMap[u.id] = u; });
-                    enriched = topLeaderboard.map(p => {
-                        const info = infoMap[p.user_id] || {};
-                        return {
-                            user_id: p.user_id,
-                            username: info.first_name || `User${p.user_id}`,
-                            avatar: info.photo_url || null,
-                            tickets: p.tickets
-                        };
-                    });
-                } else {
-                    enriched = topLeaderboard.map(p => ({ user_id: p.user_id, username: `User${p.user_id}`, avatar: null, tickets: p.tickets }));
-                }
-            } catch (e) {
-                enriched = topLeaderboard.map(p => ({ user_id: p.user_id, username: `User${p.user_id}`, avatar: null, tickets: p.tickets }));
-            }
-        }
-
-        sendSuccess(res, {
-            contest_end: contestEnd,
-            user_tickets: userTickets,
-            total_tickets: totalTickets,
-            leaderboard: enriched
-        });
-
+        sendSuccess(res, { my_tickets: myTickets, all_tickets: allTickets });
     } catch (error) {
-        console.error('getContestData failed:', error.message);
+        console.error('GetContestData failed:', error.message);
         sendError(res, `Failed to retrieve contest data: ${error.message}`, 500);
     }
 }
 
 /**
- * NEW: 11) type: "distributeContestPrizes"
- *
- * - Aggregates tickets, determines top 5, credits prizes to winners.
- * - Returns distribution summary and if current user won, include your_prize and new_balance.
- *
- * NOTE: This function will attempt to update users' balances directly. Ensure you have backups and admin controls in real deployment.
+ * NEW: 10) type: "contestWatchAd"
+ * Grants contest tickets for watching a contest ad.
  */
-async function handleDistributeContestPrizes(req, res, body) {
-    const { user_id } = body;
-    const id = user_id ? parseInt(user_id) : null;
+async function handleContestWatchAd(req, res, body) {
+    const { user_id, action_id } = body;
+    const id = parseInt(user_id);
 
-    // Prize mapping - top 5
-    const PRIZES = [500000, 250000, 100000, 100000, 50000];
+    // Validate action id
+    if (!await validateAndUseActionId(res, id, action_id, 'contestWatchAd')) return;
 
     try {
-        // 1. Aggregate all tickets
-        const allTickets = await supabaseFetch('ticket_comption', 'GET', null, `?select=user_id,tickets,created_at`);
-        const totals = {};
-        if (Array.isArray(allTickets)) {
-            allTickets.forEach(r => {
-                const uid = r.user_id;
-                const t = parseInt(r.tickets) || 0;
-                totals[uid] = (totals[uid] || 0) + t;
+        // Rate limit & banned checks
+        await resetDailyLimitsIfExpired(id);
+        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=is_banned`);
+        if (!Array.isArray(users) || users.length === 0) {
+            return sendError(res, 'User not found.', 404);
+        }
+        if (users[0].is_banned) {
+            return sendError(res, 'User is banned.', 403);
+        }
+
+        const rateLimitResult = await checkRateLimit(id);
+        if (!rateLimitResult.ok) {
+            return sendError(res, rateLimitResult.message, 429);
+        }
+
+        // Grant tickets (5 tickets per watch)
+        const ticketsToGrant = 5;
+        const insertPayload = {
+            user_id: id,
+            tickets: ticketsToGrant,
+            source: 'contest_ad',
+            created_at: new Date().toISOString()
+        };
+
+        await supabaseFetch('ticket_comp', 'POST', insertPayload, '?select=user_id');
+
+        // Recompute totals
+        const userTicketsRows = await supabaseFetch('ticket_comp', 'GET', null, `?user_id=eq.${id}&select=tickets`);
+        const myTickets = Array.isArray(userTicketsRows) ? userTicketsRows.reduce((s, r) => s + (r.tickets || 0), 0) : ticketsToGrant;
+
+        const allTicketsRows = await supabaseFetch('ticket_comp', 'GET', null, `?select=tickets`);
+        const allTickets = Array.isArray(allTicketsRows) ? allTicketsRows.reduce((s, r) => s + (r.tickets || 0), 0) : myTickets;
+
+        sendSuccess(res, { my_tickets: myTickets, all_tickets: allTickets });
+    } catch (error) {
+        console.error('ContestWatchAd failed:', error.message);
+        sendError(res, `Failed to grant contest tickets: ${error.message}`, 500);
+    }
+}
+
+/**
+ * NEW: 11) type: "getContestRank"
+ * Returns top players ordered by ticket totals (server authoritative).
+ */
+async function handleGetContestRank(req, res, body) {
+    try {
+        // Fetch all ticket entries
+        const rows = await supabaseFetch('ticket_comp', 'GET', null, `?select=user_id,tickets,created_at`);
+        if (!Array.isArray(rows)) {
+            return sendSuccess(res, { players: [] });
+        }
+
+        // Aggregate tickets per user
+        const agg = {};
+        for (const r of rows) {
+            const uid = r.user_id;
+            const t = parseInt(r.tickets || 0);
+            if (!agg[uid]) agg[uid] = 0;
+            agg[uid] += t;
+        }
+
+        // Build array and sort
+        const entries = Object.keys(agg).map(uid => ({ user_id: uid, tickets: agg[uid] }));
+        entries.sort((a, b) => b.tickets - a.tickets);
+
+        // Take top 100 (or fewer)
+        const top = entries.slice(0, 100);
+
+        // For each top user, fetch optional user details (name/avatar)
+        const players = [];
+        for (const e of top) {
+            const uid = e.user_id;
+            // Try to fetch user profile fields if available
+            const userRows = await supabaseFetch('users', 'GET', null, `?id=eq.${uid}&select=first_name,last_name,photo_url`);
+            let name = `User ${uid}`;
+            let avatar = null;
+            if (Array.isArray(userRows) && userRows.length > 0) {
+                const u = userRows[0];
+                name = `${u.first_name || ''}${u.last_name ? ' ' + u.last_name : ''}`.trim() || name;
+                avatar = u.photo_url || null;
+            }
+
+            players.push({
+                name,
+                userId: uid,
+                tickets: e.tickets,
+                avatar: avatar || null
             });
         }
 
-        const leaderboardArr = Object.keys(totals).map(uid => ({ user_id: parseInt(uid), tickets: totals[uid] }));
-        leaderboardArr.sort((a, b) => b.tickets - a.tickets);
-        const winners = leaderboardArr.slice(0, PRIZES.length);
-
-        // 2. Credit prizes to winners
-        const distribution = [];
-        for (let i = 0; i < winners.length; i++) {
-            const winner = winners[i];
-            const prize = PRIZES[i] || 0;
-            if (!winner || !winner.user_id || prize <= 0) continue;
-
-            // Fetch winner current balance
-            const users = await supabaseFetch('users', 'GET', null, `?id=eq.${winner.user_id}&select=balance,is_banned`);
-            if (!Array.isArray(users) || users.length === 0 || users[0].is_banned) {
-                distribution.push({ user_id: winner.user_id, tickets: winner.tickets, prize, credited: false, reason: 'User not found or banned' });
-                continue;
-            }
-            const currentBal = users[0].balance || 0;
-            const newBal = currentBal + prize;
-            try {
-                await supabaseFetch('users', 'PATCH', { balance: newBal }, `?id=eq.${winner.user_id}`);
-                distribution.push({ user_id: winner.user_id, tickets: winner.tickets, prize, credited: true, new_balance: newBal });
-            } catch (e) {
-                distribution.push({ user_id: winner.user_id, tickets: winner.tickets, prize, credited: false, reason: e.message });
-            }
-        }
-
-        // 3. Determine your prize if you are among winners
-        let yourPrize = 0;
-        let yourNewBalance = undefined;
-        if (id) {
-            const found = distribution.find(d => d.user_id === id && d.credited);
-            if (found) {
-                yourPrize = found.prize;
-                yourNewBalance = found.new_balance;
-            }
-        }
-
-        // 4. Optionally, mark contest as distributed in a settings table (best-effort)
-        try {
-            await supabaseFetch('contest_settings', 'PATCH', { prizes_distributed: true }, '?select=contest_end');
-        } catch (e) {
-            // ignore if table absent
-        }
-
-        sendSuccess(res, { distributed: true, winners: distribution, your_prize: yourPrize, new_balance: yourNewBalance });
-
+        sendSuccess(res, { players });
     } catch (error) {
-        console.error('distributeContestPrizes failed:', error.message);
-        sendError(res, `Failed to distribute contest prizes: ${error.message}`, 500);
+        console.error('GetContestRank failed:', error.message);
+        sendError(res, `Failed to retrieve contest ranking: ${error.message}`, 500);
     }
 }
+
+/**
+ * 7) type "completeTask" already implemented earlier...
+ * (no change)
+ */
 
 // --- Main Handler for Vercel/Serverless ---
 module.exports = async (req, res) => {
@@ -1363,7 +1232,7 @@ module.exports = async (req, res) => {
     return sendError(res, 'Missing "type" field in the request body.', 400);
   }
 
-  // initData Security Check
+  // initData Security Check (exclude commission and server-to-server types if needed)
   if (body.type !== 'commission' && (!body.initData || !validateInitData(body.initData))) {
       return sendError(res, 'Invalid or expired initData. Security check failed.', 401);
   }
@@ -1407,14 +1276,15 @@ module.exports = async (req, res) => {
     case 'taskLinkClick': 
       await handleTaskLinkClick(req, res, body);
       break;
-    case 'contestAd':
-      await handleContestAd(req, res, body);
-      break;
+    // New contest-related handlers
     case 'getContestData':
       await handleGetContestData(req, res, body);
       break;
-    case 'distributeContestPrizes':
-      await handleDistributeContestPrizes(req, res, body);
+    case 'contestWatchAd':
+      await handleContestWatchAd(req, res, body);
+      break;
+    case 'getContestRank':
+      await handleGetContestRank(req, res, body);
       break;
     default:
       sendError(res, `Unknown request type: ${body.type}`, 400);
