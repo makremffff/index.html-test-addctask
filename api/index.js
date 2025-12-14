@@ -287,24 +287,21 @@ function validateInitData(initData) {
 }
 
 /**
- * Safely parse initData (either string query or object) to extract public profile fields
+ * Parses initData (query string) into an object. Returns {} if not parseable.
  */
-function extractInitFields(initData) {
-    if (!initData) return {};
-    if (typeof initData === 'object') {
-        return {
-            first_name: initData.first_name || initData.user_first_name || null,
-            last_name: initData.last_name || null,
-            photo_url: initData.photo_url || (initData.user && initData.user.photo_url) || null
-        };
-    }
+function parseInitDataToObject(initData) {
     try {
+        if (!initData) return {};
+        if (typeof initData === 'object') {
+            return initData;
+        }
         const params = new URLSearchParams(initData);
-        return {
-            first_name: params.get('first_name') || null,
-            last_name: params.get('last_name') || null,
-            photo_url: params.get('photo_url') || null
-        };
+        const obj = {};
+        for (const [k, v] of params.entries()) {
+            obj[k] = v;
+        }
+        // Telegram sometimes provides 'user' JSON in initDataUnsafe only on client.
+        return obj;
     } catch (e) {
         return {};
     }
@@ -463,8 +460,8 @@ async function handleGetUserData(req, res, body) {
         // 1. Check and reset daily limits (if 6 hours passed since limit reached)
         await resetDailyLimitsIfExpired(id);
 
-        // 2. Fetch user data (including new task link fields)
-        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=balance,ads_watched_today,spins_today,is_banned,ref_by,ads_limit_reached_at,spins_limit_reached_at,task_completed,task_link_clicks_today,task_link_limit_reached_at,first_name,last_name,photo_url`);
+        // 2. Fetch user data (including new task link fields and profile)
+        const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=balance,ads_watched_today,spins_today,is_banned,ref_by,ads_limit_reached_at,spins_limit_reached_at,task_completed,task_link_clicks_today,task_link_limit_reached_at,first_name,photo_url`);
 
         if (!users || (Array.isArray(users) && users.length === 0)) {
             return sendSuccess(res, {
@@ -572,14 +569,17 @@ async function handleRegister(req, res, body) {
   const id = parseInt(user_id);
 
   try {
-    // Extract public fields from initData if present
-    const initFields = extractInitFields(body.initData);
-
     // 1. Check if user exists
-    const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=id,is_banned,photo_url,first_name,last_name`);
+    const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=id,is_banned,first_name,photo_url`);
+
+    // Extract optional user object sent from client (tgUser)
+    const clientUser = body.user || null;
+    const providedFirstName = clientUser && clientUser.first_name ? clientUser.first_name : null;
+    const providedLastName = clientUser && clientUser.last_name ? clientUser.last_name : null;
+    const providedPhoto = clientUser && clientUser.photo_url ? clientUser.photo_url : (body.photo_url || null);
 
     if (!Array.isArray(users) || users.length === 0) {
-      // 2. User does not exist, create new user (store photo_url and name if available)
+      // 2. User does not exist, create new user
       const newUser = {
         id,
         balance: 0,
@@ -592,30 +592,22 @@ async function handleRegister(req, res, body) {
         // Task-link fields initialization
         task_link_clicks_today: 0,
         task_link_limit_reached_at: null,
-        // Store Telegram public profile fields for future ranking display
-        first_name: initFields.first_name || null,
-        last_name: initFields.last_name || null,
-        photo_url: initFields.photo_url || null
+        // profile fields
+        first_name: providedFirstName,
+        last_name: providedLastName,
+        photo_url: providedPhoto
       };
       await supabaseFetch('users', 'POST', newUser, '?select=id');
     } else {
-        // If user exists and is banned, return error
         if (users[0].is_banned) {
              return sendError(res, 'User is banned.', 403);
         }
-        // If user exists, update their photo_url / names when provided (keep it idempotent)
-        const toUpdate = {};
-        if (initFields.photo_url && initFields.photo_url !== users[0].photo_url) {
-            toUpdate.photo_url = initFields.photo_url;
-        }
-        if (initFields.first_name && initFields.first_name !== users[0].first_name) {
-            toUpdate.first_name = initFields.first_name;
-        }
-        if (initFields.last_name && initFields.last_name !== users[0].last_name) {
-            toUpdate.last_name = initFields.last_name;
-        }
-        if (Object.keys(toUpdate).length > 0) {
-            await supabaseFetch('users', 'PATCH', toUpdate, `?id=eq.${id}`);
+        // Update profile fields if provided and different
+        const updates = {};
+        if (providedFirstName && providedFirstName !== users[0].first_name) updates.first_name = providedFirstName;
+        if (providedPhoto && providedPhoto !== users[0].photo_url) updates.photo_url = providedPhoto;
+        if (Object.keys(updates).length > 0) {
+            await supabaseFetch('users', 'PATCH', updates, `?id=eq.${id}`);
         }
     }
 
@@ -1103,7 +1095,7 @@ async function handleWithdraw(req, res, body) {
 
 /**
  * NEW: 9) type: "getContestData"
- * Returns user's tickets and total tickets across users.
+ * Returns user's tickets and total tickets across users and contest timing info.
  */
 async function handleGetContestData(req, res, body) {
     const { user_id } = body;
@@ -1117,7 +1109,27 @@ async function handleGetContestData(req, res, body) {
         const allTicketsRows = await supabaseFetch('ticket_comp', 'GET', null, `?select=tickets`);
         const allTickets = Array.isArray(allTicketsRows) ? allTicketsRows.reduce((s, r) => s + (r.tickets || 0), 0) : 0;
 
-        sendSuccess(res, { my_tickets: myTickets, all_tickets: allTickets });
+        // Read contest time from contest_time table (if exists). Expect a row with a 'time' JSON or columns start_time/end_time
+        let contestTime = null;
+        try {
+            const ct = await supabaseFetch('contest_time', 'GET', null, `?select=time,start_time,end_time&order=id.desc&limit=1`);
+            if (Array.isArray(ct) && ct.length > 0) {
+                // prefer object 'time' if present
+                const row = ct[0];
+                if (row.time) {
+                    contestTime = row.time;
+                } else {
+                    contestTime = {
+                        start_time: row.start_time || null,
+                        end_time: row.end_time || null
+                    };
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to read contest_time table:', e.message);
+        }
+
+        sendSuccess(res, { my_tickets: myTickets, all_tickets: allTickets, time: contestTime });
     } catch (error) {
         console.error('GetContestData failed:', error.message);
         sendError(res, `Failed to retrieve contest data: ${error.message}`, 500);
@@ -1179,14 +1191,6 @@ async function handleContestWatchAd(req, res, body) {
 /**
  * NEW: 11) type: "getContestRank"
  * Returns top players ordered by ticket totals (server authoritative).
- *
- * MODIFICATION: Return player objects with fields:
- *   - first_name
- *   - photo_url
- *   - user_id  (only this field for user id, do NOT include duplicate userId)
- *   - tickets
- *
- * This ensures the client shows the user id only once and can use photo_url stored in users table.
  */
 async function handleGetContestRank(req, res, body) {
     try {
@@ -1212,24 +1216,24 @@ async function handleGetContestRank(req, res, body) {
         // Take top 100 (or fewer)
         const top = entries.slice(0, 100);
 
-        // For each top user, fetch optional user details (name/avatar)
+        // For each top user, fetch optional user details (first_name/photo_url)
         const players = [];
         for (const e of top) {
             const uid = e.user_id;
             // Try to fetch user profile fields if available
-            const userRows = await supabaseFetch('users', 'GET', null, `?id=eq.${uid}&select=first_name,last_name,photo_url`);
-            let firstName = `User ${uid}`;
-            let photoUrl = null;
+            const userRows = await supabaseFetch('users', 'GET', null, `?id=eq.${uid}&select=first_name,photo_url`);
+            let first_name = `User ${uid}`;
+            let photo_url = null;
             if (Array.isArray(userRows) && userRows.length > 0) {
                 const u = userRows[0];
-                firstName = (u.first_name || '').trim() || firstName;
-                photoUrl = u.photo_url || null;
+                first_name = (u.first_name || first_name).trim();
+                photo_url = u.photo_url || null;
             }
 
-            // Build player object using explicit fields and ensure only one user id field (user_id)
+            // Return a single consolidated object (no duplicate userId/user_id)
             players.push({
-                first_name: firstName,
-                photo_url: photoUrl,
+                first_name: first_name,
+                photo_url: photo_url,
                 user_id: uid,
                 tickets: e.tickets
             });
