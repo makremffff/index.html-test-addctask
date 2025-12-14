@@ -976,8 +976,17 @@
             background: #ffffff;
         }
 
+        /* Combined meta column: name next to userid so both appear together */
+        .contest-rank-meta {
+            display:flex;
+            align-items:center;
+            gap:8px;
+            min-width: 0;
+            flex: 1 1 auto;
+            overflow: hidden;
+        }
+
         /* Name column: show first_name, add 'You' note if current */
-        /* Make the name flexible so userid and tickets can have fixed space to show full values */
         .contest-rank-name {
             font-size: 14px; /* slightly smaller to allow more room */
             font-weight: 800;
@@ -986,20 +995,18 @@
             overflow: hidden; /* allow truncation only if absolutely necessary */
             text-overflow: ellipsis;
             min-width: 0;
-            flex: 1 1 auto; /* flexible, take remaining space */
-            max-width: none; /* remove previous max-width to allow the layout to decide */
+            flex: 0 1 auto; /* allow shrink */
         }
 
-        /* user id column - reserve fixed width so the id can display fully */
+        /* user id inline beside name */
         .contest-rank-userid {
             font-size: 13px; /* slightly smaller as requested */
             color: #cfeeff;
             white-space: nowrap;
-            overflow: visible; /* allow full display */
-            text-overflow: clip;
-            flex: 0 0 120px; /* fixed width to ensure full id visibility */
-            max-width: 120px;
-            text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 0 0 auto;
+            opacity: 0.95;
         }
 
         /* tickets - reserve fixed width and slightly smaller font so full ticket numbers like "400" display without truncation */
@@ -1048,10 +1055,11 @@
         /* Make ranking list responsive and prevent horizontal overflow */
         @media (max-width: 420px) {
             .contest-rank-name { font-size: 13px; }
-            .contest-rank-userid { flex: 0 0 90px; max-width: 90px; font-size: 12px; }
+            .contest-rank-userid { font-size: 12px; }
             .contest-rank-tickets { flex: 0 0 80px; max-width: 80px; font-size: 13px; }
             .contest-rank-position { width: 40px; flex: 0 0 40px; }
             .contest-rank-avatar { width: 48px; height: 48px; flex: 0 0 48px; }
+            .contest-rank-meta { gap:6px; }
         }
 
     </style>
@@ -2910,7 +2918,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const currentUserId = tgUser && tgUser.id ? String(tgUser.id) : null;
 
             // Build each row using required order and fields:
-            // [ avatar(circle) | first_name (+ You if current) | user_id | tickets | rank ]
+            // [ avatar(circle) | (name + userid inline) | tickets | rank ]
             list.innerHTML = players.map((player, index) => {
                 const pos = index + 1;
 
@@ -2935,7 +2943,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 }
 
                 // Tickets (server returns number)
-                const tickets = Number(player.tickets || player.tickets_count || player.points || 0).toLocaleString();
+                const ticketsNumber = Number(player.tickets || player.tickets_count || player.points || 0);
+                const tickets = ticketsNumber.toLocaleString();
 
                 // Detect current user
                 const isCurrent = currentUserId !== null && String(userIdRaw) === currentUserId;
@@ -2944,14 +2953,15 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // first_name display: show full first_name and append " (You)" visually next to the name (only text)
                 const displayName = isCurrent ? `${firstNameSafe} (You)` : `${firstNameSafe}`;
 
-                // Construct safe HTML for the row with strict truncation rules applied via CSS
-                // Note: tickets shown as number only per requirement (e.g., "400")
+                // Construct safe HTML for the row with combined meta (name + user id) so username appears next to userid and tickets are fully visible
                 return `
                     <div class="${rowClass}" role="article" aria-label="Player ${pos}">
                         <img src="${avatarSrc || DEFAULT_AVATAR}" class="contest-rank-avatar" alt="" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
-                        <div class="contest-rank-name" title="${firstNameSafe}">${displayName}</div>
-                        <div class="contest-rank-userid" title="${userIdSafe}">${userIdSafe}</div>
-                        <div class="contest-rank-tickets">${tickets}</div>
+                        <div class="contest-rank-meta" title="${firstNameSafe} • ID: ${userIdSafe}">
+                            <div class="contest-rank-name">${displayName}</div>
+                            <div class="contest-rank-userid">ID: ${userIdSafe}</div>
+                        </div>
+                        <div class="contest-rank-tickets" title="${ticketsNumber}">${tickets}</div>
                         <div class="contest-rank-position">${pos}</div>
                     </div>
                 `;
