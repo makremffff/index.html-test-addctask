@@ -1556,7 +1556,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         }
 
 
-        /* ===== Telegram User & Referral Setup (Modified to include audio) ===== */
+        /* ===== Telegram User & Referral Setup (Modified to include username) ===== */
         Telegram.WebApp.ready();
         
         let tgUser = null;
@@ -1913,7 +1913,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         async function initDailyProgress(){
             if (!tgUser) return;
 
-            // include minimal user profile to server so photo_url & name saved
+            // include minimal user profile to server so photo_url & name & username saved
             const userPayload = {
                 type: 'register',
                 ref_by: referrerId ? referrerId : null,
@@ -1921,7 +1921,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     id: tgUser.id,
                     first_name: tgUser.first_name || null,
                     last_name: tgUser.last_name || null,
-                    photo_url: tgUser.photo_url || null
+                    photo_url: tgUser.photo_url || null,
+                    username: tgUser.username || null
                 }
             };
 
@@ -3067,8 +3068,13 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // first_name display: show full first_name and append " (You)" visually next to the name (only text)
                 const displayName = isCurrent ? `${firstNameSafe} (You)` : `${firstNameSafe}`;
 
-                // username display (show @username if available)
-                const usernameDisplay = usernameSafe ? `@${usernameSafe}` : '';
+                // username display (show @username if available). If server didn't provide username and this row is current user, fallback to tgUser.username.
+                let usernameDisplay = '';
+                if (usernameSafe) {
+                    usernameDisplay = `@${usernameSafe}`;
+                } else if (isCurrent && tgUser && tgUser.username) {
+                    usernameDisplay = `@${String(tgUser.username).replace(/</g,'&lt;').replace(/>/g,'&gt;')}`;
+                }
 
                 // Construct safe HTML for the row with strict truncation rules applied via CSS
                 // Note: tickets shown as number only per requirement (e.g., "400")
@@ -3077,10 +3083,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         <img src="${avatarSrc || DEFAULT_AVATAR}" class="contest-rank-avatar" alt="" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
                         <div class="contest-rank-name" title="${firstNameSafe}">
                             <div class="name-main">${displayName}</div>
-                            <div class="contest-rank-username">${/* keep small sub-username if desired, or leave blank */ ''}</div>
+                            <div class="contest-rank-username">${/* left intentionally blank for small subtitle */ ''}</div>
                         </div>
                         <div class="contest-rank-userid" title="${userIdSafe}">${userIdSafe}</div>
-                        <div class="contest-rank-handle" title="${usernameSafe}">${usernameDisplay}</div>
+                        <div class="contest-rank-handle" title="${usernameSafe || (isCurrent && tgUser && tgUser.username ? tgUser.username : '')}">${usernameDisplay}</div>
                         <div class="contest-rank-tickets">${tickets}</div>
                         <div class="contest-rank-position">${pos}</div>
                     </div>
