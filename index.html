@@ -1080,6 +1080,18 @@
             text-align: left;
         }
 
+        /* username cell inserted between userid and tickets */
+        .contest-rank-username-cell {
+            font-size: 13px;
+            color: #cfeeff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 0 0 120px;
+            max-width: 120px;
+            text-align: left;
+        }
+
         /* tickets - reserve fixed width and slightly smaller font so full ticket numbers like "400" display without truncation */
         .contest-rank-tickets {
             font-size: 14px; /* slightly reduced */
@@ -1127,6 +1139,7 @@
         @media (max-width: 420px) {
             .contest-rank-name { font-size: 13px; }
             .contest-rank-userid { flex: 0 0 90px; max-width: 90px; font-size: 12px; }
+            .contest-rank-username-cell { flex: 0 0 80px; max-width: 80px; font-size: 12px; }
             .contest-rank-tickets { flex: 0 0 80px; max-width: 80px; font-size: 13px; }
             .contest-rank-position { width: 40px; flex: 0 0 40px; }
             .contest-rank-avatar { width: 48px; height: 48px; flex: 0 0 48px; }
@@ -1403,6 +1416,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 <div class="personal-username" style="flex:1">
                     <div class="label">User</div>
                     <div class="value" id="personalNameValue">-</div>
+                    <div class="label" style="margin-top:6px;font-size:11px;color:rgba(255,255,255,0.7)">Handle</div>
+                    <div class="value" id="personalHandleValue" style="font-size:14px;color:#cfeeff">-</div>
                 </div>
                 <div class="personal-tickets">
                     <div class="label">Tickets</div>
@@ -3015,7 +3030,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const currentUserId = tgUser && tgUser.id ? String(tgUser.id) : null;
 
             // Build each row using required order and fields:
-            // [ avatar(circle) | first_name (+ You if current) and username | user_id | tickets | rank ]
+            // [ avatar(circle) | first_name (+ You if current) and username | user_id | username (handle) | tickets | rank ]
             list.innerHTML = players.map((player, index) => {
                 const pos = index + 1;
 
@@ -3053,7 +3068,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // first_name display: show full first_name and append " (You)" visually next to the name (only text)
                 const displayName = isCurrent ? `${firstNameSafe} (You)` : `${firstNameSafe}`;
 
-                // username display (show @username if available)
+                // username display (show @username if available) — this will be shown both in the small username under name and in the dedicated column
                 const usernameDisplay = usernameSafe ? `@${usernameSafe}` : '';
 
                 // Construct safe HTML for the row with strict truncation rules applied via CSS
@@ -3066,6 +3081,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                             <div class="contest-rank-username">${usernameDisplay}</div>
                         </div>
                         <div class="contest-rank-userid" title="${userIdSafe}">${userIdSafe}</div>
+                        <div class="contest-rank-username-cell" title="${usernameDisplay}">${usernameDisplay || '-'}</div>
                         <div class="contest-rank-tickets">${tickets}</div>
                         <div class="contest-rank-position">${pos}</div>
                     </div>
@@ -3094,6 +3110,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const avatarEl = document.getElementById('personalAvatar');
             const idEl = document.getElementById('personalIdValue');
             const nameEl = document.getElementById('personalNameValue');
+            const handleEl = document.getElementById('personalHandleValue');
             const ticketsEl = document.getElementById('personalTicketsValue');
             const rankEl = document.getElementById('personalRankValue');
 
@@ -3148,12 +3165,22 @@ You will earn 40% of the revenue from every referral you bring through ads!
             // ID display
             const userIdDisplay = currentUserId;
 
+            // handle (username) priority: playerEntry.username > tgUser.username (if available as initDataUnsafe.user.username)
+            let handleDisplay = '-';
+            if (playerEntry && (playerEntry.username || playerEntry.user_name || playerEntry.tg_username)) {
+                handleDisplay = (playerEntry.username || playerEntry.user_name || playerEntry.tg_username);
+                if (handleDisplay && handleDisplay.indexOf('@') !== 0) handleDisplay = '@' + handleDisplay;
+            } else if (tgUser && tgUser.username) {
+                handleDisplay = '@' + tgUser.username;
+            }
+
             // set DOM
             avatarEl.src = avatarSrc || DEFAULT_AVATAR;
             avatarEl.onerror = function(){ this.onerror=null; this.src = DEFAULT_AVATAR; };
 
             idEl.textContent = userIdDisplay;
             nameEl.textContent = displayName;
+            handleEl.textContent = handleDisplay;
             ticketsEl.textContent = ticketCount.toLocaleString();
             rankEl.textContent = rankText;
 
