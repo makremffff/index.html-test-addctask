@@ -981,13 +981,13 @@
             gap: 12px;
             flex: 1 1 auto;
         }
-        .personal-id, .personal-username, .personal-tickets {
+        .personal-id, .personal-username, .personal-tickets, .personal-rank {
             display: flex;
             flex-direction: column;
             align-items: center;
             min-width: 0;
         }
-        .personal-id .label, .personal-username .label, .personal-tickets .label {
+        .personal-id .label, .personal-username .label, .personal-tickets .label, .personal-rank .label {
             font-size: 12px;
             color: rgba(255,255,255,0.75);
             font-weight: 700;
@@ -995,7 +995,7 @@
             text-transform: uppercase;
             letter-spacing: .6px;
         }
-        .personal-id .value, .personal-username .value, .personal-tickets .value {
+        .personal-id .value, .personal-username .value, .personal-tickets .value, .personal-rank .value {
             font-size: 16px;
             font-weight: 900;
             color: #ffd700;
@@ -1061,7 +1061,12 @@
             min-width: 0;
             flex: 1 1 auto; /* flexible, take remaining space */
             max-width: none; /* remove previous max-width to allow the layout to decide */
+            display:flex;
+            flex-direction:column;
+            gap:2px;
         }
+        .contest-rank-name .name-main { font-weight:900; color:#e6f7ff; }
+        .contest-rank-username { font-size:12px; color: rgba(255,255,255,0.7); font-weight:700; letter-spacing:0.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
         /* user id column - reserve fixed width so the id can display fully */
         .contest-rank-userid {
@@ -1386,7 +1391,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             </div>
         </div>
 
-        <!-- PERSONAL USER BOX: shows the current user's avatar + row with (user id) | (username centered) | (tickets) -->
+        <!-- PERSONAL USER BOX: shows the current user's avatar + row with (user id) | (username centered) | (tickets) | (rank) -->
         <div id="personalUserBox" class="personal-info-box" style="display:none;">
             <!-- content injected by JS -->
             <img src="" alt="avatar" class="personal-avatar" id="personalAvatar">
@@ -1402,6 +1407,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 <div class="personal-tickets">
                     <div class="label">Tickets</div>
                     <div class="value" id="personalTicketsValue">0</div>
+                </div>
+                <div class="personal-rank">
+                    <div class="label">Rank</div>
+                    <div class="value" id="personalRankValue">-</div>
                 </div>
             </div>
         </div>
@@ -2981,7 +2990,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             document.body.classList.remove('hide-top-user');
         }
 
-        // Load ranking from server. Server must return { players: [ { first_name, photo_url, user_id, tickets } ] } ordered by rank.
+        // Load ranking from server. Server must return { players: [ { first_name, photo_url, user_id, tickets, username } ] } ordered by rank.
         async function loadContestRank() {
             const res = await fetchApi({ type: 'getContestRank' });
             let players = [];
@@ -3006,7 +3015,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const currentUserId = tgUser && tgUser.id ? String(tgUser.id) : null;
 
             // Build each row using required order and fields:
-            // [ avatar(circle) | first_name (+ You if current) | user_id | tickets | rank ]
+            // [ avatar(circle) | first_name (+ You if current) and username | user_id | tickets | rank ]
             list.innerHTML = players.map((player, index) => {
                 const pos = index + 1;
 
@@ -3017,6 +3026,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // Determine user id field (server should provide user_id only)
                 const userIdRaw = player.user_id !== undefined ? player.user_id : (player.userId !== undefined ? player.userId : '');
                 const userIdSafe = String(userIdRaw).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+                // Username (telegram handle) if provided by server
+                const rawUsername = player.username || player.user_name || player.tg_username || '';
+                const usernameSafe = String(rawUsername).replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
                 // Use photo_url field if present; fallback to avatar or default
                 const photoUrl = player.photo_url || player.photo || player.avatar || '';
@@ -3040,12 +3053,18 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // first_name display: show full first_name and append " (You)" visually next to the name (only text)
                 const displayName = isCurrent ? `${firstNameSafe} (You)` : `${firstNameSafe}`;
 
+                // username display (show @username if available)
+                const usernameDisplay = usernameSafe ? `@${usernameSafe}` : '';
+
                 // Construct safe HTML for the row with strict truncation rules applied via CSS
                 // Note: tickets shown as number only per requirement (e.g., "400")
                 return `
                     <div class="${rowClass}" role="article" aria-label="Player ${pos}">
                         <img src="${avatarSrc || DEFAULT_AVATAR}" class="contest-rank-avatar" alt="" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
-                        <div class="contest-rank-name" title="${firstNameSafe}">${displayName}</div>
+                        <div class="contest-rank-name" title="${firstNameSafe}">
+                            <div class="name-main">${displayName}</div>
+                            <div class="contest-rank-username">${usernameDisplay}</div>
+                        </div>
                         <div class="contest-rank-userid" title="${userIdSafe}">${userIdSafe}</div>
                         <div class="contest-rank-tickets">${tickets}</div>
                         <div class="contest-rank-position">${pos}</div>
@@ -3076,6 +3095,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const idEl = document.getElementById('personalIdValue');
             const nameEl = document.getElementById('personalNameValue');
             const ticketsEl = document.getElementById('personalTicketsValue');
+            const rankEl = document.getElementById('personalRankValue');
 
             // default hide
             if (!box || !tgUser) {
@@ -3114,6 +3134,17 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 ticketCount = Number(playerEntry.tickets || playerEntry.tickets_count || playerEntry.points || 0);
             }
 
+            // Compute rank if players array provided
+            let rankText = '-';
+            if (Array.isArray(players) && players.length > 0) {
+                const idx = players.findIndex(p => {
+                    const pid = p.user_id !== undefined ? String(p.user_id) : (p.userId !== undefined ? String(p.userId) : '');
+                    return pid === currentUserId;
+                });
+                if (idx !== -1) rankText = (idx + 1).toString();
+                else rankText = '-';
+            }
+
             // ID display
             const userIdDisplay = currentUserId;
 
@@ -3124,6 +3155,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             idEl.textContent = userIdDisplay;
             nameEl.textContent = displayName;
             ticketsEl.textContent = ticketCount.toLocaleString();
+            rankEl.textContent = rankText;
 
             box.style.display = 'flex';
         }
