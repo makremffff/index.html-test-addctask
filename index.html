@@ -1,4 +1,4 @@
-l<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -726,7 +726,7 @@ l<!DOCTYPE html>
         /* ===== Contest Button under Balance (UPDATED TO 45x45 CIRCLE) ===== */
         .contest-btn-under-balance {
             position: absolute;
-            top: 60px;
+            top: 70px;
             right: 20px;
             background: linear-gradient(145deg, #00bfff, #0077b3);
             color: #fff;
@@ -2854,7 +2854,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
 
             // We'll use a single default avatar when photo is missing
-            const DEFAULT_AVATAR = 'https://files.catbox.moe/ut2ljl.png';
+            const DEFAULT_AVATAR = 'https://giftgogame.com/static/thumbnails/5170233102089322756.webp';
 
             // Current user id from Telegram init data (if available)
             const currentUserId = tgUser && tgUser.id ? String(tgUser.id) : null;
@@ -2868,12 +2868,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 const firstNameRaw = player.first_name || player.name || '';
                 const firstNameSafe = String(firstNameRaw).replace(/</g,'&lt;').replace(/>/g,'&gt;') || 'User';
 
-                // Determine user id field (server may use userId or user_id)
-                const userIdRaw = player.userId !== undefined ? player.userId : (player.user_id !== undefined ? player.user_id : '');
+                // Determine user id field (server must provide only user_id)
+                const userIdRaw = player.user_id !== undefined ? player.user_id : '';
                 const userIdSafe = String(userIdRaw).replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-                // Use photo_url field if present; fallback to avatar or default
-                const photoUrl = player.photo_url || player.photo || player.avatar || '';
+                // Use photo_url field if present; fallback to default
+                const photoUrl = player.photo_url || '';
 
                 // Use the provided photo_url for the current user if available (tgUser.photo_url)
                 let avatarSrc = photoUrl || DEFAULT_AVATAR;
