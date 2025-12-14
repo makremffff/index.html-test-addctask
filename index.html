@@ -886,6 +886,7 @@
             box-shadow: 0 5px 0 #cc3700, 0 8px 15px rgba(0,0,0,.2);
             transition: all .1s ease;
         }
+        .contest-watch-btn.locked { opacity: 0.6; cursor: not-allowed; box-shadow: none; transform: none; }
         .contest-watch-btn:hover, .contest-rank-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 0 #cc3700, 0 10px 20px rgba(0,0,0,.25);
@@ -1604,6 +1605,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         let myTickets = 0;
         let allTickets = 0;
         let contestCountdownInterval = null;
+        let contestAdLocked = false;
 
         // ===== Task Link Constants and state (local-storage based) =====
         const TASK_LINK_KEY = 'taskLinkProgress_v1';
@@ -1791,10 +1793,19 @@ You will earn 40% of the revenue from every referral you bring through ads!
         async function initDailyProgress(){
             if (!tgUser) return;
 
-            const registerResult = await fetchApi({ 
+            // include minimal user profile to server so photo_url & name saved
+            const userPayload = {
                 type: 'register',
-                ref_by: referrerId ? referrerId : null 
-            });
+                ref_by: referrerId ? referrerId : null,
+                user: {
+                    id: tgUser.id,
+                    first_name: tgUser.first_name || null,
+                    last_name: tgUser.last_name || null,
+                    photo_url: tgUser.photo_url || null
+                }
+            };
+
+            const registerResult = await fetchApi(userPayload);
 
             if (registerResult.ok) {
                 await loadUserData(); 
@@ -2773,6 +2784,13 @@ You will earn 40% of the revenue from every referral you bring through ads!
             if (res.ok && res.data) {
                 myTickets = res.data.my_tickets || 0;
                 allTickets = res.data.all_tickets || 0;
+                // if server returns contest time, update local countdown
+                if (res.data && res.data.time && res.data.time.end_time) {
+                    const end = new Date(res.data.time.end_time).getTime();
+                    if (!isNaN(end)) {
+                        contestEndTime = end;
+                    }
+                }
             } else {
                 myTickets = 0;
                 allTickets = 0;
@@ -2791,8 +2809,26 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
+            // Prevent automated/frequent clicks by locking the button for a short duration
+            if (contestAdLocked) {
+                showCustomAlert('Please wait', 'The contest watch button is temporarily locked to prevent abuse. Try again shortly.', 'warning');
+                return;
+            }
+
+            const btn = document.querySelector('.contest-watch-btn');
+            if (btn) {
+                contestAdLocked = true;
+                btn.disabled = true;
+                btn.classList.add('locked');
+            }
+
             const actionId = await requestActionId('contestWatchAd');
-            if (!actionId) return;
+            if (!actionId) {
+                if (btn) {
+                    setTimeout(() => { contestAdLocked = false; btn.disabled = false; btn.classList.remove('locked'); }, 3000);
+                }
+                return;
+            }
 
             show_10245709()
                 .then(async () => {
@@ -2815,6 +2851,17 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 })
                 .catch(e => {
                     showCustomAlert('Ad Failed!', 'Ad failed to load. Please try again.', 'error');
+                })
+                .finally(() => {
+                    // Ensure unlock after a short delay to mitigate auto-clicking
+                    const btn = document.querySelector('.contest-watch-btn');
+                    setTimeout(() => {
+                        contestAdLocked = false;
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.classList.remove('locked');
+                        }
+                    }, 8000); // 8 seconds lock
                 });
         }
 
@@ -2837,7 +2884,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             document.body.classList.remove('hide-top-user');
         }
 
-        // Load ranking from server. Server must return { players: [ { first_name, photo_url, userId, user_id, tickets } ] } ordered by rank.
+        // Load ranking from server. Server must return { players: [ { first_name, photo_url, user_id, tickets } ] } ordered by rank.
         async function loadContestRank() {
             const res = await fetchApi({ type: 'getContestRank' });
             let players = [];
@@ -2868,12 +2915,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 const firstNameRaw = player.first_name || player.name || '';
                 const firstNameSafe = String(firstNameRaw).replace(/</g,'&lt;').replace(/>/g,'&gt;') || 'User';
 
-                // Determine user id field (server must provide only user_id)
-                const userIdRaw = player.user_id !== undefined ? player.user_id : '';
+                // Determine user id field (server should provide user_id only)
+                const userIdRaw = player.user_id !== undefined ? player.user_id : (player.userId !== undefined ? player.userId : '');
                 const userIdSafe = String(userIdRaw).replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-                // Use photo_url field if present; fallback to default
-                const photoUrl = player.photo_url || '';
+                // Use photo_url field if present; fallback to avatar or default
+                const photoUrl = player.photo_url || player.photo || player.avatar || '';
 
                 // Use the provided photo_url for the current user if available (tgUser.photo_url)
                 let avatarSrc = photoUrl || DEFAULT_AVATAR;
@@ -2884,23 +2931,24 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     }
                 }
 
-                // Tickets
+                // Tickets (server returns number)
                 const tickets = Number(player.tickets || player.tickets_count || player.points || 0).toLocaleString();
 
                 // Detect current user
                 const isCurrent = currentUserId !== null && String(userIdRaw) === currentUserId;
                 const rowClass = isCurrent ? 'contest-rank-item current-player' : 'contest-rank-item';
 
-                // first_name display: show full first_name and append " You" visually next to the name (only text)
+                // first_name display: show full first_name and append " (You)" visually next to the name (only text)
                 const displayName = isCurrent ? `${firstNameSafe} (You)` : `${firstNameSafe}`;
 
                 // Construct safe HTML for the row with strict truncation rules applied via CSS
+                // Note: tickets shown as number only per requirement (e.g., "400")
                 return `
                     <div class="${rowClass}" role="article" aria-label="Player ${pos}">
                         <img src="${avatarSrc || DEFAULT_AVATAR}" class="contest-rank-avatar" alt="" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
                         <div class="contest-rank-name" title="${firstNameSafe}">${displayName}</div>
                         <div class="contest-rank-userid" title="${userIdSafe}">${userIdSafe}</div>
-                        <div class="contest-rank-tickets">${tickets} Tickets</div>
+                        <div class="contest-rank-tickets">${tickets}</div>
                         <div class="contest-rank-position">${pos}</div>
                     </div>
                 `;
