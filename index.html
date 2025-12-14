@@ -1080,19 +1080,6 @@
             text-align: left;
         }
 
-        /* NEW: username column (placed BETWEEN user id and tickets) */
-        .contest-rank-username-col {
-            font-size: 13px;
-            color: #cfeeff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            flex: 0 0 120px; /* fixed width to ensure visibility */
-            max-width: 120px;
-            text-align: center;
-            font-weight:700;
-        }
-
         /* tickets - reserve fixed width and slightly smaller font so full ticket numbers like "400" display without truncation */
         .contest-rank-tickets {
             font-size: 14px; /* slightly reduced */
@@ -1140,7 +1127,6 @@
         @media (max-width: 420px) {
             .contest-rank-name { font-size: 13px; }
             .contest-rank-userid { flex: 0 0 90px; max-width: 90px; font-size: 12px; }
-            .contest-rank-username-col { flex: 0 0 80px; max-width: 80px; font-size: 12px; }
             .contest-rank-tickets { flex: 0 0 80px; max-width: 80px; font-size: 13px; }
             .contest-rank-position { width: 40px; flex: 0 0 40px; }
             .contest-rank-avatar { width: 48px; height: 48px; flex: 0 0 48px; }
@@ -3029,7 +3015,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const currentUserId = tgUser && tgUser.id ? String(tgUser.id) : null;
 
             // Build each row using required order and fields:
-            // [ avatar(circle) | first_name (+ You if current) | user_id | USERNAME (visible for all) | tickets | rank ]
+            // [ avatar(circle) | first_name (+ You if current) and username | user_id | tickets | rank ]
             list.innerHTML = players.map((player, index) => {
                 const pos = index + 1;
 
@@ -3041,10 +3027,9 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 const userIdRaw = player.user_id !== undefined ? player.user_id : (player.userId !== undefined ? player.userId : '');
                 const userIdSafe = String(userIdRaw).replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-                // Username (telegram handle) if provided by server — ensure visible for all players
-                const rawUsername = player.username || player.user_name || player.tg_username || player.handle || '';
+                // Username (telegram handle) if provided by server
+                const rawUsername = player.username || player.user_name || player.tg_username || '';
                 const usernameSafe = String(rawUsername).replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                const usernameDisplay = usernameSafe ? `@${usernameSafe}` : '-';
 
                 // Use photo_url field if present; fallback to avatar or default
                 const photoUrl = player.photo_url || player.photo || player.avatar || '';
@@ -3068,16 +3053,19 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // first_name display: show full first_name and append " (You)" visually next to the name (only text)
                 const displayName = isCurrent ? `${firstNameSafe} (You)` : `${firstNameSafe}`;
 
+                // username display (show @username if available)
+                const usernameDisplay = usernameSafe ? `@${usernameSafe}` : '';
+
                 // Construct safe HTML for the row with strict truncation rules applied via CSS
-                // Note: We now ensure username column is visible for all players (as requested)
+                // Note: tickets shown as number only per requirement (e.g., "400")
                 return `
                     <div class="${rowClass}" role="article" aria-label="Player ${pos}">
                         <img src="${avatarSrc || DEFAULT_AVATAR}" class="contest-rank-avatar" alt="" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
                         <div class="contest-rank-name" title="${firstNameSafe}">
                             <div class="name-main">${displayName}</div>
+                            <div class="contest-rank-username">${usernameDisplay}</div>
                         </div>
                         <div class="contest-rank-userid" title="${userIdSafe}">${userIdSafe}</div>
-                        <div class="contest-rank-username-col" title="${usernameSafe}">${usernameDisplay}</div>
                         <div class="contest-rank-tickets">${tickets}</div>
                         <div class="contest-rank-position">${pos}</div>
                     </div>
@@ -3134,7 +3122,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 avatarSrc = tgUser.photo_url;
             }
 
-            // Username/Name priority: prefer server-provided first_name (or username if that's better)
+            // Username priority: playerEntry.first_name > tgUser.first_name > fallback
             let displayName = tgUser.first_name || 'User';
             if (playerEntry && (playerEntry.first_name || playerEntry.name)) {
                 displayName = playerEntry.first_name || playerEntry.name;
