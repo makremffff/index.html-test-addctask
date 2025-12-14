@@ -1049,49 +1049,60 @@
             background: #ffffff;
         }
 
-        /* Name column: show first_name, add 'You' note if current */
-        /* Make the name flexible so userid and tickets can have fixed space to show full values */
+        /* Name column */
         .contest-rank-name {
-            font-size: 14px; /* slightly smaller to allow more room */
+            font-size: 14px;
             font-weight: 800;
             color: #e6f7ff;
-            white-space: nowrap; /* keep single line */
-            overflow: hidden; /* allow truncation only if absolutely necessary */
+            white-space: nowrap;
+            overflow: hidden;
             text-overflow: ellipsis;
             min-width: 0;
-            flex: 1 1 auto; /* flexible, take remaining space */
-            max-width: none; /* remove previous max-width to allow the layout to decide */
+            flex: 1 1 auto; /* flexible */
             display:flex;
             flex-direction:column;
             gap:2px;
         }
         .contest-rank-name .name-main { font-weight:900; color:#e6f7ff; }
-        .contest-rank-username { font-size:12px; color: rgba(255,255,255,0.7); font-weight:700; letter-spacing:0.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .contest-rank-name .name-sub { font-size:12px; color: rgba(255,255,255,0.75); }
 
-        /* user id column - reserve fixed width so the id can display fully */
+        /* user id column - reserve width */
         .contest-rank-userid {
-            font-size: 13px; /* slightly smaller as requested */
+            font-size: 13px;
             color: #cfeeff;
             white-space: nowrap;
-            overflow: visible; /* allow full display */
-            text-overflow: clip;
-            flex: 0 0 120px; /* fixed width to ensure full id visibility */
+            flex: 0 0 120px;
             max-width: 120px;
             text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* tickets - reserve fixed width and slightly smaller font so full ticket numbers like "400" display without truncation */
+        /* username column (NEW) placed between user id and tickets */
+        .contest-rank-username {
+            font-size: 13px;
+            color: rgba(255,255,255,0.9);
+            white-space: nowrap;
+            flex: 0 0 140px;
+            max-width: 140px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight:700;
+        }
+
+        /* tickets column */
         .contest-rank-tickets {
-            font-size: 14px; /* slightly reduced */
+            font-size: 14px;
             font-weight: 900;
             color: #ffd700;
             white-space: nowrap;
-            overflow: visible; /* show full number */
-            text-overflow: clip;
-            text-align: right;
-            flex: 0 0 110px; /* fixed width for tickets column */
+            flex: 0 0 110px;
             max-width: 110px;
+            text-align: right;
             margin-left: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* position (rank) shown at the far right */
@@ -1126,8 +1137,9 @@
         /* Make ranking list responsive and prevent horizontal overflow */
         @media (max-width: 420px) {
             .contest-rank-name { font-size: 13px; }
-            .contest-rank-userid { flex: 0 0 90px; max-width: 90px; font-size: 12px; }
-            .contest-rank-tickets { flex: 0 0 80px; max-width: 80px; font-size: 13px; }
+            .contest-rank-userid { flex: 0 0 80px; max-width: 80px; font-size: 12px; }
+            .contest-rank-username { flex: 0 0 80px; max-width: 80px; font-size: 12px; }
+            .contest-rank-tickets { flex: 0 0 70px; max-width: 70px; font-size: 13px; }
             .contest-rank-position { width: 40px; flex: 0 0 40px; }
             .contest-rank-avatar { width: 48px; height: 48px; flex: 0 0 48px; }
             .personal-avatar { width:48px; height:48px; flex:0 0 48px; }
@@ -3015,7 +3027,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const currentUserId = tgUser && tgUser.id ? String(tgUser.id) : null;
 
             // Build each row using required order and fields:
-            // [ avatar(circle) | first_name (+ You if current) and username | user_id | tickets | rank ]
+            // [ avatar | name | user_id | username | tickets | rank ]
             list.innerHTML = players.map((player, index) => {
                 const pos = index + 1;
 
@@ -3029,7 +3041,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
                 // Username (telegram handle) if provided by server
                 const rawUsername = player.username || player.user_name || player.tg_username || '';
-                const usernameSafe = String(rawUsername).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                const usernameSafe = rawUsername ? String(rawUsername).replace(/</g,'&lt;').replace(/>/g,'&gt;') : '';
 
                 // Use photo_url field if present; fallback to avatar or default
                 const photoUrl = player.photo_url || player.photo || player.avatar || '';
@@ -3057,15 +3069,15 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 const usernameDisplay = usernameSafe ? `@${usernameSafe}` : '';
 
                 // Construct safe HTML for the row with strict truncation rules applied via CSS
-                // Note: tickets shown as number only per requirement (e.g., "400")
                 return `
                     <div class="${rowClass}" role="article" aria-label="Player ${pos}">
                         <img src="${avatarSrc || DEFAULT_AVATAR}" class="contest-rank-avatar" alt="" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
                         <div class="contest-rank-name" title="${firstNameSafe}">
                             <div class="name-main">${displayName}</div>
-                            <div class="contest-rank-username">${usernameDisplay}</div>
+                            <div class="name-sub">${player.title || ''}</div>
                         </div>
                         <div class="contest-rank-userid" title="${userIdSafe}">${userIdSafe}</div>
+                        <div class="contest-rank-username" title="${usernameSafe}">${usernameDisplay}</div>
                         <div class="contest-rank-tickets">${tickets}</div>
                         <div class="contest-rank-position">${pos}</div>
                     </div>
