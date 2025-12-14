@@ -977,40 +977,43 @@
         }
 
         /* Name column: show first_name, add 'You' note if current */
+        /* Make the name flexible so userid and tickets can have fixed space to show full values */
         .contest-rank-name {
-            font-size: 16px;
+            font-size: 14px; /* slightly smaller to allow more room */
             font-weight: 800;
             color: #e6f7ff;
-            white-space: nowrap;
-            overflow: hidden;
+            white-space: nowrap; /* keep single line */
+            overflow: hidden; /* allow truncation only if absolutely necessary */
             text-overflow: ellipsis;
             min-width: 0;
-            max-width: 36%; /* prevent pushing other columns */
+            flex: 1 1 auto; /* flexible, take remaining space */
+            max-width: none; /* remove previous max-width to allow the layout to decide */
         }
 
-        /* user id column */
+        /* user id column - reserve fixed width so the id can display fully */
         .contest-rank-userid {
-            font-size: 13px;
+            font-size: 13px; /* slightly smaller as requested */
             color: #cfeeff;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            min-width: 0;
-            max-width: 20%;
+            overflow: visible; /* allow full display */
+            text-overflow: clip;
+            flex: 0 0 120px; /* fixed width to ensure full id visibility */
+            max-width: 120px;
+            text-align: left;
         }
 
-        /* tickets */
+        /* tickets - reserve fixed width and slightly smaller font so full ticket numbers like "400" display without truncation */
         .contest-rank-tickets {
-            font-size: 15px;
+            font-size: 14px; /* slightly reduced */
             font-weight: 900;
             color: #ffd700;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            overflow: visible; /* show full number */
+            text-overflow: clip;
             text-align: right;
-            min-width: 0;
-            max-width: 18%;
-            margin-left: auto;
+            flex: 0 0 110px; /* fixed width for tickets column */
+            max-width: 110px;
+            margin-left: 8px;
         }
 
         /* position (rank) shown at the far right */
@@ -1044,9 +1047,9 @@
 
         /* Make ranking list responsive and prevent horizontal overflow */
         @media (max-width: 420px) {
-            .contest-rank-name { max-width: 40%; font-size: 14px; }
-            .contest-rank-userid { max-width: 22%; font-size: 12px; }
-            .contest-rank-tickets { max-width: 20%; font-size: 14px; }
+            .contest-rank-name { font-size: 13px; }
+            .contest-rank-userid { flex: 0 0 90px; max-width: 90px; font-size: 12px; }
+            .contest-rank-tickets { flex: 0 0 80px; max-width: 80px; font-size: 13px; }
             .contest-rank-position { width: 40px; flex: 0 0 40px; }
             .contest-rank-avatar { width: 48px; height: 48px; flex: 0 0 48px; }
         }
