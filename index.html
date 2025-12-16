@@ -861,7 +861,7 @@
             gap:6px;
         }
         .contest-ticket-value {
-            font-size: 18px;
+            font-size: 15px;
             color: #ffd700;
             font-weight: bold;
             white-space:nowrap;
@@ -949,6 +949,79 @@
             box-sizing: border-box;
         }
 
+        /* NEW: Personal user info box (golden) - placed inside ranking page for visibility */
+        .personal-info-box {
+            width: 100%;
+            max-width: 720px;
+            background: linear-gradient(90deg, #2b2a2a 0%, rgba(255, 215, 0, 0.06) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.25);
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 30px rgba(255,215,0,0.06), inset 0 0 12px rgba(255,215,0,0.02);
+            color: #fff;
+            background-color: rgba(32,24,12,0.12);
+        }
+        .personal-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex: 0 0 64px;
+            border: 2px solid rgba(255,215,0,0.9);
+            background: #fff;
+        }
+        .personal-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex: 1 1 auto;
+        }
+        .personal-id, .personal-username, .personal-tickets, .personal-rank {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 0;
+        }
+        .personal-id .label, .personal-username .label, .personal-tickets .label, .personal-rank .label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.75);
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+        }
+        .personal-id .value, .personal-username .value, .personal-tickets .value, .personal-rank .value {
+            font-size: 16px;
+            font-weight: 900;
+            color: #ffd700;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 220px;
+        }
+        /* Ensure username sits visually centered between id and tickets */
+        .personal-username .value {
+            color: #fff;
+            font-size: 18px;
+            letter-spacing: .3px;
+            color: #ffd700;
+        }
+
+        /* NEW: make golden box stand out on small screens */
+        @media (max-width:720px) {
+            .personal-info-box { padding: 8px; gap: 10px; }
+            .personal-avatar { width:56px; height:56px; flex:0 0 56px; }
+            .personal-id .value, .personal-username .value, .personal-tickets .value { font-size: 15px; }
+            .personal-username .value { font-size: 16px; }
+            .contest-rank-list { padding: 6px; }
+        }
+
         /* NEW: Ranking row styles to satisfy layout requirements */
         .contest-rank-item {
             display: flex;
@@ -976,45 +1049,49 @@
             background: #ffffff;
         }
 
-        /* Name column: show first_name, add 'You' note if current
-           Modified: reduce font-size slightly and allow wrapping so full name displays */
+        /* Name column: show first_name, add 'You' note if current */
+        /* Make the name flexible so userid and tickets can have fixed space to show full values */
         .contest-rank-name {
-            font-size: 14px; /* slightly reduced to fit longer names */
+            font-size: 14px; /* slightly smaller to allow more room */
             font-weight: 800;
             color: #e6f7ff;
-            white-space: normal; /* allow wrapping */
-            overflow: visible; /* ensure not cut */
-            text-overflow: clip;
+            white-space: nowrap; /* keep single line */
+            overflow: hidden; /* allow truncation only if absolutely necessary */
+            text-overflow: ellipsis;
             min-width: 0;
-            flex: 1 1 40%; /* flexible so it can take available space but not force others to truncate */
-            line-height: 1.1;
-            word-break: break-word;
+            flex: 1 1 auto; /* flexible, take remaining space */
+            max-width: none; /* remove previous max-width to allow the layout to decide */
+            display:flex;
+            flex-direction:column;
+            gap:2px;
         }
+        .contest-rank-name .name-main { font-weight:900; color:#e6f7ff; }
+        .contest-rank-username { font-size:12px; color: rgba(255,255,255,0.7); font-weight:700; letter-spacing:0.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-        /* user id column - reduced font-size and allow full visibility */
+        /* user id column - reserve fixed width so the id can display fully */
         .contest-rank-userid {
-            font-size: 12px; /* slightly smaller */
+            font-size: 13px; /* slightly smaller as requested */
             color: #cfeeff;
-            white-space: normal; /* allow wrapping if needed */
-            overflow: visible;
+            white-space: nowrap;
+            overflow: visible; /* allow full display */
             text-overflow: clip;
-            flex: 0 0 120px; /* fixed-ish width but enough for full ids like 400 or longer */
-            max-width: 140px;
-            word-break: break-all;
+            flex: 0 0 120px; /* fixed width to ensure full id visibility */
+            max-width: 120px;
+            text-align: left;
         }
 
-        /* tickets - ensure full numeric value is visible; use right alignment and fixed width */
+        /* tickets - reserve fixed width and slightly smaller font so full ticket numbers like "400" display without truncation */
         .contest-rank-tickets {
             font-size: 14px; /* slightly reduced */
             font-weight: 900;
             color: #ffd700;
-            white-space: nowrap; /* keep number on single line */
-            overflow: visible; /* ensure full digits are shown */
+            white-space: nowrap;
+            overflow: visible; /* show full number */
             text-overflow: clip;
             text-align: right;
-            flex: 0 0 80px; /* fixed width sufficient for numbers like 400000 */
-            min-width: 60px;
-            margin-left: auto;
+            flex: 0 0 110px; /* fixed width for tickets column */
+            max-width: 110px;
+            margin-left: 8px;
         }
 
         /* position (rank) shown at the far right */
@@ -1049,10 +1126,11 @@
         /* Make ranking list responsive and prevent horizontal overflow */
         @media (max-width: 420px) {
             .contest-rank-name { font-size: 13px; }
-            .contest-rank-userid { font-size: 11px; flex: 0 0 100px; max-width: 100px; }
-            .contest-rank-tickets { font-size: 13px; flex: 0 0 70px; min-width: 50px; }
-            .contest-rank-position { width: 40px; flex: 0 0 40px; font-size: 14px; }
+            .contest-rank-userid { flex: 0 0 90px; max-width: 90px; font-size: 12px; }
+            .contest-rank-tickets { flex: 0 0 80px; max-width: 80px; font-size: 13px; }
+            .contest-rank-position { width: 40px; flex: 0 0 40px; }
             .contest-rank-avatar { width: 48px; height: 48px; flex: 0 0 48px; }
+            .personal-avatar { width:48px; height:48px; flex:0 0 48px; }
         }
 
     </style>
@@ -1312,7 +1390,31 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 <button class="back-btn" onclick="hideContestRank()">Back</button>
             </div>
         </div>
-        
+
+        <!-- PERSONAL USER BOX: shows the current user's avatar + row with (user id) | (username centered) | (tickets) | (rank) -->
+        <div id="personalUserBox" class="personal-info-box" style="display:none;">
+            <!-- content injected by JS -->
+            <img src="" alt="avatar" class="personal-avatar" id="personalAvatar">
+            <div class="personal-info-row">
+                <div class="personal-id">
+                    <div class="label">ID</div>
+                    <div class="value" id="personalIdValue">-</div>
+                </div>
+                <div class="personal-username" style="flex:1">
+                    <div class="label">User</div>
+                    <div class="value" id="personalNameValue">-</div>
+                </div>
+                <div class="personal-tickets">
+                    <div class="label">Tickets</div>
+                    <div class="value" id="personalTicketsValue">0</div>
+                </div>
+                <div class="personal-rank">
+                    <div class="label">Rank</div>
+                    <div class="value" id="personalRankValue">-</div>
+                </div>
+            </div>
+        </div>
+
         <div class="contest-rank-list" id="contestRankList" aria-live="polite">
             <!-- Top players will be injected here from server -->
         </div>
@@ -2888,7 +2990,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             document.body.classList.remove('hide-top-user');
         }
 
-        // Load ranking from server. Server must return { players: [ { first_name, photo_url, user_id, tickets } ] } ordered by rank.
+        // Load ranking from server. Server must return { players: [ { first_name, photo_url, user_id, tickets, username } ] } ordered by rank.
         async function loadContestRank() {
             const res = await fetchApi({ type: 'getContestRank' });
             let players = [];
@@ -2901,6 +3003,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const list = document.getElementById('contestRankList');
             if (!players || players.length === 0) {
                 list.innerHTML = `<div style="text-align:center;color:#cfeeff;padding:20px;border-radius:10px;background:rgba(255,255,255,0.02);">No entries yet.</div>`;
+                // still render personal box if possible
+                renderPersonalUserBox(players);
                 return;
             }
 
@@ -2911,7 +3015,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const currentUserId = tgUser && tgUser.id ? String(tgUser.id) : null;
 
             // Build each row using required order and fields:
-            // [ avatar(circle) | first_name (+ You if current) | user_id | tickets | rank ]
+            // [ avatar(circle) | first_name (+ You if current) and username | user_id | tickets | rank ]
             list.innerHTML = players.map((player, index) => {
                 const pos = index + 1;
 
@@ -2922,6 +3026,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // Determine user id field (server should provide user_id only)
                 const userIdRaw = player.user_id !== undefined ? player.user_id : (player.userId !== undefined ? player.userId : '');
                 const userIdSafe = String(userIdRaw).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+                // Username (telegram handle) if provided by server
+                const rawUsername = player.username || player.user_name || player.tg_username || '';
+                const usernameSafe = String(rawUsername).replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
                 // Use photo_url field if present; fallback to avatar or default
                 const photoUrl = player.photo_url || player.photo || player.avatar || '';
@@ -2945,18 +3053,27 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // first_name display: show full first_name and append " (You)" visually next to the name (only text)
                 const displayName = isCurrent ? `${firstNameSafe} (You)` : `${firstNameSafe}`;
 
+                // username display (show @username if available)
+                const usernameDisplay = usernameSafe ? `@${usernameSafe}` : '';
+
                 // Construct safe HTML for the row with strict truncation rules applied via CSS
                 // Note: tickets shown as number only per requirement (e.g., "400")
                 return `
                     <div class="${rowClass}" role="article" aria-label="Player ${pos}">
                         <img src="${avatarSrc || DEFAULT_AVATAR}" class="contest-rank-avatar" alt="" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
-                        <div class="contest-rank-name" title="${firstNameSafe}">${displayName}</div>
+                        <div class="contest-rank-name" title="${firstNameSafe}">
+                            <div class="name-main">${displayName}</div>
+                            <div class="contest-rank-username">${usernameDisplay}</div>
+                        </div>
                         <div class="contest-rank-userid" title="${userIdSafe}">${userIdSafe}</div>
                         <div class="contest-rank-tickets">${tickets}</div>
                         <div class="contest-rank-position">${pos}</div>
                     </div>
                 `;
             }).join('');
+
+            // After rendering, also render the personal user info box with data found in players (authoritative)
+            renderPersonalUserBox(players);
 
             // After rendering, scroll to the current player's position (if present) for visibility
             if (currentUserId) {
@@ -2969,6 +3086,78 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     }
                 }, 120);
             }
+        }
+
+        // Render the personal user golden box using tgUser and authoritative players array when available
+        function renderPersonalUserBox(players) {
+            const box = document.getElementById('personalUserBox');
+            const avatarEl = document.getElementById('personalAvatar');
+            const idEl = document.getElementById('personalIdValue');
+            const nameEl = document.getElementById('personalNameValue');
+            const ticketsEl = document.getElementById('personalTicketsValue');
+            const rankEl = document.getElementById('personalRankValue');
+
+            // default hide
+            if (!box || !tgUser) {
+                if (box) box.style.display = 'none';
+                return;
+            }
+
+            const currentUserId = String(tgUser.id);
+            // find authoritative player entry if available
+            let playerEntry = null;
+            if (Array.isArray(players) && players.length > 0) {
+                playerEntry = players.find(p => {
+                    const pid = p.user_id !== undefined ? String(p.user_id) : (p.userId !== undefined ? String(p.userId) : '');
+                    return pid === currentUserId;
+                });
+            }
+
+            // Avatar priority: playerEntry.photo_url > tgUser.photo_url > default
+            const DEFAULT_AVATAR = 'https://giftgogame.com/static/thumbnails/5170233102089322756.webp';
+            let avatarSrc = DEFAULT_AVATAR;
+            if (playerEntry && (playerEntry.photo_url || playerEntry.avatar || playerEntry.photo)) {
+                avatarSrc = playerEntry.photo_url || playerEntry.avatar || playerEntry.photo;
+            } else if (tgUser.photo_url) {
+                avatarSrc = tgUser.photo_url;
+            }
+
+            // Username priority: playerEntry.first_name > tgUser.first_name > fallback
+            let displayName = tgUser.first_name || 'User';
+            if (playerEntry && (playerEntry.first_name || playerEntry.name)) {
+                displayName = playerEntry.first_name || playerEntry.name;
+            }
+
+            // Tickets priority: playerEntry.tickets or myTickets
+            let ticketCount = myTickets || 0;
+            if (playerEntry && (playerEntry.tickets !== undefined || playerEntry.tickets_count !== undefined || playerEntry.points !== undefined)) {
+                ticketCount = Number(playerEntry.tickets || playerEntry.tickets_count || playerEntry.points || 0);
+            }
+
+            // Compute rank if players array provided
+            let rankText = '-';
+            if (Array.isArray(players) && players.length > 0) {
+                const idx = players.findIndex(p => {
+                    const pid = p.user_id !== undefined ? String(p.user_id) : (p.userId !== undefined ? String(p.userId) : '');
+                    return pid === currentUserId;
+                });
+                if (idx !== -1) rankText = (idx + 1).toString();
+                else rankText = '-';
+            }
+
+            // ID display
+            const userIdDisplay = currentUserId;
+
+            // set DOM
+            avatarEl.src = avatarSrc || DEFAULT_AVATAR;
+            avatarEl.onerror = function(){ this.onerror=null; this.src = DEFAULT_AVATAR; };
+
+            idEl.textContent = userIdDisplay;
+            nameEl.textContent = displayName;
+            ticketsEl.textContent = ticketCount.toLocaleString();
+            rankEl.textContent = rankText;
+
+            box.style.display = 'flex';
         }
 
         // Final event listener to ensure background audio starts on the first user interaction
