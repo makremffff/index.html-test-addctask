@@ -1096,18 +1096,20 @@ async function handleWithdraw(req, res, body) {
 /**
  * NEW: 9) type: "getContestData"
  * Returns user's tickets and total tickets across users and contest timing info.
+ *
+ * NOTE: This implementation uses the single 'ticket' table (one row per user).
  */
 async function handleGetContestData(req, res, body) {
     const { user_id } = body;
     const id = parseInt(user_id);
     try {
-        // Sum tickets for the user
-        const userTicketsRows = await supabaseFetch('ticket_comp', 'GET', null, `?user_id=eq.${id}&select=tickets`);
-        const myTickets = Array.isArray(userTicketsRows) ? userTicketsRows.reduce((s, r) => s + (r.tickets || 0), 0) : 0;
+        // Read the user's ticket row (single row per user)
+        const userTicketRows = await supabaseFetch('ticket', 'GET', null, `?user_id=eq.${id}&select=tickets`);
+        const myTickets = Array.isArray(userTicketRows) && userTicketRows.length > 0 ? parseInt(userTicketRows[0].tickets || 0) : 0;
 
-        // Sum tickets for all users
-        const allTicketsRows = await supabaseFetch('ticket_comp', 'GET', null, `?select=tickets`);
-        const allTickets = Array.isArray(allTicketsRows) ? allTicketsRows.reduce((s, r) => s + (r.tickets || 0), 0) : 0;
+        // Sum tickets for all users by selecting tickets column and summing in JS
+        const allTicketRows = await supabaseFetch('ticket', 'GET', null, `?select=tickets`);
+        const allTickets = Array.isArray(allTicketRows) ? allTicketRows.reduce((s, r) => s + (parseInt(r.tickets || 0)), 0) : 0;
 
         // Read contest time from contest_time table (if exists). Expect a row with a 'time' JSON or columns start_time/end_time
         let contestTime = null;
@@ -1139,6 +1141,10 @@ async function handleGetContestData(req, res, body) {
 /**
  * NEW: 10) type: "contestWatchAd"
  * Grants contest tickets for watching a contest ad.
+ *
+ * This uses the single 'ticket' table (one row per user). It performs an upsert:
+ * - If the user has a ticket row, increment tickets count.
+ * - Otherwise create the row with initial tickets value.
  */
 async function handleContestWatchAd(req, res, body) {
     const { user_id, action_id } = body;
@@ -1165,21 +1171,25 @@ async function handleContestWatchAd(req, res, body) {
 
         // Grant tickets (5 tickets per watch)
         const ticketsToGrant = 5;
-        const insertPayload = {
-            user_id: id,
-            tickets: ticketsToGrant,
-            source: 'contest_ad',
-            created_at: new Date().toISOString()
-        };
 
-        await supabaseFetch('ticket_comp', 'POST', insertPayload, '?select=user_id');
+        // Try to fetch existing ticket row
+        const existing = await supabaseFetch('ticket', 'GET', null, `?user_id=eq.${id}&select=tickets`);
+        if (Array.isArray(existing) && existing.length > 0) {
+            const current = parseInt(existing[0].tickets || 0);
+            const newTickets = current + ticketsToGrant;
+            // Update existing row
+            await supabaseFetch('ticket', 'PATCH', { tickets: newTickets, updated_at: new Date().toISOString() }, `?user_id=eq.${id}`);
+        } else {
+            // Insert new row for this user
+            await supabaseFetch('ticket', 'POST', { user_id: id, tickets: ticketsToGrant, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }, '?select=user_id');
+        }
 
         // Recompute totals
-        const userTicketsRows = await supabaseFetch('ticket_comp', 'GET', null, `?user_id=eq.${id}&select=tickets`);
-        const myTickets = Array.isArray(userTicketsRows) ? userTicketsRows.reduce((s, r) => s + (r.tickets || 0), 0) : ticketsToGrant;
+        const userTicketsRows = await supabaseFetch('ticket', 'GET', null, `?user_id=eq.${id}&select=tickets`);
+        const myTickets = Array.isArray(userTicketsRows) && userTicketsRows.length > 0 ? parseInt(userTicketsRows[0].tickets || 0) : ticketsToGrant;
 
-        const allTicketsRows = await supabaseFetch('ticket_comp', 'GET', null, `?select=tickets`);
-        const allTickets = Array.isArray(allTicketsRows) ? allTicketsRows.reduce((s, r) => s + (r.tickets || 0), 0) : myTickets;
+        const allTicketsRows = await supabaseFetch('ticket', 'GET', null, `?select=tickets`);
+        const allTickets = Array.isArray(allTicketsRows) ? allTicketsRows.reduce((s, r) => s + (parseInt(r.tickets || 0)), 0) : myTickets;
 
         sendSuccess(res, { my_tickets: myTickets, all_tickets: allTickets });
     } catch (error) {
@@ -1191,43 +1201,33 @@ async function handleContestWatchAd(req, res, body) {
 /**
  * NEW: 11) type: "getContestRank"
  * Returns top players ordered by ticket totals (server authoritative).
+ *
+ * Now reads from 'ticket' table which stores one row per user (no duplicates).
  */
 async function handleGetContestRank(req, res, body) {
     try {
-        // Fetch all ticket entries
-        const rows = await supabaseFetch('ticket_comp', 'GET', null, `?select=user_id,tickets,created_at`);
-        if (!Array.isArray(rows)) {
+        // Fetch top users directly from the ticket table ordered by tickets desc
+        // Use REST param to select user_id and tickets and order by tickets.desc
+        const rows = await supabaseFetch('ticket', 'GET', null, `?select=user_id,tickets&order=tickets.desc&limit=100`);
+        if (!Array.isArray(rows) || rows.length === 0) {
             return sendSuccess(res, { players: [] });
         }
 
-        // Aggregate tickets per user
-        const agg = {};
-        for (const r of rows) {
-            const uid = r.user_id;
-            const t = parseInt(r.tickets || 0);
-            if (!agg[uid]) agg[uid] = 0;
-            agg[uid] += t;
-        }
-
-        // Build array and sort
-        const entries = Object.keys(agg).map(uid => ({ user_id: uid, tickets: agg[uid] }));
-        entries.sort((a, b) => b.tickets - a.tickets);
-
-        // Take top 100 (or fewer)
-        const top = entries.slice(0, 100);
-
         // For each top user, fetch optional user details (first_name/photo_url)
         const players = [];
-        for (const e of top) {
+        for (const e of rows) {
             const uid = e.user_id;
+            const tickets = parseInt(e.tickets || 0);
             // Try to fetch user profile fields if available
-            const userRows = await supabaseFetch('users', 'GET', null, `?id=eq.${uid}&select=first_name,photo_url`);
+            const userRows = await supabaseFetch('users', 'GET', null, `?id=eq.${uid}&select=first_name,photo_url,username`);
             let first_name = `User ${uid}`;
             let photo_url = null;
+            let username = '';
             if (Array.isArray(userRows) && userRows.length > 0) {
                 const u = userRows[0];
                 first_name = (u.first_name || first_name).trim();
                 photo_url = u.photo_url || null;
+                username = u.username || '';
             }
 
             // Return a single consolidated object (no duplicate userId/user_id)
@@ -1235,7 +1235,8 @@ async function handleGetContestRank(req, res, body) {
                 first_name: first_name,
                 photo_url: photo_url,
                 user_id: uid,
-                tickets: e.tickets
+                tickets: tickets,
+                username: username
             });
         }
 
@@ -1335,7 +1336,7 @@ module.exports = async (req, res) => {
     case 'taskLinkClick': 
       await handleTaskLinkClick(req, res, body);
       break;
-    // New contest-related handlers
+    // New contest-related handlers (use single 'ticket' table)
     case 'getContestData':
       await handleGetContestData(req, res, body);
       break;
