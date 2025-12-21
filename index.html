@@ -130,6 +130,47 @@
 
         .balance{position:absolute;top:20px;right:20px;background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:16px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05)}
         
+        /* Contest button replaced by image-button - keep layout and z-index */
+        .contest-btn-under-balance {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: linear-gradient(145deg, #00bfff, #0077b3);
+            color: #fff;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #005a8d, 0 6px 10px rgba(0,0,0,.15);
+            transition: all .1s ease;
+            z-index: 101;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding: 0;
+            overflow: hidden;
+        }
+        .contest-btn-under-balance:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 0 #005a8d, 0 8px 15px rgba(0,0,0,.2);
+        }
+        .contest-btn-under-balance:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #005a8d, 0 4px 8px rgba(0,0,0,.15);
+        }
+        /* ensure the image fills the circular button nicely */
+        .contest-btn-under-balance img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+            pointer-events: none; /* allow click to be handled by button */
+        }
+
         /* Shared Progress Containers */
         .progress-group-container {
             position: absolute;
@@ -724,34 +765,7 @@
         .history-empty {text-align:center;color:#777;padding:30px}
 
         /* ===== Contest Button under Balance (UPDATED TO 45x45 CIRCLE) ===== */
-        .contest-btn-under-balance {
-            position: absolute;
-            top: 70px;
-            right: 20px;
-            background: linear-gradient(145deg, #00bfff, #0077b3);
-            color: #fff;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #005a8d, 0 6px 10px rgba(0,0,0,.15);
-            transition: all .1s ease;
-            z-index: 101;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-        }
-        .contest-btn-under-balance:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 5px 0 #005a8d, 0 8px 15px rgba(0,0,0,.2);
-        }
-        .contest-btn-under-balance:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #005a8d, 0 4px 8px rgba(0,0,0,.15);
-        }
+        /* (Now uses an image inside the circular button; styles above) */
 
         /* ===== Contest Screen Styles (UPDATED LAYOUT) ===== */
         .contest-screen {
@@ -1133,6 +1147,14 @@
             .personal-avatar { width:48px; height:48px; flex:0 0 48px; }
         }
 
+        /* ===== Ticket image smaller per request ===== */
+        .contest-ticket-img {
+            width: 26px;
+            height: 26px;
+            object-fit: cover;
+            display: inline-block;
+        }
+
     </style>
 </head>
 <body>
@@ -1178,7 +1200,9 @@
     
     <div class="app-screen main-screen" id="mainScreen">
         <div class="balance" id="shibBalance">0 SHIB</div>
-        <button class="contest-btn-under-balance" onclick="showContest()">🏆</button>
+        <button class="contest-btn-under-balance" onclick="showContest()" aria-label="Open Contest">
+            <img src="https://giftgogame.com/static/thumbnails/5168043875654172773.webp" alt="Contest">
+        </button>
         
         <div class="progress-group-container">
             <div class="daily-progress-container">
