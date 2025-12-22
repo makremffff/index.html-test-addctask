@@ -1,0 +1,1233 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;color:#111;}
+
+.app-screen {
+    position: fixed;
+    inset: 0;
+    background: url('img.png') no-repeat center center;
+    background-size: cover;
+    transition: opacity .5s ease-in;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none; 
+    z-index: 10; 
+}
+.app-screen.visible {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 20; 
+}
+
+/* Loading Screen - Replaced with animated "LOADING" letter sequence */
+.loading-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity .5s ease-out;
+    background: url('img2.png') no-repeat center center;
+    background-size: cover; /* use provided image */
+}
+.loading-screen.hidden{opacity:0;pointer-events:none}
+
+.loader {
+  --ANIMATION-DELAY-MULTIPLIER: 70ms;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.loader span {
+  padding: 0;
+  margin: 0;
+  letter-spacing: -5rem;
+  transform: translateY(4rem);
+  animation: hideAndSeek 1s alternate infinite cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+.loader .l { animation-delay: calc(var(--ANIMATION-DELAY-MULTIPLIER) * 0); color:#ff3b3b; }
+.loader .o { animation-delay: calc(var(--ANIMATION-DELAY-MULTIPLIER) * 1); color:#ff8c00; }
+.loader .a { animation-delay: calc(var(--ANIMATION-DELAY-MULTIPLIER) * 2); color:#ffd700; }
+.loader .d { animation-delay: calc(var(--ANIMATION-DELAY-MULTIPLIER) * 3); color:#4caf50; }
+.loader .ispan { animation-delay: calc(var(--ANIMATION-DELAY-MULTIPLIER) * 4); color:#00bfff; }
+.loader .n { animation-delay: calc(var(--ANIMATION-DELAY-MULTIPLIER) * 5); color:#6a5acd; }
+.loader .g { animation-delay: calc(var(--ANIMATION-DELAY-MULTIPLIER) * 6); color:#ff1493; }
+
+.letter {
+  width: fit-content;
+  height: 3rem;
+}
+
+.i {
+  margin-inline: 5px;
+}
+
+@keyframes hideAndSeek {
+  0% {
+    transform: translateY(4rem);
+  }
+  100% {
+    transform: translateY(0rem);
+  }
+}
+/* End of replaced loader styles */
+
+/* Main Screen */
+.main-screen{
+    background-color: #f0f0f0; 
+}
+
+.main-content{flex:1;display:flex;justify-content:center;align-items:center}
+
+/* User Circle */
+.user-circle{
+    position:absolute;top:10px;left:15px;width:60px;height:60px;border:2px dashed #ccc;
+    border-radius:50%;display:flex;flex-direction:column;justify-content:center;
+    align-items:center;cursor:pointer;transition:all .3s ease;z-index:100;overflow:hidden
+}
+.user-circle:hover{border-color:#4a90e2;background:rgba(74,144,226,.05)}
+.user-circle img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:none}
+.user-circle .placeholder{color:#999;font-size:12px;text-align:center}
+
+.user-username{
+    position: absolute;
+    top: 70px;
+    left: 10px;
+    width: 70px;
+    font-size:13px;color:#555;white-space:nowrap;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.user-id{
+    position: absolute;
+    top: 85px;
+    left: 10px;
+    width: 70px;
+    font-size:11px;color:#888;white-space:nowrap;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.balance{position:absolute;top:20px;right:20px;background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:16px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05)}
+
+/* Contest button replaced by image-button - keep layout and z-index */
+.contest-btn-under-balance {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    background: linear-gradient(145deg, #00bfff, #0077b3);
+    color: #fff;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #005a8d, 0 6px 10px rgba(0,0,0,.15);
+    transition: all .1s ease;
+    z-index: 101;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 0;
+    overflow: hidden;
+}
+.contest-btn-under-balance:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 0 #005a8d, 0 8px 15px rgba(0,0,0,.2);
+}
+.contest-btn-under-balance:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #005a8d, 0 4px 8px rgba(0,0,0,.15);
+}
+/* ensure the image fills the circular button nicely */
+.contest-btn-under-balance img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    pointer-events: none; /* allow click to be handled by button */
+}
+
+/* Shared Progress Containers */
+.progress-group-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 90%;
+    max-width: 300px;
+    z-index: 102;
+}
+.daily-progress-container, .spin-progress-container {
+    background: #fff;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.1);
+    text-align: center;
+    border-left: 5px solid #4a90e2; 
+}
+.spin-progress-container {
+    border-left: 5px solid #ff8c00; 
+}
+.daily-progress-text, .spin-progress-text {font-size:14px;color:#333;margin-bottom:4px; font-weight: bold;}
+.daily-progress-bar, .spin-progress-bar {width:100%;height:12px;background:rgba(0,0,0,.1);border-radius:10px;overflow:hidden;margin-top:6px}
+.daily-progress-fill {height:100%;background:linear-gradient(90deg,#00f2fe,#4facfe);border-radius:10px;width:0%;transition:width .4s ease}
+.spin-progress-fill {height:100%;background:linear-gradient(90deg,#ff8c00, #ff4500);border-radius:10px;width:0%;transition:width .4s ease}
+
+/* Button Adjustments - Equal width for 5 buttons */
+.button-container{
+    position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+    display:grid; /* Change to grid for better control */
+    grid-template-columns: repeat(5, 1fr); /* 5 equal columns (UPDATED) */
+    gap: 8px; /* Slightly reduced gap */
+    background:rgba(240,240,240,.9);padding:10px 10px; /* Reduced padding */
+    border-radius:20px;box-shadow:0 4px 15px rgba(0,0,0,.1);backdrop-filter:blur(10px);
+    width: 95%; /* Increased width for more space */
+    max-width: 450px;
+}
+.nav-button{
+    position:relative;background:linear-gradient(145deg,#4a90e2,#357abd);color:#fff;border:none;padding:10px 0; /* Adjust padding for height control */
+    border-radius:10px;font-size:11px; /* Reduced font size for better fit */
+    font-weight:bold;cursor:pointer;transition:all .1s ease;
+    flex-grow: 1;
+    min-width: auto;
+    text-transform:uppercase;letter-spacing:.5px;box-shadow:0 5px 0 #2c5aa0,0 8px 12px rgba(0,0,0,.15);transform:translateY(0);
+    text-align: center;
+    line-height: 1; /* Ensure text fits */
+}
+.nav-button:hover{transform:translateY(-1px);box-shadow:0 6px 0 #2c5aa0,0 10px 15px rgba(0,0,0,.2)}
+.nav-button:active{transform:translateY(2px);box-shadow:0 3px 0 #2c5aa0,0 5px 8px rgba(0,0,0,.15)}
+.nav-button span{display:block;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+
+.nav-button.task-btn{
+    background:linear-gradient(145deg,#ffc107,#ff9800);
+    box-shadow:0 5px 0 #cc9a00,0 8px 12px rgba(0,0,0,.15);
+}
+.nav-button.task-btn:hover{box-shadow:0 6px 0 #cc9a00,0 10px 15px rgba(0,0,0,.2)}
+.nav-button.task-btn:active{box-shadow:0 3px 0 #cc9a00,0 5px 8px rgba(0,0,0,.15)}
+
+/* NEW Style for Withdraw Nav Button */
+.nav-button.withdraw-btn-nav{
+    background:linear-gradient(145deg,#ff2a2a,#cc2121);
+    box-shadow:0 5px 0 #991919,0 8px 12px rgba(0,0,0,.15);
+}
+.nav-button.withdraw-btn-nav:hover{box-shadow:0 6px 0 #991919,0 10px 15px rgba(0,0,0,.2)}
+.nav-button.withdraw-btn-nav:active{box-shadow:0 3px 0 #991919,0 5px 8px rgba(0,0,0,.15)}
+
+/* ===== Task Screen - REDESIGNED STYLING ===== */
+.task-screen{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content: flex-start; 
+    padding-top: 50px; 
+    padding-bottom: 120px; 
+    overflow-y: auto;
+    background: #ffffed; /* Light, paper-like background */
+}
+.task-header{ 
+    text-align: center;
+    margin-bottom: 30px;
+    width: 90%;
+    max-width: 350px;
+}
+.task-title{ 
+     font-family: 'Vazirmatn', sans-serif; 
+     font-size:24px; 
+     color:#333; /* Dark pencil color */
+     font-weight:700; 
+     text-shadow: 1px 1px 0 #fff; 
+     border-bottom: 2px dashed #a0a0a0;
+     padding-bottom: 10px;
+}
+
+/* New Task Card Style based on user's input (Paper Style) */
+.task-content-container {
+    width: 100%;
+    padding: 0 10px;
+    max-width: 400px;
+}
+
+.task-item-card {
+    background:#ffffff; /* White card */
+    margin:10px 0;
+    padding:18px;
+    border-radius:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border: 1px solid #ddd; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.task-text-info {
+    color: #555; /* Slightly lighter text */
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Button style from user's input (Pencil Style Action Button) */
+.task-action-btn-new {
+    background:linear-gradient(145deg, #ffc107, #ff9800);
+    border:1px solid #cc9a00;
+    color:#fff;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:1em;
+    font-weight: bold;
+    min-width: 90px; 
+    transition: all 0.1s ease;
+    box-shadow: 0 4px 0 #cc9a00;
+    text-transform: uppercase;
+}
+.task-action-btn-new:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 0 #cc9a00;
+}
+.task-action-btn-new:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #cc9a00;
+}
+.task-action-btn-new:disabled {
+    background:#ccc;
+    border-color:#aaa;
+    color:#666;
+    cursor:not-allowed;
+    box-shadow: 0 4px 0 #aaa;
+    transform: translateY(0);
+}
+
+.task-action-btn-new.completed {
+    background:linear-gradient(145deg, #28a745, #1e7e34); /* Green for completed */
+    border-color: #1c6d32;
+    color: #fff;
+    cursor: default;
+    box-shadow: 0 4px 0 #1c6d32;
+}
+.task-action-btn-new.completed:disabled {
+     background:linear-gradient(145deg, #1e7e34, #1c6d32); /* Darker green when disabled (after completion) */
+     color: #ccc;
+     box-shadow: 0 4px 0 #1c6d32;
+}
+
+/* Task Note style - REMOVED */
+.task-screen .note{ display: none; }
+
+/* Back Button Style - FIXED at bottom */
+.task-back-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background:linear-gradient(145deg, #6c757d, #5a6268);
+    color:#fff;border:none;padding:15px 40px; /* Larger padding */
+    border-radius:12px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 6px 0 #4e555b; /* Larger shadow */
+    transition:all .1s ease;
+    width: 90%;
+    max-width: 350px;
+    z-index: 1000; /* Ensure it's above other elements */
+}
+.task-back-btn:active{transform:translateY(3px) translateX(-50%);box-shadow:0 3px 0 #4e555b}
+
+/* ===== Spin Screen ===== */
+.spin-screen{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transition:opacity .3s ease;
+}
+#wheelBox{position:relative;margin-bottom:25px}
+#wheelCanvas{
+    border-radius:50%;
+    /* Enhanced 3D Look */
+    box-shadow:0 0 0 10px #eee, 0 15px 35px rgba(0,0,0,0.4); 
+    background-color: #fefefe; 
+    border: 2px solid #ccc; 
+    transform-origin: center center;
+    transition: transform 4s cubic-bezier(0.22,0,0.2,1);
+    will-change: transform;
+}
+/* Extra visual effect while spinning (glow) */
+#wheelCanvas.spinning {
+    box-shadow: 0 0 40px rgba(255, 102, 136, 0.25), 0 15px 35px rgba(0,0,0,0.4);
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25));
+}
+.arrow{
+    position:absolute;top:-16px;left:50%;transform:translateX(-50%);
+    width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;
+    border-top:28px solid #ff3366;filter:drop-shadow(0 3px 2px rgba(0,0,0,.3));z-index:10;
+}
+.spin-btn{background:#ff3366;color:#fff;border:none;padding:12px 35px;border-radius:30px;font-size:16px;font-weight:bold;cursor:pointer;box-shadow:0 6px 0 #cc2950;transition:all .1s ease}
+.spin-btn:active{transform:translateY(3px);box-shadow:0 3px 0 #cc2950}
+.spin-result{margin-top:18px;font-size:18px;color:#333}
+.spin-back{margin-top:25px;background:#6c757d;color:#fff;border:none;padding:10px 25px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;box-shadow:0 4px 0 #5a6268}
+.spin-back:active{transform:translateY(2px);box-shadow:0 2px 0 #5a6268}
+
+/* ===== Withdraw Screen ===== */
+.withdraw-screen{
+    display:flex;flex-direction:column;align-items:center;padding:20px 20px;
+    transition:opacity .3s ease;
+    overflow-y: auto;
+}
+.withdraw-header{
+    text-align: center;
+    margin-bottom: 25px;
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 15px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    align-items:center;
+}
+.withdraw-header-top {
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+}
+.withdraw-title{
+    font-size:22px;color:#ff2a2a;font-weight:700; text-shadow: 0 1px 1px rgba(0,0,0,.1);
+    margin:0;
+}
+.current-balance-info{
+    font-size: 16px;
+    color: #555;
+    margin-top: 0;
+    font-weight: bold;
+}
+.input-form-container {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.1);
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+.input-group{
+    width:100%;margin-bottom:15px;
+}
+.input-group label{display:block;margin-bottom:8px;font-size:14px;color:#555;font-weight:600;}
+.input-group input{width:100%;padding:12px 15px;border:1px solid #ddd;border-radius:10px;font-size:16px;transition:border-color .3s ease, box-shadow .3s ease;outline:none;}
+.input-group input:focus{border-color:#ff8c00;box-shadow:0 0 0 3px rgba(255,140,0,0.2);}
+.withdraw-buttons{display:flex;gap:15px;margin-top:20px;justify-content: center;flex-wrap:wrap}
+.withdraw-btn{
+    background:linear-gradient(145deg, #28a745, #1e7e34);
+    color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;
+    box-shadow:0 5px 0 #1c6d32;transition:all .1s ease;
+    width: 100%;
+    max-width: 220px;
+}
+.withdraw-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #1c6d32}
+.back-btn{
+    background:linear-gradient(145deg, #6c757d, #5a6268);
+    color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;
+    box-shadow:0 5px 0 #4e555b;transition:all .1s ease;
+}
+.back-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #4e555b}
+.note{margin-top:15px;font-size:13px;color:#777;max-width:400px;text-align:center;background:rgba(255,140,0,0.1);padding:10px;border-radius:10px;border-left: 5px solid #ff8c00;}
+
+/* Withdrawal History Table */
+.history-section{
+    width: 100%;
+    max-width: 400px;
+    margin-top: 30px;
+    padding: 20px 0;
+    border-top: 1px solid #eee;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 15px;
+}
+.history-title{
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-align: center;
+}
+.history-table{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+.history-table th, .history-table td{
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+.history-table th{
+    background-color: #f0f4f8;
+    color: #4a90e2;
+    font-weight: 700;
+}
+.history-table tr:last-child td{
+    border-bottom: none;
+}
+.status-pending{color: #ff8c00; font-weight: bold;}
+.status-completed{color: #28a745; font-weight: bold;}
+.no-records{text-align: center; color: #999; padding: 20px;}
+
+/* ===== Invite Screen ===== */
+.invite-screen{
+    display:flex;flex-direction:column;align-items:center;padding:20px 20px;
+    transition:opacity .3s ease;
+    overflow-y: auto;
+}
+.invite-header{ 
+    text-align: center;
+    margin-bottom: 25px;
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 15px;
+}
+.invite-title{ 
+     font-size:28px;color:#4a90e2;font-weight:700; text-shadow: 0 1px 1px rgba(0,0,0,.1);
+}
+.referrals-count-info{
+    font-size: 18px;
+    color: #333;
+    margin-top: 15px;
+    font-weight: bold;
+    padding: 10px 15px;
+    background: #e6f0ff;
+    border-radius: 10px;
+    border: 1px solid #cce0ff;
+    box-shadow: 0 2px 5px rgba(0,0,0,.05);
+    width: 100%;
+}
+.invite-buttons{
+    width: 100%;
+    margin-top: 15px;
+}
+.copy-link-btn{
+    background:linear-gradient(145deg, #00bfff, #0077b3);
+    color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;
+    box-shadow:0 5px 0 #005a8d;transition:all .1s ease;
+    width: 100%; 
+}
+.copy-link-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #005a8d}
+#referralLinkInput{
+    text-align: center;
+    cursor: pointer;
+    font-weight: 500;
+    color: #4a90e2;
+    background: #f8f8f8;
+    word-break: break-all;
+    white-space: normal;
+}
+
+/* Custom Alert Overlay */
+.custom-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none; /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.custom-alert-overlay.visible {
+    display: flex;
+    opacity: 1;
+}
+
+/* Custom Alert Box - 3D Pencil Style - SLIGHTLY SMALLER */
+.custom-alert-box {
+    width: 90%;
+    max-width: 280px; /* Smaller max width */
+    background: #ffffed; /* Off-white paper background */
+    border-radius: 15px;
+    padding: 20px; /* Reduced padding */
+    text-align: center;
+    box-shadow: 
+        0 8px 15px rgba(0, 0, 0, 0.3), /* Base shadow */
+        inset 0 0 10px rgba(0, 0, 0, 0.05); /* Inner light effect */
+    border: 3px solid #6b4d32; /* Pencil/Wood border */
+    transform: perspective(600px) rotateX(0deg) scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring effect */
+}
+.custom-alert-overlay.visible .custom-alert-box {
+    transform: perspective(600px) rotateX(0deg) scale(1);
+}
+
+.alert-title {
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 20px; /* Slightly smaller title */
+    font-weight: 700;
+    color: #4CAF50; 
+    margin-bottom: 8px; /* Reduced margin */
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1); 
+    letter-spacing: 0.5px;
+}
+
+.alert-message {
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 13px; /* Slightly smaller message */
+    color: #333; 
+    margin-bottom: 18px; /* Reduced margin */
+    white-space: pre-wrap; 
+}
+
+.alert-icon {
+    font-size: 35px; /* Slightly smaller icon */
+    margin-bottom: 12px;
+}
+.alert-icon::before {
+    content: '⭐';
+}
+
+.alert-close-btn {
+    background: #6b4d32; 
+    color: #fff;
+    border: none;
+    padding: 9px 18px; /* Slightly smaller button */
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #543b27;
+    transition: all 0.1s ease;
+}
+.alert-close-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #543b27;
+}
+
+/* Specific styles for Success */
+.custom-alert-box.success .alert-title { color: #28a745; }
+.custom-alert-box.success .alert-icon::before { content: '🎮'; }
+
+/* Specific styles for Error/Warning */
+.custom-alert-box.error .alert-title { color: #dc3545; }
+.custom-alert-box.error .alert-icon::before { content: '🔔'; }
+
+/* Specific styles for Warning/Info - Using Yellow/Brown for Pencil/Paper Theme */
+.custom-alert-box.warning .alert-title { color: #8B4513; } /* Brown */
+.custom-alert-box.warning .alert-icon::before { content: '✍️'; } /* Pencil/Writing Icon */
+
+/* ===== Task Link Progress (NEW, COMPACT) ===== */
+.task-link-container {
+    width: 100%;
+    max-width: 360px;
+    background: #fff;
+    padding: 8px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    border: 1px solid #e6e6e6;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: stretch;
+    font-size: 13px;
+}
+.task-link-title {
+    font-size: 14px;
+    color: #333;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.task-link-progress-bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.task-link-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg,#ff9a00,#ff5a5a);
+    border-radius: 8px;
+    transition: width .4s ease;
+}
+
+/* 3D push button style for task link - smaller */
+.task-link-button {
+    margin-top: 6px;
+    align-self: center;
+    background: linear-gradient(145deg,#ff7a7a,#ff3b3b);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #b02323, 0 12px 30px rgba(0,0,0,0.12);
+    transform: translateY(0);
+    transition: all .12s ease;
+    letter-spacing: 0.4px;
+    text-transform: none;
+}
+.task-link-button:active {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 #b02323, 0 10px 25px rgba(0,0,0,0.10);
+}
+.task-link-button[disabled] {
+    background: #ddd;
+    color: #888;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* small helper text removed to keep it minimal as requested */
+.task-link-small {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+}
+
+.no-channel-tasks {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    background: rgba(255,255,255,0.6);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+/* ===== Withdraw method toggle ===== */
+.withdraw-method-toggle {
+    display:flex;
+    gap:8px;
+    background:#fff;padding:8px;border-radius:12px;border:1px solid #eee;
+    align-items:center;justify-content:center;width:100%;
+}
+.method-option {
+    display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;cursor:pointer;border:1px solid transparent;
+    transition:all .12s ease;
+    background:linear-gradient(180deg,#fafafa,#fff);
+}
+.method-option input{display:none}
+.method-option.active{border-color:#ff8c00;box-shadow:0 6px 0 rgba(255,140,0,0.12)}
+.method-option .label {font-weight:700;color:#333;font-size:14px}
+
+/* ===== Fullscreen withdrawal history page ===== */
+.withdraw-history-full {
+    display:flex;flex-direction:column;padding:20px 20px;overflow-y:auto;background:#fff;
+}
+.withdraw-history-header {
+    display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;
+}
+.history-list {
+    width:100%;max-width:720px;margin:0 auto;padding-bottom:40px;
+}
+.history-item {
+    display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;background:#f8f8f8;margin-bottom:10px;border:1px solid #eee;
+}
+.history-item .left {display:flex;flex-direction:column;gap:6px}
+.history-item .right {text-align:right}
+.history-item .amount {font-weight:800;color:#ff2a2a}
+.history-empty {text-align:center;color:#777;padding:30px}
+
+/* ===== Contest Button under Balance (UPDATED TO 45x45 CIRCLE) ===== */
+/* (Now uses an image inside the circular button; styles above) */
+
+/* ===== Contest Screen Styles (UPDATED LAYOUT) ===== */
+.contest-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 14px;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #001f3f, #003366);
+    color: #fff;
+    position: relative;
+}
+.contest-header {
+    text-align: center;
+    margin-bottom: 18px;
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 14px;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    align-items:center;
+}
+.contest-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    color: #00bfff;
+    font-weight: 700;
+    text-shadow: 0 0 10px #00bfff;
+    margin-bottom: 0;
+}
+.contest-countdown {
+    font-size: 20px;
+    color: #ffd700;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0 0 6px #ffd700;
+    margin-bottom: 0;
+}
+/* Prize distribution box (vertical, compact, no overflow) */
+.prize-vertical-box {
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 12px;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.16);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #fff;
+    align-items:stretch;
+}
+.prize-item {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    font-weight:700;
+    font-size:14px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.prize-label { color: #e6f7ff; font-weight:700; }
+.prize-value { color: #ffd700; font-weight:900; }
+/* ensure content doesn't overflow horizontally on small screens */
+.prize-item .prize-label, .prize-item .prize-value {
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contest-tickets-container {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 12px;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    margin-bottom: 16px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+    justify-content:space-between;
+}
+.contest-ticket-row {
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    align-items:flex-start;
+    min-width: 0;
+}
+.contest-ticket-label {
+    font-size: 14px;
+    color: #cfeeff;
+    font-weight: 700;
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+.contest-ticket-value {
+    font-size: 15px;
+    color: #ffd700;
+    font-weight: bold;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.contest-buttons-horizontal {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 6px;
+}
+.contest-watch-btn, .contest-rank-btn {
+    background: linear-gradient(145deg, #ff8c00, #ff4500);
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #cc3700, 0 8px 15px rgba(0,0,0,.2);
+    transition: all .1s ease;
+}
+.contest-watch-btn.locked { opacity: 0.6; cursor: not-allowed; box-shadow: none; transform: none; }
+.contest-watch-btn:hover, .contest-rank-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 0 #cc3700, 0 10px 20px rgba(0,0,0,.25);
+}
+.contest-back-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(145deg, #6c757d, #5a6268);
+    color: #fff;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #4e555b;
+    transition: all .1s ease;
+    width: 90%;
+    max-width: 350px;
+    z-index: 1000;
+}
+.contest-back-btn:active {
+    transform: translateY(3px) translateX(-50%);
+    box-shadow: 0 3px 0 #4e555b;
+}
+
+/* ===== Contest Ranking Screen ===== */
+.contest-rank-screen {
+    display: flex;
+    flex-direction: column;
+    padding: 14px;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #001f3f, #003366);
+    color: #fff;
+    align-items:center;
+}
+.contest-rank-header {
+    display: flex;
+    justify-content:space-between;
+    align-items:center;
+    gap: 10px;
+    width: 100%;
+    max-width: 720px;
+    margin-bottom: 12px;
+}
+.contest-rank-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    color: #00bfff;
+    font-weight: 700;
+    text-shadow: 0 0 8px #00bfff;
+}
+.contest-rank-list {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding-bottom: 40px;
+    box-sizing: border-box;
+}
+
+/* NEW: Personal user info box (golden) - placed inside ranking page for visibility */
+.personal-info-box {
+    width: 100%;
+    max-width: 720px;
+    background: linear-gradient(90deg, #2b2a2a 0%, rgba(255, 215, 0, 0.06) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.25);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 30px rgba(255,215,0,0.06), inset 0 0 12px rgba(255,215,0,0.02);
+    color: #fff;
+    background-color: rgba(32,24,12,0.12);
+}
+.personal-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: 0 0 64px;
+    border: 2px solid rgba(255,215,0,0.9);
+    background: #fff;
+}
+.personal-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex: 1 1 auto;
+}
+.personal-id, .personal-username, .personal-tickets, .personal-rank {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+}
+.personal-id .label, .personal-username .label, .personal-tickets .label, .personal-rank .label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+.personal-id .value, .personal-username .value, .personal-tickets .value, .personal-rank .value {
+    font-size: 16px;
+    font-weight: 900;
+    color: #ffd700;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+}
+/* Ensure username sits visually centered between id and tickets */
+.personal-username .value {
+    color: #fff;
+    font-size: 18px;
+    letter-spacing: .3px;
+    color: #ffd700;
+}
+
+/* NEW: make golden box stand out on small screens */
+@media (max-width:720px) {
+    .personal-info-box { padding: 8px; gap: 10px; }
+    .personal-avatar { width:56px; height:56px; flex:0 0 56px; }
+    .personal-id .value, .personal-username .value, .personal-tickets .value { font-size: 15px; }
+    .personal-username .value { font-size: 16px; }
+    .contest-rank-list { padding: 6px; }
+}
+
+/* NEW: Ranking row styles to satisfy layout requirements */
+.contest-rank-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 10px;
+    backdrop-filter: blur(6px);
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+.contest-rank-item:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+
+/* fixed-size circular avatar to avoid layout shifts */
+.contest-rank-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex: 0 0 56px;
+    border: 2px solid rgba(255,255,255,0.06);
+    background: #ffffff;
+}
+
+/* Name column: show first_name, add 'You' note if current */
+/* Make the name flexible so userid and tickets can have fixed space to show full values */
+.contest-rank-name {
+    font-size: 14px; /* slightly smaller to allow more room */
+    font-weight: 800;
+    color: #e6f7ff;
+    white-space: nowrap; /* keep single line */
+    overflow: hidden; /* allow truncation only if absolutely necessary */
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1 1 auto; /* flexible, take remaining space */
+    max-width: none; /* remove previous max-width to allow the layout to decide */
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+}
+.contest-rank-name .name-main { font-weight:900; color:#e6f7ff; }
+.contest-rank-username { font-size:12px; color: rgba(255,255,255,0.7); font-weight:700; letter-spacing:0.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* user id column - reserve fixed width so the id can display fully */
+.contest-rank-userid {
+    font-size: 13px; /* slightly smaller as requested */
+    color: #cfeeff;
+    white-space: nowrap;
+    overflow: visible; /* allow full display */
+    text-overflow: clip;
+    flex: 0 0 120px; /* fixed width to ensure full id visibility */
+    max-width: 120px;
+    text-align: left;
+}
+
+/* tickets - reserve fixed width and slightly smaller font so full ticket numbers like "400" display without truncation */
+.contest-rank-tickets {
+    font-size: 14px; /* slightly reduced */
+    font-weight: 900;
+    color: #ffd700;
+    white-space: nowrap;
+    overflow: visible; /* show full number */
+    text-overflow: clip;
+    text-align: right;
+    flex: 0 0 110px; /* fixed width for tickets column */
+    max-width: 110px;
+    margin-left: 8px;
+}
+
+/* position (rank) shown at the far right */
+.contest-rank-position {
+    font-size: 16px;
+    font-weight: 700;
+    color: #00bfff;
+    width: 44px;
+    text-align: center;
+    flex: 0 0 44px;
+}
+
+/* Highlight current user row without changing order/position */
+.contest-rank-item.current-player {
+    border: 1px solid rgba(255,215,0,0.12);
+    background: linear-gradient(90deg, rgba(255,215,0,0.03), rgba(0,191,255,0.01));
+    box-shadow: 0 8px 20px rgba(0,191,255,0.04);
+}
+.contest-rank-item.current-player .contest-rank-name { color: #ffd700; }
+.contest-rank-item.current-player .contest-rank-tickets { color: #ffd700; font-weight:900; }
+
+/* ensure the whole UI never produces horizontal scroll */
+html, body { max-width:100%; overflow-x:hidden; }
+
+/* Hide top user info when ranking screen is active (added/removed via body class) */
+.hide-top-user .user-circle,
+.hide-top-user #userName,
+.hide-top-user #userId {
+    display: none !important;
+}
+
+/* Make ranking list responsive and prevent horizontal overflow */
+@media (max-width: 420px) {
+    .contest-rank-name { font-size: 13px; }
+    .contest-rank-userid { flex: 0 0 90px; max-width: 90px; font-size: 12px; }
+    .contest-rank-tickets { flex: 0 0 80px; max-width: 80px; font-size: 13px; }
+    .contest-rank-position { width: 40px; flex: 0 0 40px; }
+    .contest-rank-avatar { width: 48px; height: 48px; flex: 0 0 48px; }
+    .personal-avatar { width:48px; height:48px; flex:0 0 48px; }
+}
+
+/* ===== Ticket image smaller per request ===== */
+.contest-ticket-img {
+    width: 26px;
+    height: 26px;
+    object-fit: cover;
+    display: inline-block;
+}
+
+/* ===== Continuation & Final Adjustments ===== */
+
+/* Small balance icon (requested 15x15, not a circular button) */
+.balance .balance-icon {
+    width: 15px;
+    height: 15px;
+    object-fit: cover;
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 2px; /* keep it subtle, not circular */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+/* ensure the text sits nicely next to the small icon */
+#shibBalanceText {
+    display: inline-block;
+    vertical-align: middle;
+    font-weight: 800;
+    color: #ff2a2a;
+    margin-left: 6px;
+}
+
+/* Wheel icon fallback container styling (in case we switch to using IMG overlays) */
+#wheelBox .sector-icon-overlay {
+    position: absolute;
+    width: 35px; /* requested icon size inside each sector */
+    height: 35px;
+    pointer-events: none;
+    transform-origin: center center;
+    will-change: transform, opacity;
+    display: none; /* hidden by default; script may enable if used */
+}
+
+/* Provide smooth appearance for dynamic overlays if used */
+#wheelBox .sector-icon-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px; /* slightly rounded for aesthetic */
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+}
+
+/* Improve progress fill contrast on dark/light themes */
+.daily-progress-container, .spin-progress-container {
+    background: linear-gradient(180deg,#ffffff,#f7f9fb);
+}
+.daily-progress-fill::after, .spin-progress-fill::after {
+    animation-duration: 2.4s;
+}
+
+/* Slight visual emphasis on completed progress (100%) */
+.daily-progress-fill[style*="width: 100%"], .spin-progress-fill[style*="width: 100%"] {
+    box-shadow: 0 10px 30px rgba(255,51,102,0.12), 0 2px 8px rgba(0,0,0,0.06) inset;
+    transform: scaleY(1.02);
+}
+
+/* Accessibility: focus outlines for interactive elements */
+.nav-button:focus, .task-action-btn-new:focus, .spin-btn:focus, .withdraw-btn:focus, .copy-link-btn:focus {
+    outline: 3px solid rgba(0,183,255,0.18);
+    outline-offset: 3px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* Light-weight utility helpers */
+.hidden { display: none !important; }
+.centered { display:flex;align-items:center;justify-content:center; }
+
+/* Mobile: tighten paddings and ensure no overflow */
+@media (max-width: 420px) {
+    .balance { right: 12px; top: 12px; padding:6px 8px; font-size:14px; border-radius:10px; }
+    .contest-btn-under-balance { width:40px; height:40px; top:62px; right:12px; }
+    .progress-group-container { max-width: 320px; gap:12px; top:50%; left:50%; transform: translate(-50%,-50%); }
+    .button-container { gap:6px; padding:6px; max-width: 98%; }
+    .nav-button { padding:8px 6px; font-size:11px; border-radius:8px; }
+    .task-back-btn, .contest-back-btn { padding:12px 26px; max-width: 360px; }
+}
+
+/* Ensure no unexpected horizontal overflow created by later additions */
+:root {
+    scroll-behavior: smooth;
+}
+
+/* End of style.css */
