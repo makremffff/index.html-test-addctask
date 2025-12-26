@@ -20,6 +20,13 @@
             --button-depth: rgba(0,0,0,0.45);
             --shadow-deep: 0 18px 40px rgba(0,0,0,0.55);
             --glass-blur: 10px;
+
+            /* Toast specific color tokens (derived to keep app identity) */
+            --toast-success: #28a745; /* green */
+            --toast-error: #dc3545; /* red */
+            --toast-warning: #ff8c00; /* orange */
+            --toast-info: #00bfff; /* blue */
+            --toast-bg-glass: rgba(255,255,255,0.06);
         }
 
         *{margin:0;padding:0;box-sizing:border-box}
@@ -808,7 +815,7 @@
             white-space: normal;
         }
         
-        /* Custom Alert Overlay - (No changes needed) */
+        /* Custom Alert Overlay - (left in place but we'll migrate to toast) */
         .custom-alert-overlay {
             position: fixed;
             inset: 0;
@@ -825,7 +832,7 @@
             opacity: 1;
         }
 
-        /* Custom Alert Box - 3D Pencil Style - SLIGHTLY SMALLER - (No changes needed) */
+        /* Custom Alert Box - 3D Pencil Style - SLIGHTLY SMALLER - (left for compatibility but not used for toasts) */
         .custom-alert-box {
             width: 90%;
             max-width: 280px; /* Smaller max width */
@@ -1415,6 +1422,148 @@
             display: inline-block;
         }
 
+        /* =========================
+           NEW: Toast Notification CSS
+           Glassmorphism + Top Toast, small, non-intrusive
+           ========================= */
+
+        /* Container fixed to top center. pointer-events:none so toasts don't block page interactions.
+           Individual toasts keep pointer-events:none as they contain no buttons per requirement. */
+        .toast-container {
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+            max-width: 560px;
+            padding: 6px;
+            z-index: 999999; /* very high to be above UI but non-blocking */
+            pointer-events: none; /* do not block interactions */
+        }
+
+        .toast {
+            pointer-events: none; /* keeps interactions to underlying page */
+            width: calc(100% - 24px);
+            max-width: 520px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
+            border-radius: 12px;
+            padding: 10px 12px;
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(2,6,23,0.35);
+            backdrop-filter: blur(8px) saturate(120%);
+            border: 1px solid rgba(255,255,255,0.06);
+            transform-origin: top center;
+            opacity: 0;
+            transform: translateY(-12px) scale(0.995);
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            will-change: transform, opacity;
+        }
+
+        .toast.show {
+            animation: toastIn 260ms cubic-bezier(.2,.9,.2,1) forwards;
+        }
+        .toast.hide {
+            animation: toastOut 260ms cubic-bezier(.2,.9,.2,1) forwards;
+        }
+
+        /* Content layout */
+        .toast .toast-icon {
+            flex: 0 0 36px;
+            width: 36px;
+            height: 36px;
+            border-radius: 9px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:18px;
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            box-shadow: inset 0 -2px 6px rgba(0,0,0,0.12);
+        }
+        .toast .toast-content {
+            display:flex;
+            flex-direction:column;
+            gap:2px;
+            min-width: 0;
+        }
+        .toast .toast-title {
+            font-weight: 800;
+            font-size: 14px;
+            color: #fff;
+            line-height: 1;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        .toast .toast-message {
+            font-size: 12px;
+            color: rgba(255,255,255,0.9);
+            line-height: 1.1;
+            max-height: 36px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Type variants (use subtle color accents while preserving app identity) */
+        .toast--success { border-left: 4px solid var(--toast-success); background: linear-gradient(135deg, rgba(40,167,69,0.08), rgba(255,255,255,0.02)); color: #e9fff0; }
+        .toast--error   { border-left: 4px solid var(--toast-error);   background: linear-gradient(135deg, rgba(220,53,69,0.06), rgba(255,255,255,0.02)); color: #fff0f0; }
+        .toast--warning { border-left: 4px solid var(--toast-warning); background: linear-gradient(135deg, rgba(255,140,0,0.06), rgba(255,255,255,0.02)); color: #fffaf0; }
+        .toast--info    { border-left: 4px solid var(--toast-info);    background: linear-gradient(135deg, rgba(0,191,255,0.06), rgba(255,255,255,0.02)); color: #eff8ff; }
+
+        /* subtle icon color override to keep consistency */
+        .toast--success .toast-icon { background: rgba(40,167,69,0.12); color: var(--toast-success); }
+        .toast--error   .toast-icon { background: rgba(220,53,69,0.12); color: var(--toast-error); }
+        .toast--warning .toast-icon { background: rgba(255,140,0,0.12); color: var(--toast-warning); }
+        .toast--info    .toast-icon { background: rgba(0,191,255,0.12); color: var(--toast-info); }
+
+        /* Entrance / Exit animations */
+        @keyframes toastIn {
+            0% { opacity: 0; transform: translateY(-14px) scale(.995); }
+            60% { opacity: 1; transform: translateY(4px) scale(1.002); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes toastOut {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-10px) scale(.995); }
+        }
+
+        /* Error shake animation (subtle) */
+        @keyframes toastShake {
+            0% { transform: translateX(0); }
+            15% { transform: translateX(-6px); }
+            30% { transform: translateX(6px); }
+            45% { transform: translateX(-4px); }
+            60% { transform: translateX(4px); }
+            75% { transform: translateX(-2px); }
+            100% { transform: translateX(0); }
+        }
+
+        .toast--error.shake {
+            animation: toastIn 260ms cubic-bezier(.2,.9,.2,1) forwards, toastShake 420ms ease-in-out 0ms;
+        }
+
+        /* Small screens tweak */
+        @media (max-width: 480px) {
+            .toast { padding: 8px 10px; border-radius: 10px; max-width: calc(100% - 24px); }
+            .toast .toast-icon { width: 32px; height: 32px; font-size:16px; border-radius:8px; }
+            .toast .toast-title { font-size:13px; }
+            .toast .toast-message { display: none; } /* keep toast compact on tiny screens */
+            .toast-container { top: 8px; gap:8px; padding: 4px; }
+        }
+
+        /* small helper to visually hide old overlay (we won't use it anymore but keep DOM for compatibility) */
+        .custom-alert-overlay { display: none !important; opacity: 0 !important; pointer-events: none !important; }
+
     </style>
 </head>
 <body>
@@ -1713,6 +1862,9 @@ You will earn 40% of the revenue from every referral you bring through ads!
         </div>
     </div>
 
+    <!-- Toast container (for top toasts). Created in HTML so CSS applies immediately -->
+    <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="false"></div>
+
     <!-- Background audio player (playlist managed in JS): audio.mp3, audio2.mp3, audio3.mp3, audio4.mp3 -->
     <audio id="bgPlayer">
         <source id="bgSource" src="audio.mp3" type="audio/mp3">
@@ -1751,6 +1903,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
         const alertTitleEl = document.getElementById('alertTitle');
         const alertMessageEl = document.getElementById('alertMessage');
         const alertIconEl = document.getElementById('alertIcon');
+
+        const toastContainer = document.getElementById('toastContainer');
 
         const bgPlaylist = ['audio.mp3', 'audio2.mp3', 'audio3.mp3', 'audio4.mp3'];
         let currentBgIndex = -1;
@@ -1810,21 +1964,122 @@ You will earn 40% of the revenue from every referral you bring through ads!
             sfx.play().catch(e => console.log("SFX play failed:", e));
         }
 
-        function showCustomAlert(title, message, type = 'warning') {
-            const finalTitle = title;
-            const finalMessage = message.replace(/(\r\n|\n|\r)/gm, "\n"); 
+        /* =========================
+           Toast Notification System (replaces previous overlay alerts for non-blocking UX)
+           - Uses same showCustomAlert signature for compatibility with existing code.
+           - Creates small top toasts, auto-dismiss after ~2.8s (configurable).
+           - Glassmorphism style, soft shadow, rounded corners.
+           - Error type gets a subtle shake animation.
+           - Does not block page interactions (pointer-events: none).
+           ========================= */
 
-            alertTitleEl.textContent = finalTitle;
-            alertMessageEl.textContent = finalMessage;
+        /**
+         * showToast(type, title, message, opts)
+         * type: 'success'|'error'|'warning'|'info'
+         * title: short title string
+         * message: short descriptive text
+         * opts: { durationMs: number (optional) }
+         */
+        function showToast(type, title, message, opts = {}) {
+            if (!toastContainer) return;
+            const duration = typeof opts.durationMs === 'number' ? opts.durationMs : 2800; // default 2.8s
+            const toast = document.createElement('div');
+            const safeTitle = String(title || '').slice(0, 64);
+            const safeMessage = String(message || '').slice(0, 160);
 
-            alertBox.classList.remove('success', 'error', 'warning');
-            alertBox.classList.add(type);
+            const typeClass = `toast--${type || 'info'}`;
+            toast.className = `toast ${typeClass}`;
+            // build inner HTML (icon left, title + small message)
+            let icon = 'ℹ️';
+            if (type === 'success') icon = '✅';
+            else if (type === 'error') icon = '❌';
+            else if (type === 'warning') icon = '⚡';
+            else if (type === 'info') icon = 'ℹ️';
 
-            customAlert.classList.add('visible');
-            
-            playSFX(type === 'error' ? 'error' : 'success'); 
+            toast.innerHTML = `
+                <div class="toast-icon" aria-hidden="true">${icon}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${escapeHtml(safeTitle || capitalizeType(type))}</div>
+                    <div class="toast-message">${escapeHtml(safeMessage || '')}</div>
+                </div>
+            `;
+
+            // append and animate in
+            toastContainer.appendChild(toast);
+
+            // small delay to ensure CSS animation triggers
+            requestAnimationFrame(() => {
+                // apply 'show' state
+                toast.classList.add('show');
+                // add shake class for error
+                if (type === 'error') {
+                    // add a class that triggers a shake; the CSS combines with entrance animation
+                    toast.classList.add('shake');
+                }
+            });
+
+            // optional SFX
+            if (type === 'error') playSFX('error');
+            else if (type === 'success') playSFX('success');
+
+            // auto-dismiss
+            const hideAfter = Math.max(1800, duration); // ensure reasonable min
+            const timeoutId = setTimeout(() => {
+                // start hide animation
+                toast.classList.remove('show');
+                toast.classList.add('hide');
+                // remove after animation
+                setTimeout(() => {
+                    if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 280);
+            }, hideAfter);
+
+            // For accessibility we won't block interactions; toasts are non-focusable per requirement.
+            // Return control object for optional manual dismissal
+            return {
+                dismiss: () => {
+                    clearTimeout(timeoutId);
+                    if (toast && toast.parentNode) {
+                        toast.classList.remove('show');
+                        toast.classList.add('hide');
+                        setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 280);
+                    }
+                }
+            };
         }
 
+        // Helper: preserve existing function name so other code calls still work.
+        // We replace the previous overlay-based showCustomAlert with a toast-based implementation.
+        function showCustomAlert(title, message, type = 'warning') {
+            // Normalize type to known values
+            const normalized = (String(type || '').toLowerCase());
+            const t = ['success','error','warning','info'].includes(normalized) ? normalized : 'info';
+
+            // Some messages include newlines; compress to single-line small message for toast
+            const msg = String(message || '').replace(/(\r\n|\n|\r)/gm, ' ').trim();
+
+            // Use a compact duration for toasts; success/info shorter, error slightly longer
+            const baseDuration = 2800;
+            const durationMap = { success: 2700, info: 2600, warning: 3000, error: 3200 };
+            const duration = durationMap[t] || baseDuration;
+
+            showToast(t, title || capitalizeType(t), msg, { durationMs: duration });
+        }
+
+        // small helper: escape HTML to avoid injection in innerHTML usage
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function capitalizeType(type) {
+            if (!type) return '';
+            return String(type).charAt(0).toUpperCase() + String(type).slice(1);
+        }
 
         /* ===== Telegram User & Referral Setup (Modified to include audio) ===== */
         Telegram.WebApp.ready();
