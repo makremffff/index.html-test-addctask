@@ -27,6 +27,11 @@
             --toast-warning: #ff8c00; /* orange */
             --toast-info: #00bfff; /* blue */
             --toast-bg-glass: rgba(255,255,255,0.06);
+
+            /* Unified primary button gradient */
+            --primary-start: #0b86d6;
+            --primary-end: #006bb3;
+            --primary-shadow: rgba(4,77,135,0.5);
         }
 
         *{margin:0;padding:0;box-sizing:border-box}
@@ -155,16 +160,16 @@
             position: absolute;
             top: 70px;
             right: 20px;
-            background: linear-gradient(145deg, #00bfff, #0077b3);
-            color: white;
+            background: linear-gradient(145deg, var(--primary-start), var(--primary-end));
+            color: #fff;
             border: none;
-            width: 85px;
-            height: 55px;
-            border-radius: 10px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            
+            box-shadow: 0 4px 0 var(--primary-shadow), 0 6px 10px rgba(0,0,0,.15);
             transition: all .1s ease;
             z-index: 101;
             display:flex;
@@ -175,18 +180,18 @@
         }
         .contest-btn-under-balance:hover {
             transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 6px 0 #005a8d, 0 10px 15px rgba(0,0,0,.22);
+            box-shadow: 0 6px 0 var(--primary-shadow), 0 10px 15px rgba(0,0,0,.22);
         }
         .contest-btn-under-balance:active {
             transform: translateY(2px) scale(.98);
-            box-shadow: 0 2px 0 #005a8d, 0 4px 8px rgba(0,0,0,.15);
+            box-shadow: 0 2px 0 var(--primary-shadow), 0 4px 8px rgba(0,0,0,.15);
         }
         /* ensure the image fills the circular button nicely */
         .contest-btn-under-balance img {
-            width: 80%;
-            height: 90%;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border-radius: 15px;
+            border-radius: 50%;
             display: block;
             pointer-events: none; /* allow click to be handled by button */
         }
@@ -334,11 +339,11 @@
             position:relative;display:flex;align-items:center;justify-content:center;
             --btn-h:48px;
             height:var(--btn-h);
-            background: linear-gradient(145deg,#4a90e2,#357abd);
+            background: linear-gradient(145deg,var(--primary-start),var(--primary-end));
             color:#fff;border:none;padding:10px 0;border-radius:12px;font-size:12px;
             font-weight:900;cursor:pointer;transition:transform .18s cubic-bezier(.2,.9,.2,1), box-shadow .18s ease, filter .18s ease;
             transform-style:preserve-3d;
-            box-shadow: var(--shadow-deep), 0 6px 0 rgba(44,90,160,0.6), inset 0 -6px 18px rgba(255,255,255,0.02);
+            box-shadow: var(--shadow-deep), 0 6px 0 var(--primary-shadow), inset 0 -6px 18px rgba(255,255,255,0.02);
             text-transform:uppercase;letter-spacing:.6px;
         }
         .nav-button span{display:block;text-shadow:0 1px 4px rgba(0,0,0,.35)}
@@ -369,23 +374,20 @@
             box-shadow: 0 8px 18px rgba(2,6,23,0.6), 0 4px 8px rgba(0,0,0,0.45);
         }
         .nav-button[disabled]{
-            opacity:.5; cursor:not-allowed;
+            opacity:.7; cursor:not-allowed;
             transform:none; box-shadow: 0 6px 12px rgba(0,0,0,0.45);
         }
 
         .nav-button.task-btn{
-            background: linear-gradient(145deg,#ffc107,#ff9800);
-            box-shadow: var(--shadow-deep), 0 6px 0 #cc9a00, inset 0 -6px 14px rgba(255,255,255,0.02);
-            color: #222;
-        }
-        .nav-button.task-btn:hover{
-            box-shadow: 0 34px 60px rgba(2,6,23,0.8), 0 14px 36px rgba(0,0,0,0.62), 0 0 40px rgba(255,168,0,0.14);
+            /* keep same unified color but change visual accent */
+            box-shadow: var(--shadow-deep), 0 6px 0 rgba(4,77,135,0.6), inset 0 -6px 14px rgba(255,255,255,0.02);
+            color: #fff;
         }
 
         /* NEW Style for Withdraw Nav Button */
         .nav-button.withdraw-btn-nav{
-            background:linear-gradient(145deg,#ff2a2a,#cc2121);
-            box-shadow: var(--shadow-deep), 0 6px 0 #991919, inset 0 -6px 14px rgba(255,255,255,0.02);
+            /* unified look */
+            box-shadow: var(--shadow-deep), 0 6px 0 var(--primary-shadow), inset 0 -6px 14px rgba(255,255,255,0.02);
         }
         .nav-button.withdraw-btn-nav:hover{
             box-shadow: 0 34px 60px rgba(2,6,23,0.8), 0 14px 36px rgba(0,0,0,0.62), 0 0 40px rgba(255,42,42,0.16);
@@ -417,46 +419,85 @@
             text-decoration: none;
             -webkit-tap-highlight-color: transparent;
             box-shadow: 0 18px 48px rgba(2,6,23,0.6), 0 6px 0 rgba(0,0,0,0.5);
+            background: linear-gradient(145deg,var(--primary-start),var(--primary-end));
         }
 
         .task-action-btn-new {
-            background: linear-gradient(145deg, #ffc107, #ff9800);
-            color: #1c1c1c;
-            box-shadow: 0 18px 48px rgba(40,30,10,0.5), 0 6px 0 #cc9a00, inset 0 -6px 12px rgba(255,255,255,0.02);
+            color: #fff;
+            box-shadow: 0 18px 48px rgba(4,77,135,0.5), 0 6px 0 var(--primary-shadow), inset 0 -6px 12px rgba(255,255,255,0.02);
         }
         .task-action-btn-new:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 32px 68px rgba(40,30,10,0.72); }
         .task-action-btn-new:active { transform: translateY(4px) scale(.99); box-shadow: 0 8px 18px rgba(0,0,0,0.5); }
 
         .withdraw-btn {
-            background: linear-gradient(145deg, #28a745, #1e7e34);
             box-shadow: 0 18px 48px rgba(10,50,20,0.5), 0 6px 0 #1c6d32, inset 0 -6px 12px rgba(255,255,255,0.02);
         }
         .back-btn {
-            background: linear-gradient(145deg, #6c757d, #5a6268);
+            background: linear-gradient(145deg,#6c757d,#5a6268);
             box-shadow: 0 18px 48px rgba(10,10,10,0.55), 0 6px 0 #4e555b, inset 0 -6px 12px rgba(255,255,255,0.02);
         }
         .copy-link-btn {
-            background: linear-gradient(145deg, #00bfff, #0077b3);
-            box-shadow: 0 18px 48px rgba(0,40,70,0.6), 0 6px 0 #005a8d, inset 0 -6px 12px rgba(255,255,255,0.02);
+            color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;
+            box-shadow:0 5px 0 #005a8d;transition:all .1s ease;
+            width: 100%; 
         }
         .contest-watch-btn, .contest-rank-btn {
-            background: linear-gradient(145deg, #ff8c00, #ff4500);
-            box-shadow: 0 18px 48px rgba(70,25,0,0.55), 0 6px 0 #cc3700, inset 0 -6px 12px rgba(255,255,255,0.02);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #cc3700, 0 8px 15px rgba(0,0,0,.2);
+            transition: all .1s ease;
+            background: linear-gradient(145deg,var(--primary-start),var(--primary-end));
+        }
+        .contest-watch-btn.locked { opacity: 0.6; cursor: not-allowed; box-shadow: none; transform: none; }
+        .contest-watch-btn:hover, .contest-rank-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 0 #005a8d, 0 10px 20px rgba(0,0,0,.25);
         }
         .contest-back-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             background: linear-gradient(145deg, #6c757d, #5a6268);
-            box-shadow: 0 18px 48px rgba(10,10,10,0.55), 0 6px 0 #4e555b, inset 0 -6px 12px rgba(255,255,255,0.02);
-        }
-        .task-back-btn {
-            background: linear-gradient(145deg, #6c757d, #5a6268);
-            box-shadow: 0 20px 60px rgba(10,10,10,0.6), 0 6px 0 #4e555b;
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #4e555b;
+            transition: all .1s ease;
             width: 90%;
-            max-width: 380px;
-            margin: 18px auto 28px;
+            max-width: 350px;
+            z-index: 1000;
         }
+        .contest-back-btn:active {
+            transform: translateY(3px) translateX(-50%);
+            box-shadow: 0 3px 0 #4e555b;
+        }
+
+        .task-back-btn {
+            background: linear-gradient(145deg,#6c757d,#5a6268);
+            color:#fff;border:none;padding:15px 40px; /* Larger padding */
+            border-radius:12px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            box-shadow:0 6px 0 #4e555b; /* Larger shadow */
+            transition:all .1s ease;
+            width: 90%;
+            max-width: 350px;
+            z-index: 1000; /* Ensure it's above other elements */
+        }
+        .task-back-btn:active{transform:translateY(3px) translateX(-50%);box-shadow:0 3px 0 #4e555b}
+
         .spin-btn {
-            background: linear-gradient(145deg, #ff3366, #cc2950);
-            box-shadow: 0 20px 68px rgba(80,20,40,0.6), 0 8px 0 #99203f;
             padding: 14px 40px;
             border-radius: 28px;
             font-size: 16px;
@@ -557,8 +598,7 @@
 
         /* Button style from user's input (Pencil Style Action Button) */
         .task-action-btn-new {
-            background:linear-gradient(145deg, #ffc107, #ff9800);
-            border:1px solid #cc9a00;
+            border:1px solid transparent;
             color:#fff;
             padding:10px 20px;
             border-radius:8px;
@@ -567,23 +607,19 @@
             font-weight: bold;
             min-width: 90px; 
             transition: all 0.1s ease;
-            box-shadow: 0 4px 0 #cc9a00;
             text-transform: uppercase;
         }
         .task-action-btn-new:hover {
             transform: translateY(-1px);
-            box-shadow: 0 5px 0 #cc9a00;
         }
         .task-action-btn-new:active {
             transform: translateY(2px);
-            box-shadow: 0 2px 0 #cc9a00;
         }
         .task-action-btn-new:disabled {
             background:#ccc;
             border-color:#aaa;
             color:#666;
             cursor:not-allowed;
-            box-shadow: 0 4px 0 #aaa;
             transform: translateY(0);
         }
         
@@ -600,7 +636,6 @@
              box-shadow: 0 4px 0 #1c6d32;
         }
         
-        /* Task Note style - REMOVED */
         .task-screen .note{ display: none; }
 
         /* Back Button Style - FIXED at bottom */
@@ -649,8 +684,8 @@
             width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;
             border-top:28px solid #ff3366;filter:drop-shadow(0 3px 2px rgba(0,0,0,.3));z-index:10;
         }
-        .spin-btn{background:#ff3366;color:#fff;border:none;padding:12px 35px;border-radius:30px;font-size:16px;font-weight:bold;cursor:pointer;box-shadow:0 6px 0 #cc2950;transition:all .1s ease}
-        .spin-btn:active{transform:translateY(3px);box-shadow:0 3px 0 #cc2950}
+        .spin-btn{background:linear-gradient(145deg,var(--primary-start),var(--primary-end));color:#fff;border:none;padding:12px 35px;border-radius:30px;font-size:16px;font-weight:bold;cursor:pointer;box-shadow:0 6px 0 var(--primary-shadow);transition:all .1s ease}
+        .spin-btn:active{transform:translateY(3px);box-shadow:0 3px 0 var(--primary-shadow)}
         .spin-result{margin-top:18px;font-size:18px;color:#333;white-space:pre-wrap;text-align:center}
         .spin-back{margin-top:25px;background:#6c757d;color:#fff;border:none;padding:10px 25px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;box-shadow:0 4px 0 #5a6268}
         .spin-back:active{transform:translateY(2px);box-shadow:0 2px 0 #5a6268}
@@ -709,15 +744,15 @@
         .input-group input:focus{border-color:#ff8c00;box-shadow:0 0 0 3px rgba(255,140,0,0.2);}
         .withdraw-buttons{display:flex;gap:15px;margin-top:20px;justify-content: center;flex-wrap:wrap}
         .withdraw-btn{
-            background:linear-gradient(145deg, #28a745, #1e7e34);
+            background: linear-gradient(145deg,var(--primary-start),var(--primary-end));
             color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;
-            box-shadow:0 5px 0 #1c6d32;transition:all .1s ease;
+            box-shadow:0 5px 0 var(--primary-shadow);transition:all .1s ease;
             width: 100%;
             max-width: 220px;
         }
-        .withdraw-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #1c6d32}
+        .withdraw-btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--primary-shadow)}
         .back-btn{
-            background:linear-gradient(145deg, #6c757d, #5a6268);
+            background:linear-gradient(145deg,#6c757d,#5a6268);
             color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;
             box-shadow:0 5px 0 #4e555b;transition:all .1s ease;
         }
@@ -799,12 +834,12 @@
             margin-top: 15px;
         }
         .copy-link-btn{
-            background:linear-gradient(145deg, #00bfff, #0077b3);
+            background:linear-gradient(145deg,var(--primary-start),var(--primary-end));
             color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;
-            box-shadow:0 5px 0 #005a8d;transition:all .1s ease;
+            box-shadow:0 5px 0 var(--primary-shadow);transition:all .1s ease;
             width: 100%; 
         }
-        .copy-link-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #005a8d}
+        .copy-link-btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--primary-shadow)}
         #referralLinkInput{
             text-align: center;
             cursor: pointer;
@@ -1152,7 +1187,7 @@
             margin-top: 6px;
         }
         .contest-watch-btn, .contest-rank-btn {
-            background: linear-gradient(145deg, #ff8c00, #ff4500);
+            background: linear-gradient(145deg,var(--primary-start),var(--primary-end));
             color: #fff;
             border: none;
             padding: 12px 25px;
@@ -1160,13 +1195,13 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 5px 0 #cc3700, 0 8px 15px rgba(0,0,0,.2);
+            box-shadow: 0 5px 0 var(--primary-shadow), 0 8px 15px rgba(0,0,0,.2);
             transition: all .1s ease;
         }
         .contest-watch-btn.locked { opacity: 0.6; cursor: not-allowed; box-shadow: none; transform: none; }
         .contest-watch-btn:hover, .contest-rank-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 0 #cc3700, 0 10px 20px rgba(0,0,0,.25);
+            box-shadow: 0 6px 0 var(--primary-shadow), 0 10px 20px rgba(0,0,0,.25);
         }
         .contest-back-btn {
             position: fixed;
@@ -1423,12 +1458,10 @@
         }
 
         /* =========================
-           NEW: Toast Notification CSS
-           Glassmorphism + Top Toast, small, non-intrusive
+           NEW: Toast Notification CSS (IMPROVED CONTRAST & SIZE)
+           Glassmorphism + Top Toast, larger, more legible, contains multi-line details
            ========================= */
 
-        /* Container fixed to top center. pointer-events:none so toasts don't block page interactions.
-           Individual toasts keep pointer-events:none as they contain no buttons per requirement. */
         .toast-container {
             position: fixed;
             top: 14px;
@@ -1439,26 +1472,26 @@
             gap: 10px;
             align-items: center;
             width: 100%;
-            max-width: 560px;
+            max-width: 640px;
             padding: 6px;
             z-index: 999999; /* very high to be above UI but non-blocking */
             pointer-events: none; /* do not block interactions */
         }
 
         .toast {
-            pointer-events: none; /* keeps interactions to underlying page */
+            pointer-events: none;
             width: calc(100% - 24px);
-            max-width: 520px;
+            max-width: 620px;
             display: flex;
             align-items: center;
             gap: 12px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
-            border-radius: 12px;
-            padding: 10px 12px;
+            background: linear-gradient(135deg, rgba(20,25,35,0.96), rgba(255,255,255,0.02));
+            border-radius: 14px;
+            padding: 12px 14px;
             color: #fff;
-            box-shadow: 0 6px 18px rgba(2,6,23,0.35);
-            backdrop-filter: blur(8px) saturate(120%);
-            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+            backdrop-filter: blur(10px) saturate(140%);
+            border: 1px solid rgba(255,255,255,0.04);
             transform-origin: top center;
             opacity: 0;
             transform: translateY(-12px) scale(0.995);
@@ -1469,7 +1502,7 @@
         }
 
         .toast.show {
-            animation: toastIn 260ms cubic-bezier(.2,.9,.2,1) forwards;
+            animation: toastIn 300ms cubic-bezier(.2,.9,.2,1) forwards;
         }
         .toast.hide {
             animation: toastOut 260ms cubic-bezier(.2,.9,.2,1) forwards;
@@ -1477,50 +1510,47 @@
 
         /* Content layout */
         .toast .toast-icon {
-            flex: 0 0 36px;
-            width: 36px;
-            height: 36px;
-            border-radius: 9px;
+            flex: 0 0 44px;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
             display:flex;
             align-items:center;
             justify-content:center;
-            font-size:18px;
-            background: rgba(255,255,255,0.06);
+            font-size:20px;
+            background: rgba(255,255,255,0.03);
             color: #fff;
             box-shadow: inset 0 -2px 6px rgba(0,0,0,0.12);
         }
         .toast .toast-content {
             display:flex;
             flex-direction:column;
-            gap:2px;
+            gap:6px;
             min-width: 0;
         }
         .toast .toast-title {
-            font-weight: 800;
-            font-size: 14px;
+            font-weight: 900;
+            font-size: 15px;
             color: #fff;
-            line-height: 1;
-            white-space:nowrap;
-            overflow:hidden;
-            text-overflow:ellipsis;
+            line-height: 1.05;
+            white-space:normal;
         }
         .toast .toast-message {
-            font-size: 12px;
-            color: rgba(255,255,255,0.9);
-            line-height: 1.1;
-            max-height: 36px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.95);
+            line-height: 1.2;
+            max-height: 80px;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            white-space: pre-wrap;
         }
 
         /* Type variants (use subtle color accents while preserving app identity) */
-        .toast--success { border-left: 4px solid var(--toast-success); background: linear-gradient(135deg, rgba(40,167,69,0.08), rgba(255,255,255,0.02)); color: #e9fff0; }
-        .toast--error   { border-left: 4px solid var(--toast-error);   background: linear-gradient(135deg, rgba(220,53,69,0.06), rgba(255,255,255,0.02)); color: #fff0f0; }
-        .toast--warning { border-left: 4px solid var(--toast-warning); background: linear-gradient(135deg, rgba(255,140,0,0.06), rgba(255,255,255,0.02)); color: #fffaf0; }
-        .toast--info    { border-left: 4px solid var(--toast-info);    background: linear-gradient(135deg, rgba(0,191,255,0.06), rgba(255,255,255,0.02)); color: #eff8ff; }
+        .toast--success { border-left: 5px solid var(--toast-success); background: linear-gradient(135deg, rgba(40,167,69,0.06), rgba(20,25,35,0.96)); color: #e9fff0; }
+        .toast--error   { border-left: 5px solid var(--toast-error);   background: linear-gradient(135deg, rgba(220,53,69,0.06), rgba(20,25,35,0.96)); color: #fff0f0; }
+        .toast--warning { border-left: 5px solid var(--toast-warning); background: linear-gradient(135deg, rgba(255,140,0,0.06), rgba(20,25,35,0.96)); color: #fffaf0; }
+        .toast--info    { border-left: 5px solid var(--toast-info);    background: linear-gradient(135deg, rgba(0,191,255,0.06), rgba(20,25,35,0.96)); color: #eff8ff; }
 
-        /* subtle icon color override to keep consistency */
         .toast--success .toast-icon { background: rgba(40,167,69,0.12); color: var(--toast-success); }
         .toast--error   .toast-icon { background: rgba(220,53,69,0.12); color: var(--toast-error); }
         .toast--warning .toast-icon { background: rgba(255,140,0,0.12); color: var(--toast-warning); }
@@ -1529,7 +1559,7 @@
         /* Entrance / Exit animations */
         @keyframes toastIn {
             0% { opacity: 0; transform: translateY(-14px) scale(.995); }
-            60% { opacity: 1; transform: translateY(4px) scale(1.002); }
+            60% { opacity: 1; transform: translateY(6px) scale(1.01); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes toastOut {
@@ -1555,9 +1585,9 @@
         /* Small screens tweak */
         @media (max-width: 480px) {
             .toast { padding: 8px 10px; border-radius: 10px; max-width: calc(100% - 24px); }
-            .toast .toast-icon { width: 32px; height: 32px; font-size:16px; border-radius:8px; }
-            .toast .toast-title { font-size:13px; }
-            .toast .toast-message { display: none; } /* keep toast compact on tiny screens */
+            .toast .toast-icon { width: 36px; height: 36px; font-size:16px; border-radius:8px; }
+            .toast .toast-title { font-size:14px; }
+            .toast .toast-message { font-size:12px; }
             .toast-container { top: 8px; gap:8px; padding: 4px; }
         }
 
@@ -1971,21 +2001,22 @@ You will earn 40% of the revenue from every referral you bring through ads!
            - Glassmorphism style, soft shadow, rounded corners.
            - Error type gets a subtle shake animation.
            - Does not block page interactions (pointer-events: none).
+           - Improved contrast, larger type and multi-line support.
            ========================= */
 
         /**
          * showToast(type, title, message, opts)
          * type: 'success'|'error'|'warning'|'info'
          * title: short title string
-         * message: short descriptive text
+         * message: short descriptive text (supports multi-line)
          * opts: { durationMs: number (optional) }
          */
         function showToast(type, title, message, opts = {}) {
             if (!toastContainer) return;
-            const duration = typeof opts.durationMs === 'number' ? opts.durationMs : 2800; // default 2.8s
+            const duration = typeof opts.durationMs === 'number' ? opts.durationMs : 3200; // slightly longer default
             const toast = document.createElement('div');
-            const safeTitle = String(title || '').slice(0, 64);
-            const safeMessage = String(message || '').slice(0, 160);
+            const safeTitle = String(title || '').slice(0, 120);
+            const safeMessage = String(message || '').slice(0, 400);
 
             const typeClass = `toast--${type || 'info'}`;
             toast.className = `toast ${typeClass}`;
@@ -2031,10 +2062,9 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 // remove after animation
                 setTimeout(() => {
                     if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
-                }, 280);
+                }, 300);
             }, hideAfter);
 
-            // For accessibility we won't block interactions; toasts are non-focusable per requirement.
             // Return control object for optional manual dismissal
             return {
                 dismiss: () => {
@@ -2042,7 +2072,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     if (toast && toast.parentNode) {
                         toast.classList.remove('show');
                         toast.classList.add('hide');
-                        setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 280);
+                        setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
                     }
                 }
             };
@@ -2055,13 +2085,12 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const normalized = (String(type || '').toLowerCase());
             const t = ['success','error','warning','info'].includes(normalized) ? normalized : 'info';
 
-            // Some messages include newlines; compress to single-line small message for toast
-            const msg = String(message || '').replace(/(\r\n|\n|\r)/gm, ' ').trim();
+            // Preserve newlines and show multi-line message in English if possible
+            const msg = String(message || '').replace(/\r\n/g, '\n').trim();
 
             // Use a compact duration for toasts; success/info shorter, error slightly longer
-            const baseDuration = 2800;
-            const durationMap = { success: 2700, info: 2600, warning: 3000, error: 3200 };
-            const duration = durationMap[t] || baseDuration;
+            const durationMap = { success: 3000, info: 2800, warning: 3200, error: 3800 };
+            const duration = durationMap[t] || 3000;
 
             showToast(t, title || capitalizeType(t), msg, { durationMs: duration });
         }
@@ -2308,7 +2337,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const count = taskLinkState.count || 0;
             const percent = Math.min((count / TASK_LINK_DAILY_MAX) * 100, 100);
             fill.style.width = percent + '%';
-            countDisplay.textContent = `${count} / ${TASK_LINK_DAILY_MAX}`;
+            countDisplay.textContent = `${count.toLocaleString('en-US')} / ${TASK_LINK_DAILY_MAX.toLocaleString('en-US')}`;
 
             if (count >= TASK_LINK_DAILY_MAX) {
                 btn.disabled = true;
@@ -2361,7 +2390,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     saveTaskLinkProgressToStorage();
                     updateState({ balance: shibBalance });
                     updateTaskLinkUI();
-                    showCustomAlert('Reward', '5 SHIB', 'success');
+                    showCustomAlert('Reward', `You received ${TASK_LINK_REWARD} SHIB`, 'success');
                 } else {
                     showCustomAlert('Server Sync Warning', 'The server accepted the click but did not return updated data. Please reload the app.', 'warning');
                 }
@@ -2458,18 +2487,18 @@ You will earn 40% of the revenue from every referral you bring through ads!
         }
         
         function updateUI(){
-            document.getElementById('shibBalance').textContent = shibBalance.toLocaleString() + ' SHIB';
-            document.getElementById('withdrawBalanceDisplay').textContent = shibBalance.toLocaleString() + ' SHIB';
+            document.getElementById('shibBalance').textContent = Number(shibBalance || 0).toLocaleString('en-US') + ' SHIB';
+            document.getElementById('withdrawBalanceDisplay').textContent = Number(shibBalance || 0).toLocaleString('en-US') + ' SHIB';
 
-            document.getElementById('adsCount').textContent = adsWatchedToday;
+            document.getElementById('adsCount').textContent = Number(adsWatchedToday || 0).toLocaleString('en-US');
             const adsPercent = Math.min((adsWatchedToday / DAILY_MAX) * 100, 100);
             document.getElementById('dailyProgressFill').style.width = adsPercent + '%';
 
-            document.getElementById('spinsCount').textContent = spinsToday; 
+            document.getElementById('spinsCount').textContent = Number(spinsToday || 0).toLocaleString('en-US'); 
             const spinsPercent = Math.min((spinsToday / DAILY_MAX_SPINS) * 100, 100);
             document.getElementById('spinProgressFill').style.width = spinsPercent + '%';
 
-            document.getElementById('referralsCountDisplay').textContent = referralsCount.toLocaleString();
+            document.getElementById('referralsCountDisplay').textContent = Number(referralsCount || 0).toLocaleString('en-US');
             
             const perTaskBtn = currentTask ? document.querySelector(`button[data-task-id="${currentTask.id}"]`) : null;
 
@@ -2512,7 +2541,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 if (spinBtn) {
                     if (isBanned || spinsToday >= DAILY_MAX_SPINS) {
                         spinBtn.disabled = true;
-                        spinBtn.textContent = `LIMIT REACHED (${spinsToday}/${DAILY_MAX_SPINS})`;
+                        spinBtn.textContent = `LIMIT REACHED (${Number(spinsToday).toLocaleString('en-US')}/${DAILY_MAX_SPINS})`;
                     } else if (!spinning) {
                         spinBtn.disabled = false;
                         spinBtn.textContent = 'SPIN';
@@ -2528,7 +2557,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         }
         
         // ***************************************************************
-        // UPDATED watchAds FUNCTION FOR TWO SEQUENTIAL ADS (NO INTERMEDIATE ALERTS)
+        // UPDATED watchAds FUNCTION: better messages (English), improved error handling & UI reset
         // ***************************************************************
         async function watchAds(){
             if (isBanned) {
@@ -2537,62 +2566,68 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
             
             if (adsWatchedToday >= DAILY_MAX) {
-                showCustomAlert('Daily Limit Reached!', `ＡＬＬ ａｄｓ Ｄｏｎｅ (${DAILY_MAX}). Ｃｏｍｅ ｂａｃｋ Ａｆｔｅｒ 6 Ｈｏｕｒｓ🥩!`, 'warning');
+                showCustomAlert('Daily Limit Reached!', `You have completed all ads for today (${DAILY_MAX}). Please come back later.`, 'warning');
                 return;
             }
 
             const actionId = await requestActionId('watchAd');
             if (!actionId) return;
 
-            show_10245709()
-                .then(() => {
-                    return show_10245709();
-                })
-                .then(async () => {
-                    const adResult = await fetchApi({
-                        type: 'watchAd',
-                        action_id: actionId
-                    });
+            // Show two ads sequentially using libtl SDK. We'll handle failures and ensure UI resets.
+            try {
+                await show_10245709();
+                await show_10245709();
 
-                    if (adResult.ok) {
-                        const actualReward = adResult.data.actual_reward; 
-                        
-                        updateState({
-                            balance: adResult.data.new_balance,
-                            ads_watched_today: adResult.data.new_ads_count
-                        });
-                        
-                        if (referrerId) {
-                            fetchApi({
-                                type: 'commission',
-                                referrer_id: referrerId,
-                                referee_id: tgUser.id
-                            }).then(r => {
-                                if (r.ok) { console.log('Commission sent successfully.'); }
-                                else { console.warn('Commission failed to send:', r.error); }
-                            });
-                        }
-                        
-                        let alertTitle = 'Reward Granted!';
-                        let alertType = 'success';
-                        let alertMessage = ` ＹＯＵ ＷＩＮ ${actualReward} SHIB.`;
-                        
-                        if(adResult.data.new_ads_count >= DAILY_MAX){
-                            alertTitle = 'Daily Task Completed!';
-                            alertMessage = `Congratulations! You have completed all today's ads (${DAILY_MAX}). ＣＯＭＥ ｂａｃｋ ａｆｔｅｒ 6 Ｈｏｕｒｓ!`;
-                        }
-                        showCustomAlert(alertTitle, alertMessage, alertType);
-
-                    }
-                })
-                .catch(e => {
-                    console.error("libtl.com Ad sequence failed:", e);
-                    if (typeof e === 'string' && e.includes('canceled')) {
-                        showCustomAlert('Ad Cancelled/Failed!', 'The ad sequence was interrupted. Please watch both ads completely to receive the reward.', 'warning');
-                    } else {
-                        showCustomAlert('Ad Load Failed!', 'One of the ads failed to load. Please try again.', 'error');
-                    }
+                const adResult = await fetchApi({
+                    type: 'watchAd',
+                    action_id: actionId
                 });
+
+                if (adResult.ok) {
+                    const actualReward = adResult.data.actual_reward;
+                    
+                    updateState({
+                        balance: adResult.data.new_balance,
+                        ads_watched_today: adResult.data.new_ads_count
+                    });
+                    
+                    if (referrerId) {
+                        fetchApi({
+                            type: 'commission',
+                            referrer_id: referrerId,
+                            referee_id: tgUser.id
+                        }).then(r => {
+                            if (r.ok) { console.log('Commission sent successfully.'); }
+                            else { console.warn('Commission failed to send:', r.error); }
+                        });
+                    }
+                    
+                    let alertTitle = 'Reward Granted!';
+                    let alertType = 'success';
+                    let alertMessage = `You received ${Number(actualReward || 0).toLocaleString('en-US')} SHIB for watching the ad.`;
+
+                    if(adResult.data.new_ads_count >= DAILY_MAX){
+                        alertTitle = 'Daily Task Completed!';
+                        alertMessage = `Congratulations! You have completed all today's ads (${DAILY_MAX}). Come back later.`;
+                    }
+
+                    // Provide both an English toast and also a smaller server-synced message
+                    showCustomAlert(alertTitle, alertMessage, alertType);
+                } else {
+                    showCustomAlert('Reward Error', 'Server did not return reward details. Please try again.', 'error');
+                    await loadUserData();
+                }
+            } catch (e) {
+                console.error("libtl.com Ad sequence failed:", e);
+                if (typeof e === 'string' && e.includes('canceled')) {
+                    showCustomAlert('Ad Cancelled', 'The ad sequence was interrupted. Watch the full ad to receive the reward.', 'warning');
+                } else {
+                    showCustomAlert('Ad Load Failed', 'One of the ads failed to load. Please try again.', 'error');
+                }
+            } finally {
+                // ensure UI is consistent
+                await loadUserData();
+            }
         }
         // ***************************************************************
         // END OF UPDATED watchAds FUNCTION
@@ -2667,11 +2702,11 @@ You will earn 40% of the revenue from every referral you bring through ads!
             if (noChannelNotice) noChannelNotice.style.display = 'none';
 
             const html = availableTasks.map(t => {
-                const rewardText = `Reward: ${t.reward} SHIB`;
+                const rewardText = `Reward: ${Number(t.reward || 0).toLocaleString('en-US')} SHIB`;
                 const safeLink = (t.link || '').replace(/"/g, '&quot;');
                 return `
                     <div class="task-item-card" data-task-id="${t.task_id}">
-                        <span class="task-text-info">${t.name} — ${rewardText}</span>
+                        <span class="task-text-info">${escapeHtml(t.name)} — ${escapeHtml(rewardText)}</span>
                         <button class="task-action-btn-new" data-task-link="${safeLink}" data-task-id="${t.task_id}" onclick="onTaskButtonClick(event)">
                             Open
                         </button>
@@ -2761,7 +2796,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 const opened = openExternalLink(taskLink);
                 if (opened) {
                     btn.textContent = 'Claim';
-                    showCustomAlert('Opened Task', 'The task has been opened. After joining press "Claim" to receive the reward.', 'warning');
+                    showCustomAlert('Opened Task', `The task has been opened. After joining press "Claim" to receive ${Number(currentTask.reward || 0).toLocaleString('en-US')} SHIB.`, 'info');
                     btn.dataset.locked = '0';
                     btn.disabled = false;
                 } else {
@@ -2793,7 +2828,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 reward: task.reward,
                 is_completed: !!task.is_completed
             };
-            showCustomAlert('Task Selected', `Selected: ${currentTask.name}\nReward: ${currentTask.reward} SHIB`, 'warning');
+            showCustomAlert('Task Selected', `Selected: ${currentTask.name}\nReward: ${Number(currentTask.reward || 0).toLocaleString('en-US')} SHIB`, 'info');
         }
 
         async function showTask(){
@@ -2858,13 +2893,13 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 if (countdown >= 0) {
                     if (taskBtn) taskBtn.textContent = countdown;
                     if(countdownTime - countdown > 1){
-                         showCustomAlert('Verifying Membership...', `Please wait ${countdown} seconds for channel membership verification.`, 'warning');
+                         showCustomAlert('Verifying Membership...', `Please wait ${countdown} seconds for channel membership verification.`, 'info');
                     }
                 } else {
                     clearInterval(countdownInterval);
                     countdownInterval = null;
                     if (taskBtn) taskBtn.textContent = 'Verifying...';
-                    showCustomAlert('Verifying...', 'Contacting server to confirm membership and claim reward.', 'warning');
+                    showCustomAlert('Verifying...', 'Contacting server to confirm membership and claim reward.', 'info');
 
                     verifyAndClaim();
                 }
@@ -2920,7 +2955,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 const tasks = await fetchTasks();
                 renderTasksList(tasks);
 
-                showCustomAlert('Reward Claimed!', `You received ${result.data.actual_reward || currentTask.reward} SHIB for completing the task!`, 'success');
+                showCustomAlert('Reward Claimed!', `You received ${Number(result.data.actual_reward || currentTask.reward || 0).toLocaleString('en-US')} SHIB for completing the task!`, 'success');
                 
             } else {
                 await loadUserData();
@@ -2970,7 +3005,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                         taskBtn.disabled = false;
                         taskBtn.textContent = 'Claim';
                     }
-                    showCustomAlert('Action Required', 'Please ensure you joined the channel. Click the button again to start the reward verification.', 'warning');
+                    showCustomAlert('Action Required', 'Please ensure you joined the channel. Click the button again to start the reward verification.', 'info');
                 }, 1500);
 
 
@@ -3021,7 +3056,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
 
             navigator.clipboard.writeText(inviteLink).then(() => {
-                Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+                try { Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
                 showCustomAlert('Link Copied!', 'The referral link has been copied to the clipboard.', 'success');
             }).catch(err => {
                 console.error('Failed to copy text: ', err);
@@ -3111,6 +3146,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
             }
             
             if (spinsToday >= DAILY_MAX_SPINS) {
+                showCustomAlert('Daily Limit Reached', `You have used all spins for today (${DAILY_MAX_SPINS}).`, 'warning');
                 return;
             }
             
@@ -3134,78 +3170,81 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
             
-            show_10245709()
-                .then(() => {
-                    return show_10245709();
-                })
-                .then(async () => {
-                    spinning = true;
-                    spinBtn.disabled = true;
-                    spinResult.textContent = 'Spinning...'; 
-                    canvas.classList.add('spinning');
+            try {
+                await show_10245709();
+                await show_10245709();
 
-                    const spinResultRes = await fetchApi({ 
-                        type: 'spinResult',
-                        action_id: spinResultActionId
+                spinning = true;
+                spinBtn.disabled = true;
+                spinResult.textContent = 'Spinning...'; 
+                canvas.classList.add('spinning');
+
+                const spinResultRes = await fetchApi({ 
+                    type: 'spinResult',
+                    action_id: spinResultActionId
+                });
+                
+                if (spinResultRes.ok) {
+                    const finalPrize = spinResultRes.data.actual_prize;
+                    const prizeIndex = spinResultRes.data.prize_index !== undefined ? spinResultRes.data.prize_index : 0; 
+                    
+                    const sectorCount = sectors.length; 
+                    const arc = 2 * Math.PI / sectorCount; 
+                    
+                    const winningAngle = prizeIndex * arc + arc / 2; 
+                    
+                    let rotationToApply = Math.PI / 2 - winningAngle;
+                    
+                    rotationToApply = rotationToApply + (5 * 2 * Math.PI); 
+                    
+                    currentAngle += rotationToApply;
+
+                    canvas.style.transition = 'transform 4s cubic-bezier(0.22,0,0.2,1)';
+                    requestAnimationFrame(() => {
+                        canvas.style.transform = `rotate(${currentAngle}rad)`;
                     });
                     
-                    if (spinResultRes.ok) {
-                        const finalPrize = spinResultRes.data.actual_prize; 
-                        const prizeIndex = spinResultRes.data.prize_index !== undefined ? spinResultRes.data.prize_index : 0; 
+                    setTimeout(async ()=>{
+                        canvas.style.transition = '';
+                        canvas.classList.remove('spinning');
                         
-                        const sectorCount = sectors.length; 
-                        const arc = 2 * Math.PI / sectorCount; 
-                        
-                        const winningAngle = prizeIndex * arc + arc / 2; 
-                        
-                        let rotationToApply = Math.PI / 2 - winningAngle;
-                        
-                        rotationToApply = rotationToApply + (5 * 2 * Math.PI); 
-                        
-                        currentAngle += rotationToApply;
-
-                        canvas.style.transition = 'transform 4s cubic-bezier(0.22,0,0.2,1)';
-                        requestAnimationFrame(() => {
-                            canvas.style.transform = `rotate(${currentAngle}rad)`;
+                        updateState({ 
+                            balance: spinResultRes.data.new_balance,
+                            spins_today: spinResultRes.data.new_spins_count
                         });
                         
-                        setTimeout(async ()=>{
-                            canvas.style.transition = '';
-                            canvas.classList.remove('spinning');
-                            
-                            updateState({ 
-                                balance: spinResultRes.data.new_balance,
-                                spins_today: spinResultRes.data.new_spins_count
-                            });
-                            
-                            spinResult.textContent = `🎉\n\nYou won ${finalPrize} SHIB!`;
-                            showCustomAlert('Congratulations!', `You won ${finalPrize} SHIB!`, 'success');
-                            
-                            await loadUserData(); 
-                            
-                        },4000); 
-
-                    } else {
-                        canvas.classList.remove('spinning');
-                        spinResult.textContent = `❌ ERROR ❌\n\n[STATUS] Error receiving prize. Please try again.`;
-                        if (!spinResultRes.error.includes('SECURITY ERROR')) { 
-                            showCustomAlert('Error!', 'Error receiving prize. Please try again.', 'error');
-                        }
+                        spinResult.textContent = `🎉 You won ${Number(finalPrize || 0).toLocaleString('en-US')} SHIB!`;
+                        showCustomAlert('Congratulations!', `You won ${Number(finalPrize || 0).toLocaleString('en-US')} SHIB!`, 'success');
+                        
                         await loadUserData(); 
-                    }
-                    
-                    spinning   = false;
-                    updateUI(); 
-                })
-                .catch(e => {
-                    console.error("libtl.com Ad failed to show or was dismissed:", e);
-                    if (typeof e === 'string' && e.includes('canceled')) {
-                        showCustomAlert('Ad Cancelled/Failed!', 'The ad was not watched completely. The attempt was not counted.', 'warning');
-                    } else {
-                        showCustomAlert('Ad Load Failed!', 'Ad failed to load. The attempt was not counted. Please try again.', 'error');
-                    }
-                    loadUserData(); 
-                });
+                        
+                    },4000); 
+
+                } else {
+                    canvas.classList.remove('spinning');
+                    canvas.style.transition = '';
+                    spinResult.textContent = `❌ ERROR ❌\n\n[STATUS] Error receiving prize. Please try again.`;
+                    showCustomAlert('Error!', 'Error receiving prize from the server. Please try again.', 'error');
+                    await loadUserData(); 
+                }
+            } catch (e) {
+                console.error("libtl.com Ad failed to show or was dismissed:", e);
+                if (typeof e === 'string' && e.includes('canceled')) {
+                    showCustomAlert('Ad Cancelled', 'The ad was not watched completely. The attempt was not counted.', 'warning');
+                } else {
+                    showCustomAlert('Ad Load Failed', 'Ad failed to load. The attempt was not counted. Please try again.', 'error');
+                }
+                await loadUserData();
+            } finally {
+                // Ensure wheel and button are reset in all paths to prevent "freeze/تعليق"
+                try {
+                    canvas.classList.remove('spinning');
+                    canvas.style.transition = '';
+                } catch (err) {}
+                spinning = false;
+                if (spinBtn) spinBtn.disabled = false;
+                updateUI();
+            }
         }
 
         /* ===== Navigation and Withdraw (No changes needed) ===== */
@@ -3261,7 +3300,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 tableHTML += `
                     <tr>
                         <td>${record.date}</td>
-                        <td>${record.amount.toLocaleString()}</td>
+                        <td>${Number(record.amount).toLocaleString('en-US')}</td>
                         <td><span class="${statusClass}">${statusText}</span></td>
                     </tr>
                 `;
@@ -3290,10 +3329,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     <div class="history-item">
                         <div class="left">
                             <div><strong>Date:</strong> ${rec.date}</div>
-                            <div><strong>Dest:</strong> ${dest}</div>
+                            <div><strong>Dest:</strong> ${escapeHtml(dest)}</div>
                         </div>
                         <div class="right">
-                            <div class="amount">${rec.amount.toLocaleString()} SHIB</div>
+                            <div class="amount">${Number(rec.amount).toLocaleString('en-US')} SHIB</div>
                             <div class="${rec.status === 'pending' ? 'status-pending' : 'status-completed'}">${statusText}</div>
                         </div>
                     </div>
@@ -3337,7 +3376,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return; 
             }
             if(amount > shibBalance){ 
-                showCustomAlert('Balance Error!', `Your balance is insufficient. Your current balance is ${shibBalance.toLocaleString()} SHIB.`, 'error'); 
+                showCustomAlert('Balance Error!', `Your balance is insufficient. Your current balance is ${Number(shibBalance).toLocaleString('en-US')} SHIB.`, 'error'); 
                 return; 
             }
             
@@ -3364,7 +3403,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 displayWithdrawals(); 
                 
                 const destText = selectedMethod === 'faucetpay' ? `FaucetPay: ${faucetpayEmail}` : `Binance ID: ${binanceId}`;
-                showCustomAlert('Request Sent!', `Details:\n${destText}\nAmount: ${amount.toLocaleString()} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
+                showCustomAlert('Request Sent!', `Details:\n${destText}\nAmount: ${Number(amount).toLocaleString('en-US')} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
             }
         }
         
@@ -3444,8 +3483,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
         }
 
         function updateContestUI() {
-            document.getElementById('myTickets').textContent = myTickets;
-            document.getElementById('allTickets').textContent = allTickets;
+            document.getElementById('myTickets').textContent = Number(myTickets || 0).toLocaleString('en-US');
+            document.getElementById('allTickets').textContent = Number(allTickets || 0).toLocaleString('en-US');
         }
 
         async function watchContestAd() {
@@ -3475,39 +3514,40 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 return;
             }
 
-            show_10245709()
-                .then(async () => {
-                    const result = await fetchApi({
-                        type: 'contestWatchAd',
-                        action_id: actionId
-                    });
+            try {
+                await show_10245709();
 
-                    if (result.ok) {
-                        // Update tickets from server's authoritative response
-                        if (result.data) {
-                            myTickets = result.data.my_tickets !== undefined ? result.data.my_tickets : myTickets;
-                            allTickets = result.data.all_tickets !== undefined ? result.data.all_tickets : allTickets;
-                        } else {
-                            myTickets += 5; // fallback minimal update if server doesn't return structured data
-                        }
-                        updateContestUI();
-                        showCustomAlert('Contest Reward!', 'You earned 5 tickets!', 'success');
-                    }
-                })
-                .catch(e => {
-                    showCustomAlert('Ad Failed!', 'Ad failed to load. Please try again.', 'error');
-                })
-                .finally(() => {
-                    // Ensure unlock after a short delay to mitigate auto-clicking
-                    const btn = document.querySelector('.contest-watch-btn');
-                    setTimeout(() => {
-                        contestAdLocked = false;
-                        if (btn) {
-                            btn.disabled = false;
-                            btn.classList.remove('locked');
-                        }
-                    }, 8000); // 8 seconds lock
+                const result = await fetchApi({
+                    type: 'contestWatchAd',
+                    action_id: actionId
                 });
+
+                if (result.ok) {
+                    // Update tickets from server's authoritative response
+                    if (result.data) {
+                        myTickets = result.data.my_tickets !== undefined ? result.data.my_tickets : myTickets;
+                        allTickets = result.data.all_tickets !== undefined ? result.data.all_tickets : allTickets;
+                    } else {
+                        myTickets += 5; // fallback minimal update if server doesn't return structured data
+                    }
+                    updateContestUI();
+                    showCustomAlert('Contest Reward!', `You earned 5 tickets! You now have ${Number(myTickets).toLocaleString('en-US')} tickets.`, 'success');
+                } else {
+                    showCustomAlert('Contest Error', 'Server did not confirm ticket reward. Please try again.', 'error');
+                }
+            } catch (e) {
+                showCustomAlert('Ad Failed!', 'Ad failed to load. Please try again.', 'error');
+            } finally {
+                // Ensure unlock after a short delay to mitigate auto-clicking
+                const btnEl = document.querySelector('.contest-watch-btn');
+                setTimeout(() => {
+                    contestAdLocked = false;
+                    if (btnEl) {
+                        btnEl.disabled = false;
+                        btnEl.classList.remove('locked');
+                    }
+                }, 8000); // 8 seconds lock
+            }
         }
 
         function showContestRank() {
@@ -3583,7 +3623,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 }
 
                 // Tickets (server returns number)
-                const tickets = Number(player.tickets || player.tickets_count || player.points || 0).toLocaleString();
+                const tickets = Number(player.tickets || player.tickets_count || player.points || 0).toLocaleString('en-US');
 
                 // Detect current user
                 const isCurrent = currentUserId !== null && String(userIdRaw) === currentUserId;
@@ -3601,10 +3641,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     <div class="${rowClass}" role="article" aria-label="Player ${pos}">
                         <img src="${avatarSrc || DEFAULT_AVATAR}" class="contest-rank-avatar" alt="" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
                         <div class="contest-rank-name" title="${firstNameSafe}">
-                            <div class="name-main">${displayName}</div>
-                            <div class="contest-rank-username">${usernameDisplay}</div>
+                            <div class="name-main">${escapeHtml(displayName)}</div>
+                            <div class="contest-rank-username">${escapeHtml(usernameDisplay)}</div>
                         </div>
-                        <div class="contest-rank-userid" title="${userIdSafe}">${userIdSafe}</div>
+                        <div class="contest-rank-userid" title="${userIdSafe}">${escapeHtml(userIdSafe)}</div>
                         <div class="contest-rank-tickets">${tickets}</div>
                         <div class="contest-rank-position">${pos}</div>
                     </div>
@@ -3693,7 +3733,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
             idEl.textContent = userIdDisplay;
             nameEl.textContent = displayName;
-            ticketsEl.textContent = ticketCount.toLocaleString();
+            ticketsEl.textContent = Number(ticketCount || 0).toLocaleString('en-US');
             rankEl.textContent = rankText;
 
             box.style.display = 'flex';
