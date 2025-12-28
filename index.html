@@ -158,7 +158,18 @@
             background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:16px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05);
             display:flex;align-items:center;gap:8px;
         }
-        .balance img#shibIcon { width:15px; height:15px; object-fit:cover; display:inline-block; border-radius: 30px; }
+        .balance img#shibIcon { width:15px; height:15px; object-fit:cover; display:inline-block; border-radius: 50%; }
+
+        /* Improved balance number typography */
+        .balance #shibBalanceText {
+            font-family: 'Orbitron', 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: 900;
+            color: #111;
+            letter-spacing: 0.6px;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+            -webkit-font-smoothing:antialiased;
+        }
 
         /* Contest button still exists but kept visually separate (we won't rely on it for the SHIB image anymore) */
         .contest-btn-under-balance {
@@ -514,68 +525,6 @@
         .contest-back-btn:active {
             transform: translateY(3px) translateX(-50%);
             box-shadow: 0 3px 0 #4e555b;
-        }
-
-        .task-back-btn {
-            background: linear-gradient(145deg,#6c757d,#5a6268);
-            color:#fff;border:none;padding:15px 40px; /* Larger padding */
-            border-radius:12px;
-            font-size:16px;
-            font-weight:bold;
-            cursor:pointer;
-            box-shadow:0 6px 0 #4e555b; /* Larger shadow */
-            transition:all .1s ease;
-            width: 90%;
-            max-width: 350px;
-            z-index: 1000; /* Ensure it's above other elements */
-        }
-        .task-back-btn:active{transform:translateY(3px) translateX(-50%);box-shadow:0 3px 0 #4e555b}
-
-        .spin-btn {
-            padding: 14px 40px;
-            border-radius: 28px;
-            font-size: 16px;
-            font-weight: 900;
-        }
-
-        /* Hover/active for generic group */
-        .task-action-btn-new:hover,
-        .withdraw-btn:hover,
-        .back-btn:hover,
-        .copy-link-btn:hover,
-        .contest-watch-btn:hover,
-        .contest-rank-btn:hover,
-        .contest-back-btn:hover,
-        .spin-btn:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 36px 86px rgba(0,0,0,0.75);
-            filter: saturate(1.06) brightness(1.02);
-        }
-        .task-action-btn-new:active,
-        .withdraw-btn:active,
-        .back-btn:active,
-        .copy-link-btn:active,
-        .contest-watch-btn:active,
-        .contest-rank-btn:active,
-        .contest-back-btn:active,
-        .spin-btn:active {
-            transform: translateY(6px) scale(.985);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.6);
-            transition: transform .08s linear;
-        }
-
-        /* Disabled variant */
-        .task-action-btn-new:disabled,
-        .withdraw-btn:disabled,
-        .back-btn:disabled,
-        .copy-link-btn:disabled,
-        .contest-watch-btn:disabled,
-        .contest-rank-btn:disabled,
-        .spin-btn:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.45);
         }
 
         /* ===== Task Screen - REDESIGNED STYLING ===== */
@@ -1503,29 +1452,30 @@
             transform: translateX(-50%);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
             width: 100%;
-            max-width: 640px;
-            padding: 6px;
-            z-index: 999999; /* very high to be above UI but non-blocking */
+            max-width: 720px;
+            padding: 8px;
+            z-index: 1000000; /* very high to be above UI but non-blocking */
             pointer-events: none; /* do not block interactions */
         }
 
+        /* Larger, higher-contrast black notification */
         .toast {
             pointer-events: none;
-            width: calc(100% - 24px);
-            max-width: 620px;
+            width: calc(100% - 32px);
+            max-width: 700px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, rgba(20,25,35,0.96), rgba(255,255,255,0.02));
+            gap: 14px;
+            background: #000; /* solid black for max contrast as requested */
             border-radius: 14px;
-            padding: 12px 14px;
-            color: #fff;
-            box-shadow: 0 8px 30px rgba(2,6,23,0.6);
-            backdrop-filter: blur(10px) saturate(140%);
-            border: 1px solid rgba(255,255,255,0.04);
+            padding: 14px 16px; /* increased padding */
+            color: #fff; /* white text */
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px) saturate(120%);
+            border: 1px solid rgba(255,255,255,0.06);
             transform-origin: top center;
             opacity: 0;
             transform: translateY(-12px) scale(0.995);
@@ -1536,7 +1486,7 @@
         }
 
         .toast.show {
-            animation: toastIn 300ms cubic-bezier(.2,.9,.2,1) forwards;
+            animation: toastIn 320ms cubic-bezier(.2,.9,.2,1) forwards;
         }
         .toast.hide {
             animation: toastOut 260ms cubic-bezier(.2,.9,.2,1) forwards;
@@ -1544,17 +1494,17 @@
 
         /* Content layout */
         .toast .toast-icon {
-            flex: 0 0 44px;
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
+            flex: 0 0 52px;
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
             display:flex;
             align-items:center;
             justify-content:center;
-            font-size:20px;
-            background: rgba(255,255,255,0.03);
+            font-size:22px;
+            background: #111; /* darker tile for icon as requested */
             color: #fff;
-            box-shadow: inset 0 -2px 6px rgba(0,0,0,0.12);
+            box-shadow: inset 0 -2px 6px rgba(0,0,0,0.2);
         }
         .toast .toast-content {
             display:flex;
@@ -1564,41 +1514,38 @@
         }
         .toast .toast-title {
             font-weight: 900;
-            font-size: 15px;
-            color: #fff;
+            font-size: 16px; /* increased size */
+            color: #ffffff;
             line-height: 1.05;
             white-space:normal;
+            font-family: 'Orbitron', 'Vazirmatn', sans-serif; /* stronger numeric-friendly font */
         }
         .toast .toast-message {
-            font-size: 13px;
+            font-size: 14px; /* increased size */
             color: rgba(255,255,255,0.95);
-            line-height: 1.2;
-            max-height: 80px;
+            line-height: 1.25;
+            max-height: 120px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: pre-wrap;
+            font-weight: 700;
         }
 
-        /* Type variants (use subtle color accents while preserving app identity) */
-        .toast--success { border-left: 5px solid var(--toast-success); background: linear-gradient(135deg, rgba(40,167,69,0.06), rgba(20,25,35,0.96)); color: #e9fff0; }
-        .toast--error   { border-left: 5px solid var(--toast-error);   background: linear-gradient(135deg, rgba(220,53,69,0.06), rgba(20,25,35,0.96)); color: #fff0f0; }
-        .toast--warning { border-left: 5px solid var(--toast-warning); background: linear-gradient(135deg, rgba(255,140,0,0.06), rgba(20,25,35,0.96)); color: #fffaf0; }
-        .toast--info    { border-left: 5px solid var(--toast-info);    background: linear-gradient(135deg, rgba(0,191,255,0.06), rgba(20,25,35,0.96)); color: #eff8ff; }
-
-        .toast--success .toast-icon { background: rgba(40,167,69,0.12); color: var(--toast-success); }
-        .toast--error   .toast-icon { background: rgba(220,53,69,0.12); color: var(--toast-error); }
-        .toast--warning .toast-icon { background: rgba(255,140,0,0.12); color: var(--toast-warning); }
-        .toast--info    .toast-icon { background: rgba(0,191,255,0.12); color: var(--toast-info); }
+        /* Type accents are still preserved by border-left */
+        .toast--success { border-left: 6px solid var(--toast-success); }
+        .toast--error   { border-left: 6px solid var(--toast-error);   }
+        .toast--warning { border-left: 6px solid var(--toast-warning); }
+        .toast--info    { border-left: 6px solid var(--toast-info);    }
 
         /* Entrance / Exit animations */
         @keyframes toastIn {
             0% { opacity: 0; transform: translateY(-14px) scale(.995); }
-            60% { opacity: 1; transform: translateY(6px) scale(1.01); }
+            60% { opacity: 1; transform: translateY(8px) scale(1.02); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes toastOut {
             0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-10px) scale(.995); }
+            100% { opacity: 0; transform: translateY(-12px) scale(.995); }
         }
 
         /* Error shake animation (subtle) */
@@ -1618,10 +1565,10 @@
 
         /* Small screens tweak */
         @media (max-width: 480px) {
-            .toast { padding: 8px 10px; border-radius: 10px; max-width: calc(100% - 24px); }
-            .toast .toast-icon { width: 36px; height: 36px; font-size:16px; border-radius:8px; }
-            .toast .toast-title { font-size:14px; }
-            .toast .toast-message { font-size:12px; }
+            .toast { padding: 10px 12px; border-radius: 10px; max-width: calc(100% - 24px); gap: 10px; }
+            .toast .toast-icon { width: 44px; height: 44px; font-size:18px; border-radius:10px; }
+            .toast .toast-title { font-size:15px; }
+            .toast .toast-message { font-size:13px; }
             .toast-container { top: 8px; gap:8px; padding: 4px; }
         }
 
@@ -2050,10 +1997,10 @@ You will earn 40% of the revenue from every referral you bring through ads!
          */
         function showToast(type, title, message, opts = {}) {
             if (!toastContainer) return;
-            const duration = typeof opts.durationMs === 'number' ? opts.durationMs : 3200; // slightly longer default
+            const duration = typeof opts.durationMs === 'number' ? opts.durationMs : 3600; // slightly longer default
             const toast = document.createElement('div');
-            const safeTitle = String(title || '').slice(0, 120);
-            const safeMessage = String(message || '').slice(0, 400);
+            const safeTitle = String(title || '').slice(0, 160);
+            const safeMessage = String(message || '').slice(0, 800);
 
             const typeClass = `toast--${type || 'info'}`;
             toast.className = `toast ${typeClass}`;
@@ -2126,8 +2073,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
             const msg = String(message || '').replace(/\r\n/g, '\n').trim();
 
             // Use a compact duration for toasts; success/info shorter, error slightly longer
-            const durationMap = { success: 3000, info: 2800, warning: 3200, error: 3800 };
-            const duration = durationMap[t] || 3000;
+            const durationMap = { success: 3000, info: 3000, warning: 3600, error: 4200 };
+            const duration = durationMap[t] || 3200;
 
             showToast(t, title || capitalizeType(t), msg, { durationMs: duration });
         }
@@ -3124,6 +3071,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
         wheelIcon.onerror = () => { wheelIconLoaded = false; console.warn('Wheel icon failed to load; emoji fallback will be used.'); drawWheel(); };
 
         function drawWheel() {
+            if (!ctx) return;
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const radius = 130;
@@ -3132,7 +3080,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            ctx.font = '24px Vazirmatn, sans-serif';
+            ctx.font = '20px Orbitron, Vazirmatn, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
@@ -3162,15 +3110,28 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 const imgX = centerX + radius * 0.55 * Math.cos(angle);
                 const imgY = centerY + radius * 0.55 * Math.sin(angle);
 
-                // Draw icon (35x35 scaled) centered at (imgX,imgY) if loaded, otherwise fallback to emoji
+                // Draw circular-clipped icon (35x35) centered at (imgX,imgY) if loaded, otherwise fallback to emoji
                 const iconSize = 35;
                 if (wheelIconLoaded) {
                     try {
                         ctx.save();
-                        ctx.translate(imgX, imgY);
-                        ctx.rotate(angle + Math.PI / 2); // rotate slightly to flow with sector
-                        ctx.drawImage(wheelIcon, -iconSize/2, -iconSize/2, iconSize, iconSize);
+                        ctx.beginPath();
+                        ctx.arc(imgX, imgY, iconSize / 2 + 1, 0, Math.PI * 2); // +1 for slight border
+                        ctx.closePath();
+                        ctx.clip();
+
+                        // draw image centered
+                        ctx.drawImage(wheelIcon, imgX - iconSize/2, imgY - iconSize/2, iconSize, iconSize);
+
                         ctx.restore();
+
+                        // draw subtle circular border around image
+                        ctx.beginPath();
+                        ctx.arc(imgX, imgY, iconSize / 2 + 1, 0, Math.PI * 2);
+                        ctx.closePath();
+                        ctx.lineWidth = 2;
+                        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+                        ctx.stroke();
                     } catch (e) {
                         // drawing image failed due to CORS or other; fallback to emoji
                         ctx.save();
@@ -3188,6 +3149,16 @@ You will earn 40% of the revenue from every referral you bring through ads!
                     ctx.fillText('🐱', 0, 0);
                     ctx.restore();
                 }
+
+                // Optionally draw small numeric label under the icon for clarity
+                ctx.save();
+                ctx.fillStyle = '#fff';
+                ctx.font = '700 12px Orbitron, Vazirmatn, sans-serif';
+                const labelX = centerX + (radius * 0.85) * Math.cos(angle);
+                const labelY = centerY + (radius * 0.85) * Math.sin(angle);
+                ctx.textAlign = 'center';
+                ctx.fillText(String(val), labelX, labelY);
+                ctx.restore();
             });
 
             // Center decoration
