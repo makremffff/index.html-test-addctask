@@ -26,7 +26,6 @@
             --toast-error: #dc3545; /* red */
             --toast-warning: #ff8c00; /* orange */
             --toast-info: #00bfff; /* blue */
-            --toast-bg-glass: rgba(255,255,255,0.06);
 
             /* Unified primary button gradient */
             --primary-start: #0b86d6;
@@ -153,9 +152,15 @@
             text-overflow: ellipsis;
         }
 
-        .balance{position:absolute;top:20px;right:20px;background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:16px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05)}
-        
-        /* Contest button replaced by image-button - keep layout and z-index */
+        /* Balance with small image in front (plain image, not inside a circular button) */
+        .balance {
+            position:absolute;top:20px;right:20px;
+            background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:16px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05);
+            display:flex;align-items:center;gap:8px;
+        }
+        .balance img#shibIcon { width:15px; height:15px; object-fit:cover; display:inline-block; border-radius:0; }
+
+        /* Contest button still exists but kept visually separate (we won't rely on it for the SHIB image anymore) */
         .contest-btn-under-balance {
             position: absolute;
             top: 70px;
@@ -186,7 +191,6 @@
             transform: translateY(2px) scale(.98);
             box-shadow: 0 2px 0 var(--primary-shadow), 0 4px 8px rgba(0,0,0,.15);
         }
-        /* ensure the image fills the circular button nicely */
         .contest-btn-under-balance img {
             width: 100%;
             height: 100%;
@@ -276,6 +280,7 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 6px 28px rgba(0,0,0,0.6), 0 0 18px rgba(0,191,255,0.12);
+            display:flex; align-items:center; justify-content:center;
         }
 
         /* different gradients for the two fills for variety yet harmony */
@@ -308,6 +313,23 @@
             mix-blend-mode: overlay;
         }
 
+        /* animated diagonal stripes overlay to give "ad-progress" vibe */
+        .daily-progress-bar::before, .spin-progress-bar::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.03) 25%, rgba(0,0,0,0.02) 25%, rgba(0,0,0,0.02) 50%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.03) 75%, rgba(0,0,0,0.02) 75%, rgba(0,0,0,0.02) 100%);
+            background-size: 24px 24px;
+            pointer-events: none;
+            opacity: 0.45;
+            mix-blend-mode: overlay;
+            animation: stripeMove 6s linear infinite;
+        }
+        @keyframes stripeMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 48px 0; }
+        }
+
         @keyframes shiftGradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -319,6 +341,18 @@
             50% { transform: translateX(200%) rotate(18deg); opacity:0.6; }
             90% { opacity:0.0; }
             100% { transform: translateX(200%) rotate(18deg); opacity:0; }
+        }
+
+        /* percent label inside fills */
+        .progress-percent {
+            position: relative;
+            z-index: 2;
+            font-weight: 900;
+            font-size: 12px;
+            color: rgba(0,0,0,0.7);
+            text-shadow: 0 1px 2px rgba(255,255,255,0.25);
+            padding: 0 6px;
+            pointer-events: none;
         }
 
         /* End of progress styling */
@@ -1638,22 +1672,25 @@
     </div>
     
     <div class="app-screen main-screen" id="mainScreen">
-        <div class="balance" id="shibBalance">0 SHIB</div>
+        <div class="balance" id="shibBalance">
+            <img id="shibIcon" src="https://files.catbox.moe/4se3k0.jpg" alt="shib">
+            <span id="shibBalanceText">0 SHIB</span>
+        </div>
         <button class="contest-btn-under-balance" onclick="showContest()" aria-label="Open Contest">
             <img src="https://giftgogame.com/static/thumbnails/5168043875654172773.webp" alt="Contest">
         </button>
         
-        <div class="progress-group-container">
-            <div class="daily-progress-container">
+        <div class="progress-group-container" aria-hidden="false">
+            <div class="daily-progress-container" role="region" aria-label="Ads progress">
                 <div class="daily-progress-text">Ads today: <span id="adsCount">0</span> / 200</div>
-                <div class="daily-progress-bar">
-                    <div class="daily-progress-fill" id="dailyProgressFill"></div>
+                <div class="daily-progress-bar" aria-hidden="false">
+                    <div class="daily-progress-fill" id="dailyProgressFill"><span class="progress-percent" id="dailyPercent">0%</span></div>
                 </div>
             </div>
-            <div class="spin-progress-container">
+            <div class="spin-progress-container" role="region" aria-label="Spin progress">
                 <div class="spin-progress-text">Spins today: <span id="spinsCount">0</span> / 25</div>
-                <div class="spin-progress-bar">
-                    <div class="spin-progress-fill" id="spinProgressFill"></div>
+                <div class="spin-progress-bar" aria-hidden="false">
+                    <div class="spin-progress-fill" id="spinProgressFill"><span class="progress-percent" id="spinPercent">0%</span></div>
                 </div>
             </div>
         </div>
@@ -1705,7 +1742,7 @@
     <div class="app-screen spin-screen" id="spinScreen">
         <div id="wheelBox">
             <div class="arrow"></div>
-            <canvas id="wheelCanvas" width="280" height="280"></canvas>
+            <canvas id="wheelCanvas" width="280" height="280" aria-label="Spin wheel"></canvas>
         </div>
         <button class="spin-btn" id="spinBtn" onclick="startSpin()">SPIN</button>
         <div class="spin-result" id="spinResult"></div>
@@ -2487,16 +2524,18 @@ You will earn 40% of the revenue from every referral you bring through ads!
         }
         
         function updateUI(){
-            document.getElementById('shibBalance').textContent = Number(shibBalance || 0).toLocaleString('en-US') + ' SHIB';
+            document.getElementById('shibBalanceText').textContent = Number(shibBalance || 0).toLocaleString('en-US') + ' SHIB';
             document.getElementById('withdrawBalanceDisplay').textContent = Number(shibBalance || 0).toLocaleString('en-US') + ' SHIB';
 
             document.getElementById('adsCount').textContent = Number(adsWatchedToday || 0).toLocaleString('en-US');
             const adsPercent = Math.min((adsWatchedToday / DAILY_MAX) * 100, 100);
             document.getElementById('dailyProgressFill').style.width = adsPercent + '%';
+            document.getElementById('dailyPercent').textContent = Math.round(adsPercent) + '%';
 
             document.getElementById('spinsCount').textContent = Number(spinsToday || 0).toLocaleString('en-US'); 
             const spinsPercent = Math.min((spinsToday / DAILY_MAX_SPINS) * 100, 100);
             document.getElementById('spinProgressFill').style.width = spinsPercent + '%';
+            document.getElementById('spinPercent').textContent = Math.round(spinsPercent) + '%';
 
             document.getElementById('referralsCountDisplay').textContent = Number(referralsCount || 0).toLocaleString('en-US');
             
@@ -3076,6 +3115,14 @@ You will earn 40% of the revenue from every referral you bring through ads!
         let spinning = false;
         let currentAngle = 0;
 
+        // Preload the icon that will be drawn into every sector (35x35 target)
+        const wheelIcon = new Image();
+        wheelIcon.crossOrigin = "anonymous";
+        wheelIcon.src = 'https://files.catbox.moe/4se3k0.jpg';
+        let wheelIconLoaded = false;
+        wheelIcon.onload = () => { wheelIconLoaded = true; drawWheel(); };
+        wheelIcon.onerror = () => { wheelIconLoaded = false; console.warn('Wheel icon failed to load; emoji fallback will be used.'); drawWheel(); };
+
         function drawWheel() {
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
@@ -3089,11 +3136,11 @@ You will earn 40% of the revenue from every referral you bring through ads!
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-
             sectors.forEach((val, i) => {
                 const start = i * arc - Math.PI / 2; 
                 const end = start + arc;
 
+                // Sector fill
                 ctx.beginPath();
                 ctx.fillStyle = colors[i % colors.length];
                 ctx.moveTo(centerX, centerY);
@@ -3101,6 +3148,7 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 ctx.closePath();
                 ctx.fill();
 
+                // Sector border
                 ctx.beginPath();
                 ctx.strokeStyle = '#fff'; 
                 ctx.lineWidth = 3;
@@ -3109,18 +3157,40 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 ctx.closePath();
                 ctx.stroke();
 
+                // Compute image position (center of sector)
                 const angle = start + arc / 2;
-                const textX = centerX + radius * 0.65 * Math.cos(angle);
-                const textY = centerY + radius * 0.65 * Math.sin(angle);
+                const imgX = centerX + radius * 0.55 * Math.cos(angle);
+                const imgY = centerY + radius * 0.55 * Math.sin(angle);
 
-                ctx.save();
-                ctx.translate(textX, textY);
-                ctx.rotate(angle + Math.PI / 2);
-                ctx.fillStyle = '#000';
-                ctx.fillText('🐱', 0, 0); 
-                ctx.restore();
+                // Draw icon (35x35 scaled) centered at (imgX,imgY) if loaded, otherwise fallback to emoji
+                const iconSize = 35;
+                if (wheelIconLoaded) {
+                    try {
+                        ctx.save();
+                        ctx.translate(imgX, imgY);
+                        ctx.rotate(angle + Math.PI / 2); // rotate slightly to flow with sector
+                        ctx.drawImage(wheelIcon, -iconSize/2, -iconSize/2, iconSize, iconSize);
+                        ctx.restore();
+                    } catch (e) {
+                        // drawing image failed due to CORS or other; fallback to emoji
+                        ctx.save();
+                        ctx.translate(imgX, imgY);
+                        ctx.rotate(angle + Math.PI / 2);
+                        ctx.fillStyle = '#000';
+                        ctx.fillText('🐱', 0, 0);
+                        ctx.restore();
+                    }
+                } else {
+                    ctx.save();
+                    ctx.translate(imgX, imgY);
+                    ctx.rotate(angle + Math.PI / 2);
+                    ctx.fillStyle = '#000';
+                    ctx.fillText('🐱', 0, 0);
+                    ctx.restore();
+                }
             });
 
+            // Center decoration
             ctx.beginPath();
             ctx.fillStyle = '#fff';
             ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI); 
