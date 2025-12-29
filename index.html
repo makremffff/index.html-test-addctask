@@ -154,8 +154,8 @@
 
         /* Balance with small image in front (plain image, not inside a circular button) */
         .balance {
-            position:absolute;top:20px;right:1px;
-            background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:10px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05);
+            position:absolute;top:20px;right:20px;
+            background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:16px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05);
             display:flex;align-items:center;gap:8px;
         }
         .balance img#shibIcon { width:15px; height:15px; object-fit:cover; display:inline-block; border-radius: 50%; }
@@ -794,17 +794,19 @@
             width: 100%;
             max-width: 400px;
             background: rgba(255, 255, 255, 0.9);
-            padding: 12px;
+            padding: 15px;
             border-radius: 15px;
         }
         .invite-title{ 
-             background: url('refal.png') no-repeat center;
-             background-size: cover;
-             border-radius: 25px;
+             background: url(refal.png) center;
+            background-size: cover;
+            width: 200px;
+            height: 150px;
+            padding: 10px; 
         }
         .referrals-count-info{
             font-size: 18px;
-            color: red;
+            color: #333;
             margin-top: 15px;
             font-weight: bold;
             padding: 10px 15px;
@@ -1670,7 +1672,7 @@
         <div class="task-content-container" id="taskContentContainer">
             <div id="taskLinkArea" class="task-link-container" style="display:none;">
                 <div class="task-link-title">
-                    <span>get 5 SHIB</span>
+                    <span>Open and get 5 SHIB</span>
                     <span id="taskLinkCountDisplay">0 / 200</span>
                 </div>
                 <div class="task-link-progress-bar">
@@ -1766,8 +1768,7 @@
 
     <div class="app-screen invite-screen" id="inviteScreen">
         <div class="invite-header">
-            <h2 class="invite-title">
-            </h2>
+            <h2 class="invite-title">🤝 Invite Friends & Earn SHIB</h2>
             <div class="referrals-count-info">
                 Your Referrals: <span id="referralsCountDisplay">0</span>
             </div>
