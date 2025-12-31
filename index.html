@@ -39,7 +39,7 @@
         .app-screen {
             position: fixed;
             inset: 0;
-            background: url('img.png') no-repeat center center;
+            background: #ffffed;
             background-size: cover;
             transition: opacity .5s ease-in;
             display: flex;
@@ -701,8 +701,9 @@
             gap:8px;
         }
         .withdraw-title{
-            font-size:22px;color:#ff2a2a;font-weight:700; text-shadow: 0 1px 1px rgba(0,0,0,.1);
-            margin:0;
+            width: 250px;
+            height: 180px
+            border-radius: 50px; 
         }
         .current-balance-info{
             font-size: 16px;
@@ -1660,7 +1661,7 @@
         <div class="main-content"></div>
         
         <div class="button-container">
-            <button class="nav-button" onclick="watchAds()"><span>Ads</span></button>
+            <button class="nav-button" onclick="watchAds()"><span>Watch</span></button>
             <button class="nav-button task-btn" onclick="showTask()"><span>Task</span></button>
             <button class="nav-button" onclick="showSpin()"><span>Spin</span></button>
             <button class="nav-button withdraw-btn-nav" onclick="showWithdraw()"><span>Withdraw</span></button>
@@ -1707,7 +1708,7 @@
     <div class="app-screen withdraw-screen" id="withdrawScreen">
         <div class="withdraw-header">
             <div class="withdraw-header-top">
-                <h3 class="withdraw-title">💰 Request SHIB Withdrawal</h3>
+                <img  src="with.png" class="withdraw-title">
             </div>
             <div class="current-balance-info">Your Balance: <span id="withdrawBalanceDisplay">0 SHIB</span></div>
         </div>
