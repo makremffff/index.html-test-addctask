@@ -15,13 +15,13 @@ const SUPABASE_KEY = SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
 // Fully secured and defined server-side constants
 // ------------------------------------------------------------------
 const REWARD_PER_AD = 10;
-const REFERRAL_COMMISSION_RATE = 0.10;
+const REFERRAL_COMMISSION_RATE = 0.40;
 const DAILY_MAX_ADS = 200; // Max ads limit
 const DAILY_MAX_SPINS = 25; // Max spins limit
 const RESET_INTERVAL_MS = 6 * 60 * 60 * 1000; // ⬅️ 6 hours in milliseconds
 const MIN_TIME_BETWEEN_ACTIONS_MS = 3000; // 3 seconds minimum time between watchAd/spin requests
 const ACTION_ID_EXPIRY_MS = 60000; // 60 seconds for Action ID to be valid
-const SPIN_SECTORS = [20, 25, 30, 30, 20];
+const SPIN_SECTORS = [15, 25, 35, 30, 20];
 
 // ===== Task Link Constants =====
 const TASK_LINK_REWARD = 5; // 5 SHIB per task-link click
@@ -31,6 +31,64 @@ const TASK_LINK_DAILY_MAX = 200; // daily max clicks tracked server-side
 // Task Constants
 // ------------------------------------------------------------------
 const TASK_COMPLETIONS_TABLE = 'user_task_completions'; // اسم افتراضي لجدول حفظ إكمال المهام
+
+// ===== Security: Global Request Integrity & Anti-Tamper Layer =====
+const SECURITY_LOG_TABLE = 'security'; // جدول السجلات الأمنية
+const MAX_FAILED_ACTIONS_PER_HOUR = 10;
+const MAX_UNIQUE_VIOLATIONS_PER_DAY = 5;
+const SUSPENSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24 ساعة تعليق
+
+/**
+ * مساعد لكتابة سجل أمني إلى جدول security
+ */
+async function logSecurityIncident(userId, incidentType, details = {}) {
+  try {
+    await supabaseFetch(SECURITY_LOG_TABLE, 'POST', {
+      user_id: userId,
+      incident_type: incidentType,
+      details: JSON.stringify(details),
+      ip_hash: crypto.createHash('sha256').update((details.ip || 'unknown') + process.env.IP_SALT).digest('hex'),
+      user_agent_hash: crypto.createHash('sha256').update((details.ua || 'unknown') + process.env.UA_SALT).digest('hex'),
+      created_at: new Date().toISOString()
+    }, '?select=id');
+  } catch (e) {
+    console.error('Security log failed:', e.message);
+  }
+}
+
+/**
+ * فحص ما إذا كان المستخدم موقوفًا أو تجاوز حدود الانتهاكات
+ */
+async function isUserSuspended(userId, details = {}) {
+  try {
+    const now = new Date().toISOString();
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+    // التحقق من التعليق النشط
+    const suspensions = await supabaseFetch(SECURITY_LOG_TABLE, 'GET', null, `?user_id=eq.${userId}&incident_type=eq.suspended&details->>suspend_until=gt.${now}&select=id`);
+    if (Array.isArray(suspensions) && suspensions.length > 0) return true;
+
+    // عد الفشل في الساعة الأخيرة
+    const failHour = await supabaseFetch(SECURITY_LOG_TABLE, 'GET', null, `?user_id=eq.${userId}&incident_type=eq.failed_action&created_at=gt.${oneHourAgo}&select=id`);
+    if (Array.isArray(failHour) && failHour.length >= MAX_FAILED_ACTIONS_PER_HOUR) {
+      await logSecurityIncident(userId, 'suspended', { reason: 'hourly_failed_overflow', suspend_until: new Date(Date.now() + SUSPENSION_DURATION_MS).toISOString(), ...details });
+      return true;
+    }
+
+    // عد الانتهاكات الفريدة في آخر 24 ساعة
+    const uniqueViolations = await supabaseFetch(SECURITY_LOG_TABLE, 'GET', null, `?user_id=eq.${userId}&incident_type=in.(invalid_action_id,invalid_initData,rate_overflow,duplicate_task)&created_at=gt.${oneDayAgo}&select=id`);
+    if (Array.isArray(uniqueViolations) && uniqueViolations.length >= MAX_UNIQUE_VIOLATIONS_PER_DAY) {
+      await logSecurityIncident(userId, 'suspended', { reason: 'daily_violations_overflow', suspend_until: new Date(Date.now() + SUSPENSION_DURATION_MS).toISOString(), ...details });
+      return true;
+    }
+
+    return false;
+  } catch (e) {
+    console.error('Suspension check failed:', e.message);
+    return false;
+  }
+}
 
 /**
  * Helper function to randomly select a prize from the defined sectors and return its index.
@@ -456,6 +514,13 @@ async function handleGetUserData(req, res, body) {
     }
     const id = parseInt(user_id);
 
+    // فحص التعليق الأمني
+    const details = { ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, ua: req.headers['user-agent'] };
+    if (await isUserSuspended(id, details)) {
+      await logSecurityIncident(id, 'access_denied', { reason: 'suspended', ...details });
+      return sendError(res, 'User is suspended due to security violations.', 403);
+    }
+
     try {
         // 1. Check and reset daily limits (if 6 hours passed since limit reached)
         await resetDailyLimitsIfExpired(id);
@@ -568,6 +633,13 @@ async function handleRegister(req, res, body) {
   const { user_id, ref_by } = body;
   const id = parseInt(user_id);
 
+  // فحص أمني
+  const details = { ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, ua: req.headers['user-agent'] };
+  if (await isUserSuspended(id, details)) {
+    await logSecurityIncident(id, 'access_denied', { reason: 'suspended', ...details });
+    return sendError(res, 'User is suspended due to security violations.', 403);
+  }
+
   try {
     // 1. Check if user exists
     const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=id,is_banned,first_name,photo_url`);
@@ -626,8 +698,18 @@ async function handleWatchAd(req, res, body) {
     const id = parseInt(user_id);
     const reward = REWARD_PER_AD;
 
+    // فحص أمني
+    const details = { ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, ua: req.headers['user-agent'] };
+    if (await isUserSuspended(id, details)) {
+      await logSecurityIncident(id, 'access_denied', { reason: 'suspended', ...details });
+      return sendError(res, 'User is suspended due to security violations.', 403);
+    }
+
     // 1. Check and Consume Action ID (Security Check)
-    if (!await validateAndUseActionId(res, id, action_id, 'watchAd')) return;
+    if (!await validateAndUseActionId(res, id, action_id, 'watchAd')) {
+      await logSecurityIncident(id, 'invalid_action_id', { action_type: 'watchAd', ...details });
+      return;
+    }
 
     try {
         // 2. Check and reset daily limits (if 6 hours passed since limit reached)
@@ -650,6 +732,7 @@ async function handleWatchAd(req, res, body) {
         // 5. Rate Limit Check 
         const rateLimitResult = await checkRateLimit(id);
         if (!rateLimitResult.ok) {
+            await logSecurityIncident(id, 'rate_overflow', { action: 'watchAd', ...details });
             return sendError(res, rateLimitResult.message, 429); 
         }
 
@@ -717,7 +800,17 @@ async function handlePreSpin(req, res, body) {
     const { user_id, action_id } = body;
     const id = parseInt(user_id);
     
-    if (!await validateAndUseActionId(res, id, action_id, 'preSpin')) return;
+    // فحص أمني
+    const details = { ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, ua: req.headers['user-agent'] };
+    if (await isUserSuspended(id, details)) {
+      await logSecurityIncident(id, 'access_denied', { reason: 'suspended', ...details });
+      return sendError(res, 'User is suspended due to security violations.', 403);
+    }
+
+    if (!await validateAndUseActionId(res, id, action_id, 'preSpin')) {
+      await logSecurityIncident(id, 'invalid_action_id', { action_type: 'preSpin', ...details });
+      return;
+    }
 
     try {
         const users = await supabaseFetch('users', 'GET', null, `?id=eq.${id}&select=is_banned`);
@@ -744,8 +837,18 @@ async function handleSpinResult(req, res, body) {
     const { user_id, action_id } = body; 
     const id = parseInt(user_id);
     
+    // فحص أمني
+    const details = { ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, ua: req.headers['user-agent'] };
+    if (await isUserSuspended(id, details)) {
+      await logSecurityIncident(id, 'access_denied', { reason: 'suspended', ...details });
+      return sendError(res, 'User is suspended due to security violations.', 403);
+    }
+
     // 1. Check and Consume Action ID (Security Check)
-    if (!await validateAndUseActionId(res, id, action_id, 'spinResult')) return; 
+    if (!await validateAndUseActionId(res, id, action_id, 'spinResult')) {
+      await logSecurityIncident(id, 'invalid_action_id', { action_type: 'spinResult', ...details });
+      return;
+    } 
     
     // 2. Check and reset daily limits (if 6 hours passed since limit reached)
     await resetDailyLimitsIfExpired(id);
@@ -767,6 +870,7 @@ async function handleSpinResult(req, res, body) {
         // 5. Rate Limit Check 
         const rateLimitResult = await checkRateLimit(id);
         if (!rateLimitResult.ok) {
+            await logSecurityIncident(id, 'rate_overflow', { action: 'spinResult', ...details });
             return sendError(res, rateLimitResult.message, 429); 
         }
 
@@ -821,8 +925,18 @@ async function handleTaskLinkClick(req, res, body) {
     const { user_id, action_id, url } = body;
     const id = parseInt(user_id);
 
+    // فحص أمني
+    const details = { ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, ua: req.headers['user-agent'] };
+    if (await isUserSuspended(id, details)) {
+      await logSecurityIncident(id, 'access_denied', { reason: 'suspended', ...details });
+      return sendError(res, 'User is suspended due to security violations.', 403);
+    }
+
     // 1. Validate action id (using a general 'taskLink' action type)
-    if (!await validateAndUseActionId(res, id, action_id, 'taskLink')) return;
+    if (!await validateAndUseActionId(res, id, action_id, 'taskLink')) {
+      await logSecurityIncident(id, 'invalid_action_id', { action_type: 'taskLink', ...details });
+      return;
+    }
 
     try {
         // 2. Reset limits if expired
@@ -843,6 +957,7 @@ async function handleTaskLinkClick(req, res, body) {
         // 5. Rate limit check (using the main last_activity)
         const rateLimitResult = await checkRateLimit(id);
         if (!rateLimitResult.ok) {
+            await logSecurityIncident(id, 'rate_overflow', { action: 'taskLinkClick', ...details });
             return sendError(res, rateLimitResult.message, 429);
         }
 
@@ -904,13 +1019,23 @@ async function handleCompleteTask(req, res, body) {
     const id = parseInt(user_id);
     const taskId = parseInt(task_id);
     
+    // فحص أمني
+    const details = { ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, ua: req.headers['user-agent'] };
+    if (await isUserSuspended(id, details)) {
+      await logSecurityIncident(id, 'access_denied', { reason: 'suspended', ...details });
+      return sendError(res, 'User is suspended due to security violations.', 403);
+    }
+    
     // Ensure task_id is valid
     if (isNaN(taskId)) {
         return sendError(res, 'Missing or invalid task_id.', 400);
     }
     
     // 2. Check and Consume Action ID (Security Check) - use task_id in action_type
-    if (!await validateAndUseActionId(res, id, action_id, `completeTask_${taskId}`)) return;
+    if (!await validateAndUseActionId(res, id, action_id, `completeTask_${taskId}`)) {
+      await logSecurityIncident(id, 'invalid_action_id', { action_type: `completeTask_${taskId}`, ...details });
+      return;
+    }
 
     try {
         // 3. Fetch Task Details (Reward, Link, Max Participants, AND TYPE)
@@ -927,12 +1052,14 @@ async function handleCompleteTask(req, res, body) {
         // 4. Check if task is already completed for the user (باستخدام الجدول الوسيط)
         const completions = await supabaseFetch(TASK_COMPLETIONS_TABLE, 'GET', null, `?user_id=eq.${id}&task_id=eq.${taskId}&select=id`);
         if (Array.isArray(completions) && completions.length > 0) {
+            await logSecurityIncident(id, 'duplicate_task', { task_id: taskId, ...details });
             return sendError(res, 'Task already completed by this user.', 403);
         }
 
         // 5. Rate Limit Check 
         const rateLimitResult = await checkRateLimit(id);
         if (!rateLimitResult.ok) {
+            await logSecurityIncident(id, 'rate_overflow', { action: 'completeTask', ...details });
             return sendError(res, rateLimitResult.message, 429); 
         }
         
@@ -1004,8 +1131,18 @@ async function handleWithdraw(req, res, body) {
     const withdrawalAmount = parseFloat(amount);
     const MIN_WITHDRAW = 2000; // Match client-side minimum
 
+    // فحص أمني
+    const details = { ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, ua: req.headers['user-agent'] };
+    if (await isUserSuspended(id, details)) {
+      await logSecurityIncident(id, 'access_denied', { reason: 'suspended', ...details });
+      return sendError(res, 'User is suspended due to security violations.', 403);
+    }
+
     // 1. Check and Consume Action ID (Security Check)
-    if (!await validateAndUseActionId(res, id, action_id, 'withdraw')) return;
+    if (!await validateAndUseActionId(res, id, action_id, 'withdraw')) {
+      await logSecurityIncident(id, 'invalid_action_id', { action_type: 'withdraw', ...details });
+      return;
+    }
 
     if (isNaN(withdrawalAmount) || withdrawalAmount < MIN_WITHDRAW) {
         return sendError(res, `Minimum withdrawal amount is ${MIN_WITHDRAW} SHIB.`, 400);
@@ -1150,8 +1287,18 @@ async function handleContestWatchAd(req, res, body) {
     const { user_id, action_id } = body;
     const id = parseInt(user_id);
 
+    // فحص أمني
+    const details = { ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, ua: req.headers['user-agent'] };
+    if (await isUserSuspended(id, details)) {
+      await logSecurityIncident(id, 'access_denied', { reason: 'suspended', ...details });
+      return sendError(res, 'User is suspended due to security violations.', 403);
+    }
+
     // Validate action id
-    if (!await validateAndUseActionId(res, id, action_id, 'contestWatchAd')) return;
+    if (!await validateAndUseActionId(res, id, action_id, 'contestWatchAd')) {
+      await logSecurityIncident(id, 'invalid_action_id', { action_type: 'contestWatchAd', ...details });
+      return;
+    }
 
     try {
         // Rate limit & banned checks
@@ -1166,6 +1313,7 @@ async function handleContestWatchAd(req, res, body) {
 
         const rateLimitResult = await checkRateLimit(id);
         if (!rateLimitResult.ok) {
+            await logSecurityIncident(id, 'rate_overflow', { action: 'contestWatchAd', ...details });
             return sendError(res, rateLimitResult.message, 429);
         }
 
@@ -1294,6 +1442,9 @@ module.exports = async (req, res) => {
 
   // initData Security Check (exclude commission and server-to-server types if needed)
   if (body.type !== 'commission' && (!body.initData || !validateInitData(body.initData))) {
+      // تسجيل انتهاك initData
+      const details = { ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress, ua: req.headers['user-agent'] };
+      await logSecurityIncident(body.user_id || 0, 'invalid_initData', { ...details, initData: body.initData });
       return sendError(res, 'Invalid or expired initData. Security check failed.', 401);
   }
 
