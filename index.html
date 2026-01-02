@@ -154,10 +154,10 @@
 
         /* Balance with small image in front (plain image, not inside a circular button) */
         .balance {
-            position:absolute;top:20px;right:10px;
-            background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:8px;color:#ff2a2a;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05);
+            position:absolute;top:20px;right: 3px;
+            background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:2px;color: grey;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05);
             display:flex;align-items:center;gap:8px;
-            color: grey;
+            
         }
         .balance img#shibIcon { width:15px; height:15px; object-fit:cover; display:inline-block; border-radius: 50%; }
 
@@ -702,8 +702,8 @@
         .withdraw-title{
             background: url(with.png) center;
             background-size: cover;
-            width: 280px;
-            height: 230px;
+            width: 200px;
+            height: 170px;
             border-radius: 50px;
             margin-left: 30px;
         }
@@ -1635,7 +1635,7 @@
             <span id="shibBalanceText">0 SHIB</span>
         </div>
         <button class="contest-btn-under-balance" onclick="showContest()" aria-label="Open Contest">
-            <img src="https://giftgogame.com/static/thumbnails/5168043875654172773.webp" alt="Contest">
+            <img src="https://app.crybblewars.org/main/leader_button/main-icon-top.webp" alt="Contest">
         </button>
         
         <div class="progress-group-container" aria-hidden="false">
@@ -1685,7 +1685,7 @@
                 <div class="task-link-progress-bar">
                     <div class="task-link-progress-fill" id="taskLinkProgressFill" style="width:0%"></div>
                 </div>
-                <button class="task-link-button" id="taskLinkBtn" onclick="handleTaskLinkClick()">Open and get 5 SHIB</button>
+                <button class="task-link-button" id="taskLinkBtn" onclick="handleTaskLinkClick()">get 5 SHIB</button>
             </div>
 
             <div id="taskListContainer">
@@ -1741,8 +1741,8 @@
             </div>
 
             <div class="input-group">
-                <label>Amount in SHIB (Min 2000)</label>
-                <input type="number" id="withdrawAmount" min="2000" value="" placeholder="">
+                <label>Amount in SHIB (Min 4000)</label>
+                <input type="number" id="withdrawAmount" min="4000" value="" placeholder="">
             </div>
             <div class="withdraw-buttons">
                 <button class="withdraw-btn" onclick="confirmWithdraw()">Send Request</button>
@@ -1818,14 +1818,14 @@ You will earn 40% of the revenue from every referral you bring through ads!
         <div class="contest-tickets-container" role="region" aria-label="Contest Tickets Summary">
             <div class="contest-ticket-row">
                 <span class="contest-ticket-label">
-                    <img src="https://files.catbox.moe/ut2ljl.png" class="contest-ticket-img" alt="ticket">
+                    <img src="https://app.crybblewars.org/main/voucher_button/cards-icon.webp" class="contest-ticket-img" alt="ticket">
                     My Tickets
                 </span>
                 <span class="contest-ticket-value" id="myTickets">0</span>
             </div>
             <div class="contest-ticket-row" style="align-items:flex-end;">
                 <span class="contest-ticket-label">
-                    <img src="https://files.catbox.moe/ut2ljl.png" class="contest-ticket-img" alt="ticket">
+                    <img src="https://app.crybblewars.org/main/voucher_button/cards-icon.webp" class="contest-ticket-img" alt="ticket">
                     All Tickets
                 </span>
                 <span class="contest-ticket-value" id="allTickets">0</span>
@@ -3423,8 +3423,8 @@ You will earn 40% of the revenue from every referral you bring through ads!
                 }
             }
 
-            if(isNaN(amount) || amount < 2000){ 
-                showCustomAlert('Invalid Amount!', 'The minimum withdrawal amount is 2000 SHIB.', 'warning'); 
+            if(isNaN(amount) || amount < 4000){ 
+                showCustomAlert('Invalid Amount!', 'The minimum withdrawal amount is 4000 SHIB.', 'warning'); 
                 return; 
             }
             if(amount > shibBalance){ 
