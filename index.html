@@ -2464,17 +2464,21 @@ html, body, button, input, textarea, select, .app, .app *{
   left:50%;
   bottom:12px;
   transform:translateX(-50%);
-  width:min(420px, calc(100% - 32px));
-  background:#0b1a33;
-  border:1px solid rgba(255,255,255,0.14);
-  color:#e2e8f0;
-  padding:12px 14px;
-  border-radius:16px;
-  box-shadow:0 12px 30px rgba(0,0,0,0.28);
+  width:min(380px, calc(100% - 32px));
+  background:rgba(11,26,51,0.55);
+  border:1px solid rgba(255,255,255,0.16);
+  color:#e7eefc;
+  padding:10px 12px;
+  border-radius:14px;
+  box-shadow:0 10px 24px rgba(0,0,0,0.22);
   display:flex;
   gap:10px;
   align-items:flex-start;
   z-index:9999;
+  font-size:12.5px;
+  line-height:1.35;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .w-alert-dot{
@@ -2667,13 +2671,13 @@ html, body, button, input, textarea, select, .app, .app *{
 </div>
 </div>
 <button class="withdraw-secondary-btn w-secondary" onclick="hideWithdraw()">Back to Main</button>
-</div>
-</div>
-
 <div class="w-bottom-alert" id="withdrawBottomAlert" role="status" aria-live="polite">
   <span class="w-alert-dot" aria-hidden="true"></span>
   Withdrawals are processed within 24 hours. Please double-check your details.
 </div>
+</div>
+</div>
+
 
 <!-- Fullscreen withdrawal history (opened from History button) -->
 
