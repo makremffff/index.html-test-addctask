@@ -2474,7 +2474,7 @@ html, body, button, input, textarea, select, .app, .app *{
   display:flex;
   gap:10px;
   align-items:flex-start;
-  z-index:9999;
+  z-index:9000;
   font-size:12.5px;
   line-height:1.35;
   backdrop-filter: blur(10px);
@@ -2489,6 +2489,84 @@ html, body, button, input, textarea, select, .app, .app *{
   background:#38bdf8;
   flex:0 0 auto;
 }
+
+
+        /* ===== Withdraw Screen - Modern Controls (v5) ===== */
+        .w-actions{
+            gap:10px;
+            margin-top:10px;
+        }
+        .withdraw-btn{
+            height:46px;
+            border-radius:16px;
+            font-size:15px;
+            letter-spacing:0.2px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .withdraw-btn:active{ transform:translateY(1px); }
+
+        /* Anti double-tap / loading state */
+        .withdraw-btn.is-loading{
+            opacity:0.85;
+            pointer-events:none;
+        }
+        .withdraw-btn.is-loading::after{
+            content:"";
+            width:16px;height:16px;
+            border-radius:999px;
+            border:2px solid rgba(255,255,255,0.55);
+            border-top-color: rgba(255,255,255,0.10);
+            margin-left:10px;
+            display:inline-block;
+            vertical-align:middle;
+            animation: wspin 0.9s linear infinite;
+        }
+        @keyframes wspin{ to { transform:rotate(360deg); } }
+
+        /* Modern segmented method toggle */
+        .withdraw-method-toggle{
+            display:flex;
+            gap:6px;
+            padding:6px;
+            border-radius:18px;
+            background:rgba(255,255,255,0.08);
+            border:1px solid rgba(255,255,255,0.14);
+            box-shadow:0 14px 34px rgba(0,0,0,0.22);
+        }
+        .method-option{
+            flex:1;
+            background:transparent;
+            border:0;
+            box-shadow:none;
+            padding:12px 10px;
+            border-radius:14px;
+            color:rgba(255,255,255,0.86);
+            justify-content:center;
+            gap:8px;
+            transition:transform .12s ease, background .12s ease, color .12s ease;
+        }
+        .method-option .label{ font-weight:800; }
+        .method-option .method-icon{ filter:drop-shadow(0 6px 14px rgba(0,0,0,0.22)); }
+        .method-option:hover{ transform:translateY(-1px); }
+        .method-option.active{
+            background:rgba(255,255,255,0.96);
+            color:#0b1d3a;
+            box-shadow:0 12px 26px rgba(0,0,0,0.18);
+        }
+        .method-option.active .label{ color:#0b1d3a; }
+        .method-option input{ display:none; }
+
+        /* Bottom alert: fixed, subtle, and never above the loader */
+        .w-bottom-alert{
+            pointer-events:none;
+            font-size:12.5px;
+            line-height:1.35;
+        }
+
+        @media (max-width:360px){
+            .withdraw-btn{ height:44px; font-size:14.5px; }
+            .method-option{ padding:11px 8px; }
+        }
 
 </style>
 </head>
@@ -4569,6 +4647,15 @@ showCustomAlert('Error!', 'Error receiving prize from the server. Please try aga
         }
 
         async function confirmWithdraw(){
+            const btn = document.getElementById('withdrawRequestBtn');
+            if (window.__withdrawSubmitting) return;
+            window.__withdrawSubmitting = true;
+            if (btn){
+                btn.disabled = true;
+                btn.classList.add('is-loading');
+                btn.setAttribute('aria-busy','true');
+            }
+            try{
             if (isBanned) {
                  showCustomAlert('Access Denied!', 'This account has been banned.', 'error');
                  return;
@@ -4625,6 +4712,17 @@ showCustomAlert('Error!', 'Error receiving prize from the server. Please try aga
                 
                 const destText = selectedMethod === 'faucetpay' ? `FaucetPay: ${faucetpayEmail}` : `Binance ID: ${binanceId}`;
                 showCustomAlert('Request Sent!', `Details:\n${destText}\nAmount: ${Number(amount).toLocaleString('en-US')} SHIB\n\nThe transfer will be processed within 24 hours.`, 'success');
+            }
+        
+            } finally {
+                window.__withdrawSubmitting = false;
+                if (btn){
+                    btn.classList.remove('is-loading');
+                    btn.removeAttribute('aria-busy');
+                }
+                if (typeof updateWithdrawButtonState === 'function'){
+                    updateWithdrawButtonState();
+                }
             }
         }
         
