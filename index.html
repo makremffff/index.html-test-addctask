@@ -2374,6 +2374,118 @@
 @media (max-width: 380px){
   .withdraw-method-toggle{grid-template-columns: 1fr;}
 }
+
+/* === Withdraw refinements (v3) === */
+:root{
+  --app-font: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* One font across the app */
+html, body, button, input, textarea, select, .app, .app *{
+  font-family: var(--app-font) !important;
+}
+
+/* Make header compact (title removed) */
+.withdraw-screen{ padding-bottom: 92px; }
+.w-hero{ padding:14px 14px 12px; }
+.w-hero .w-badge{ font-weight:800; letter-spacing:.2px; }
+
+/* Numbers clarity */
+.w-balance-value,
+#withdrawBalanceDisplay,
+#withdrawAmount,
+.withdrawal-amount,
+.withdrawal-balance,
+.w-meta-pill{
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .2px;
+}
+
+/* Method switch (segmented, solid) */
+.withdraw-method-toggle{
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.method-option{
+  background:#0d2343;
+  border:1px solid rgba(255,255,255,0.14);
+  box-shadow:none;
+  border-radius:16px;
+  padding:14px 14px;
+}
+
+.method-option .label{
+  color:#e2e8f0;
+  font-weight:800;
+  font-size:13px;
+}
+
+.method-option .method-icon{
+  font-size:18px;
+  width:28px;
+  height:28px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.10);
+}
+
+.method-option.active{
+  background:#ffffff;
+  border-color:#ffffff;
+  box-shadow:0 10px 26px rgba(0,0,0,0.18);
+}
+
+.method-option.active .label{
+  color:#0f172a;
+}
+
+.method-option.active .method-icon{
+  background:rgba(15,23,42,0.06);
+}
+
+/* Actions row: tidy + equal buttons */
+.w-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:14px;
+}
+
+.withdraw-btn{
+  width:100%;
+  height:48px;
+  border-radius:16px;
+  font-weight:800;
+}
+
+/* Bottom alert (restored style) */
+.w-bottom-alert{
+  position:fixed;
+  left:50%;
+  bottom:12px;
+  transform:translateX(-50%);
+  width:min(420px, calc(100% - 32px));
+  background:#0b1a33;
+  border:1px solid rgba(255,255,255,0.14);
+  color:#e2e8f0;
+  padding:12px 14px;
+  border-radius:16px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.28);
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  z-index:9999;
+}
+
+.w-alert-dot{
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  margin-top:4px;
+  background:#38bdf8;
+  flex:0 0 auto;
+}
+
 </style>
 </head>
 <body>
@@ -2492,8 +2604,6 @@
 <div class="w-badge">Payout Center</div>
 <button aria-label="Close" class="w-icon-btn" onclick="hideWithdraw()" type="button">✕</button>
 </div>
-<div class="w-hero-title">Withdraw SHIB</div>
-<div class="w-hero-sub">Processing within 24 hours.</div>
 </div>
 <div class="w-balance-card">
 <div class="w-balance-label">Available balance</div>
@@ -2508,28 +2618,23 @@
 </div>
 <div class="w-panel">
 <div class="w-panel-head">
-<div class="w-panel-title">1) Choose method</div>
+<div class="w-panel-title">Method</div>
 </div>
 <div class="withdraw-method-toggle" id="withdrawMethodToggle">
 <label class="method-option active" id="methodBinance">
 <input checked="" name="withdrawMethod" type="radio" value="binance"/>
 <span aria-hidden="true" class="method-icon">🏦</span>
 <span class="label">Binance ID</span>
-<span class="w-method-note">Recommended</span>
 </label>
 <label class="method-option" id="methodFaucetpay">
 <input name="withdrawMethod" type="radio" value="faucetpay"/>
 <span aria-hidden="true" class="method-icon">📧</span>
 <span class="label">FaucetPay Email</span>
-<span class="w-method-note">Email payout</span>
 </label>
 </div>
-<div class="w-hint">
-        Double‑check your destination details.
-      </div>
 </div>
 <div class="w-panel">
-<div class="w-panel-title">2) Destination</div>
+<div class="w-panel-title">Destination</div>
 <div class="w-form">
 <div class="input-group" id="binanceGroup">
 <label>Binance User ID</label>
@@ -2542,7 +2647,7 @@
 </div>
 </div>
 <div class="w-panel">
-<div class="w-panel-title">3) Amount</div>
+<div class="w-panel-title">Amount</div>
 <div class="w-amount">
 <div class="input-group w-amount-input" style="margin-bottom:10px;">
 <label>Withdrawal Amount</label>
@@ -2554,7 +2659,6 @@
 <button class="w-chip" data-withdraw-chip="25000" type="button">25K</button>
 <button class="w-chip" data-withdraw-chip="max" type="button">Max</button>
 </div>
-<div class="withdraw-min-note">Min: 4,000 SHIB</div>
 </div>
 </div>
 <div class="w-actions">
@@ -2564,6 +2668,11 @@
 </div>
 <button class="withdraw-secondary-btn w-secondary" onclick="hideWithdraw()">Back to Main</button>
 </div>
+</div>
+
+<div class="w-bottom-alert" id="withdrawBottomAlert" role="status" aria-live="polite">
+  <span class="w-alert-dot" aria-hidden="true"></span>
+  Withdrawals are processed within 24 hours. Please double-check your details.
 </div>
 
 <!-- Fullscreen withdrawal history (opened from History button) -->
