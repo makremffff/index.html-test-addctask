@@ -957,65 +957,245 @@
         .status-completed{color: #28a745; font-weight: bold;}
         .no-records{text-align: center; color: #999; padding: 20px;}
         
-        /* ===== Invite Screen - (No changes needed) ===== */
+        /* ===== Invite Screen - PRO Redesign ===== */
         .invite-screen{
-            display:flex;flex-direction:column;align-items:center;padding:20px 20px;
+            display:flex;
+            flex-direction:column;
+            align-items:stretch;
+            padding:14px 14px 22px;
             transition:opacity .3s ease;
-            overflow-y: auto;
+            overflow-y:auto;
+            background: transparent; /* keep base map background from .app-screen */
         }
-        .invite-header{ 
-            text-align: center;
-            margin-bottom: 25px;
-            width: 100%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 15px;
+        /* subtle neon overlay */
+        .invite-screen::before{
+            content:"";
+            position: fixed;
+            inset: 0;
+            pointer-events:none;
+            background:
+                radial-gradient(900px 520px at 18% 10%, rgba(0,242,254,0.20), rgba(0,0,0,0) 60%),
+                radial-gradient(820px 520px at 86% 18%, rgba(255,90,162,0.14), rgba(0,0,0,0) 60%),
+                radial-gradient(900px 620px at 45% 90%, rgba(122,92,255,0.12), rgba(0,0,0,0) 65%);
+            mix-blend-mode: screen;
+            opacity: .9;
         }
-        .invite-title{ 
-             background: url(refal.png) center;
-            background-size: cover;
-            width: 200px;
-            height: 150px;
-            padding: 10px; 
-            border-radius: 25px;
-            border: solid transparent;
-            margin-left: 50px;
+
+        .invite-shell{
+            width:100%;
+            max-width: 440px;
+            margin: 0 auto;
+            display:flex;
+            flex-direction:column;
+            gap: 14px;
+            position: relative;
+            z-index: 1;
+            padding-bottom: 10px;
         }
-        .referrals-count-info{
-            font-size: 18px;
-            color: #333;
-            margin-top: 15px;
-            font-weight: bold;
-            padding: 10px 15px;
-            background: #e6f0ff;
-            border-radius: 10px;
-            border: 1px solid #cce0ff;
-            box-shadow: 0 2px 5px rgba(0,0,0,.05);
-            width: 100%;
+
+        .invite-topbar{
+            display:flex;
+            align-items:center;
+            gap: 12px;
+            margin-top: 6px;
         }
-        .invite-buttons{
-            width: 100%;
-            margin-top: 15px;
+        .invite-back-icon{
+            width:44px;
+            height:44px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.08);
+            color:#fff;
+            font-size:18px;
+            font-weight: 900;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            box-shadow: 0 16px 30px rgba(2,6,23,0.55);
+            -webkit-tap-highlight-color: transparent;
         }
-        .copy-link-btn{
-            background:linear-gradient(145deg,var(--primary-start),var(--primary-end));
-            color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;
-            box-shadow:0 5px 0 var(--primary-shadow);transition:all .1s ease;
-            width: 100%; 
+        .invite-back-icon:active{ transform: translateY(2px); }
+
+        .invite-topbar-title{
+            min-width:0;
+            flex: 1 1 auto;
+            display:flex;
+            flex-direction:column;
+            gap: 2px;
         }
-        .copy-link-btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--primary-shadow)}
-        #referralLinkInput{
-            text-align: center;
+        .invite-topbar-kicker{
+            font-size:12px;
+            letter-spacing:.8px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.72);
+        }
+        .invite-topbar-headline{
+            font-size:18px;
+            font-weight: 900;
+            color:#fff;
+            letter-spacing: .2px;
+        }
+
+        .invite-hero-card{
+            background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 14px;
+            display:flex;
+            align-items:center;
+            gap: 12px;
+            box-shadow: 0 22px 56px rgba(2,6,23,0.62);
+            backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+        }
+        .invite-hero-art{
+            width: 92px;
+            height: 76px;
+            border-radius: 16px;
+            background: url(refal.png) center/cover no-repeat;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18), 0 14px 28px rgba(0,0,0,0.35);
+            flex: 0 0 auto;
+        }
+        .invite-hero-title{
+            font-size:16px;
+            font-weight: 1000;
+            color:#fff;
+        }
+        .invite-hero-sub{
+            margin-top:6px;
+            font-size:13px;
+            line-height:1.55;
+            color: rgba(255,255,255,0.88);
+        }
+        .invite-hero-sub strong{ color:#ffd700; }
+
+        .invite-stats{
+            display:grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .invite-stat{
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 14px 34px rgba(2,6,23,0.58);
+            backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+        }
+        .invite-stat .label{
+            font-size: 12px;
+            color: rgba(255,255,255,0.72);
+            font-weight: 800;
+        }
+        .invite-stat .value{
+            margin-top: 6px;
+            font-size: 22px;
+            font-weight: 1000;
+            color:#fff;
+            font-family: 'Orbitron','Vazirmatn', sans-serif;
+            letter-spacing: .4px;
+        }
+
+        .invite-link-card{
+            background: rgba(255,255,255,0.94);
+            border-radius: 18px;
+            padding: 14px;
+            box-shadow: 0 18px 44px rgba(0,0,0,0.18);
+        }
+        .invite-link-label{
+            font-size: 13px;
+            font-weight: 1000;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+        .invite-link-row{
+            display:flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+        .invite-link-input{
+            flex: 1 1 auto;
+            border-radius: 14px;
+            border: 1px solid rgba(15,23,42,0.14);
+            background: #f8fafc;
+            padding: 12px 12px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #0f172a;
+            outline: none;
+        }
+        .invite-link-input:focus{
+            border-color: rgba(11,134,214,0.65);
+            box-shadow: 0 0 0 3px rgba(0,191,255,0.18);
+        }
+        .invite-mini-btn{
+            width: 86px;
+            border-radius: 14px;
+            border: none;
             cursor: pointer;
-            font-weight: 500;
-            color: #4a90e2;
-            background: #f8f8f8;
-            word-break: break-all;
-            white-space: normal;
+            background: linear-gradient(145deg,var(--primary-start),var(--primary-end));
+            color:#fff;
+            font-weight: 1000;
+            box-shadow: 0 6px 0 var(--primary-shadow);
+            -webkit-tap-highlight-color: transparent;
         }
-        
-        /* Custom Alert Overlay - (left in place but we'll migrate to toast) */
+        .invite-mini-btn:active{ transform: translateY(3px); box-shadow: 0 3px 0 var(--primary-shadow); }
+
+        .invite-primary-btn{
+            margin-top: 12px;
+            width: 100%;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            padding: 13px 14px;
+            font-size: 15px;
+            font-weight: 1000;
+            color:#fff;
+            background: linear-gradient(145deg,var(--primary-start),var(--primary-end));
+            box-shadow: 0 18px 48px rgba(4,77,135,0.45), 0 6px 0 var(--primary-shadow);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .invite-primary-btn:active{ transform: translateY(3px); box-shadow: 0 10px 20px rgba(4,77,135,0.35), 0 3px 0 var(--primary-shadow); }
+
+        .invite-hint{
+            margin-top: 10px;
+            font-size: 12px;
+            color:#475569;
+            line-height: 1.55;
+        }
+
+        .invite-note-card{
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 14px;
+            box-shadow: 0 14px 34px rgba(2,6,23,0.58);
+            backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+            color: #fff;
+        }
+        .invite-note-title{
+            font-weight: 1000;
+            font-size: 14px;
+            margin-bottom: 8px;
+            letter-spacing: .2px;
+        }
+        .invite-note-list{
+            margin: 0;
+            padding: 0 18px 0 0;
+            display:flex;
+            flex-direction:column;
+            gap: 6px;
+            color: rgba(255,255,255,0.86);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .invite-back-btn{
+            width: 100%;
+            border-radius: 14px;
+        }
+        .invite-back-btn:active{ transform: translateY(3px); }
+/* Custom Alert Overlay - (left in place but we'll migrate to toast) */
         .custom-alert-overlay {
             position: fixed;
             inset: 0;
@@ -1951,30 +2131,57 @@
     </div>
 
     <div class="app-screen invite-screen" id="inviteScreen">
-        <div class="invite-header">
-            <h2 class="invite-title"></h2>
-            <div class="referrals-count-info">
-                Your Referrals: <span id="referralsCountDisplay">0</span>
+        <div class="invite-shell" dir="rtl">
+            <div class="invite-topbar">
+                <button class="invite-back-icon" onclick="hideInvite()" aria-label="العودة">←</button>
+                <div class="invite-topbar-title">
+                    <div class="invite-topbar-kicker">Invite</div>
+                    <div class="invite-topbar-headline">دعوة الأصدقاء</div>
+                </div>
             </div>
-        </div>
-        
-        <div class="input-form-container">
-            <div class="input-group">
-                <label>Your Referral Link</label>
-                <input type="text" id="referralLinkInput" readonly value="Generating Link...">
-            </div>
-            <div class="invite-buttons">
-                <button class="copy-link-btn" onclick="copyReferralLink()">Copy Link</button>
-            </div>
-        </div>
-        
-        <div class="note">
-       
-🚀 Share this link to invite new users.
-You will earn 40% of the revenue from every referral you bring through ads!
-        </div>
 
-        <button class="back-btn" onclick="hideInvite()">Back to Main</button>
+            <div class="invite-hero-card">
+                <div class="invite-hero-art" aria-hidden="true"></div>
+                <div class="invite-hero-text">
+                    <div class="invite-hero-title">اربح من كل دعوة</div>
+                    <div class="invite-hero-sub">تحصل على <strong>40%</strong> من أرباح الإعلانات الخاصة بإحالاتك.</div>
+                </div>
+            </div>
+
+            <div class="invite-stats">
+                <div class="invite-stat">
+                    <div class="label">الإحالات</div>
+                    <div class="value"><span id="referralsCountDisplay">0</span></div>
+                </div>
+                <div class="invite-stat">
+                    <div class="label">النسبة</div>
+                    <div class="value">40%</div>
+                </div>
+            </div>
+
+            <div class="invite-link-card">
+                <div class="invite-link-label">رابط الدعوة</div>
+                <div class="invite-link-row">
+                    <input type="text" id="referralLinkInput" class="invite-link-input" readonly value="Generating Link..." dir="ltr">
+                    <button class="invite-mini-btn" onclick="copyReferralLink()">نسخ</button>
+                </div>
+
+                <button class="invite-primary-btn" onclick="shareReferralLink()">مشاركة الرابط</button>
+
+                <div class="invite-hint">شارك الرابط مع أصدقائك، وعند فتح التطبيق عبر الرابط سيتم احتسابه كإحالة.</div>
+            </div>
+
+            <div class="invite-note-card">
+                <div class="invite-note-title">كيف تعمل؟</div>
+                <ul class="invite-note-list">
+                    <li>انسخ أو شارك رابط الدعوة الخاص بك.</li>
+                    <li>عند دخول صديقك للتطبيق عبر الرابط سيتم تسجيله كإحالة.</li>
+                    <li>ستربح 40% من أرباح إعلانات الإحالات.</li>
+                </ul>
+            </div>
+
+            <button class="back-btn invite-back-btn" onclick="hideInvite()">العودة للرئيسية</button>
+        </div>
     </div>
 
     <!-- Contest Screen -->
@@ -3240,6 +3447,30 @@ function updateUI(){
                 showCustomAlert('Error!', 'The referral link is not ready yet. Please wait a moment.', 'warning');
                 return;
             }
+
+        function shareReferralLink() {
+            const inviteLink = document.getElementById('referralLinkInput').value;
+
+            if (inviteLink === 'User data not available.' || inviteLink === 'Generating Link...') {
+                showCustomAlert('الرابط غير جاهز', 'الرجاء الانتظار لحظات حتى يتم إنشاء رابط الدعوة.', 'warning');
+                return;
+            }
+
+            const text = encodeURIComponent('🚀 Join me and earn SHIB rewards!');
+            const url = encodeURIComponent(inviteLink);
+            const shareUrl = `https://t.me/share/url?url=${url}&text=${text}`;
+
+            try {
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp && typeof Telegram.WebApp.openTelegramLink === 'function') {
+                    Telegram.WebApp.openTelegramLink(shareUrl);
+                } else {
+                    window.open(shareUrl, '_blank');
+                }
+                try { Telegram.WebApp.HapticFeedback.impactOccurred('light'); } catch(e){}
+            } catch (e) {
+                try { window.open(shareUrl, '_blank'); } catch(err){}
+            }
+        }
 
             navigator.clipboard.writeText(inviteLink).then(() => {
                 try { Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e){}
