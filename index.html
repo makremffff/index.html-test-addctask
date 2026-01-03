@@ -2288,17 +2288,20 @@
   background: radial-gradient(1000px 700px at 10% 0%, rgba(122,92,255,0.35), transparent 55%),
               radial-gradient(900px 700px at 110% 20%, rgba(255,90,162,0.25), transparent 55%),
               linear-gradient(180deg, #060c18 0%, #050b16 100%);
-  padding: 18px 16px 26px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  padding: 0;              /* scrolling moved to inner container so the bottom alert stays fixed */
+  overflow: hidden;
 }
 .withdraw-history-full{
   background: transparent;
-  padding: 0;
   max-width: 720px;
   margin: 0 auto;
-  padding-bottom: 96px;
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 18px 16px 120px; /* extra bottom space so content never hides behind the fixed alert */
 }
+
 .w-history-hero{
   display:flex;
   justify-content:space-between;
@@ -2479,7 +2482,7 @@ html, body, button, input, textarea, select, .app, .app *{
 .w-bottom-alert{
   position:fixed;
   left:50%;
-  bottom:12px;
+  bottom:calc(12px + env(safe-area-inset-bottom));
   transform:translateX(-50%);
   width:min(380px, calc(100% - 32px));
   background:rgba(11,26,51,0.55);
