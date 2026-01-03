@@ -649,10 +649,14 @@
         #wheelBox{position:relative;margin-bottom:25px}
         #wheelCanvas{
             border-radius:50%;
-            /* Enhanced 3D Look */
-            box-shadow:0 0 0 10px #eee, 0 15px 35px rgba(0,0,0,0.4); 
-            background-color: #fefefe; 
-            border: 2px solid #ccc; 
+            background-color: #fefefe;
+            border: 1px solid rgba(255,255,255,0.35);
+            /* Premium depth (neutral, no slice color changes) */
+            box-shadow:
+              0 0 0 10px #eee,
+              0 18px 48px rgba(0,0,0,0.50),
+              inset 0 2px 2px rgba(255,255,255,0.55),
+              inset 0 -14px 22px rgba(0,0,0,0.18);
             transform-origin: center center;
             transition: transform 4s cubic-bezier(0.22,0,0.2,1);
             will-change: transform;
@@ -3234,108 +3238,163 @@ function updateUI(){
 
         function drawWheel() {
             if (!ctx) return;
+
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const radius = 130;
             const sectorCount = sectors.length;
-            const arc = 2 * Math.PI / sectorCount;
+            const arc = (2 * Math.PI) / sectorCount;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            ctx.font = '20px Orbitron, Vazirmatn, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+            // Smoother edges / premium rendering
+            ctx.imageSmoothingEnabled = true;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
 
+            // ---- Sectors (keep SAME colors, add subtle depth) ----
             sectors.forEach((val, i) => {
-                const start = i * arc - Math.PI / 2; 
+                const start = i * arc - Math.PI / 2;
                 const end = start + arc;
 
-                // Sector fill
+                // Base sector fill (no color changes)
+                ctx.save();
                 ctx.beginPath();
-                ctx.fillStyle = colors[i % colors.length];
                 ctx.moveTo(centerX, centerY);
                 ctx.arc(centerX, centerY, radius, start, end);
                 ctx.closePath();
+
+                ctx.fillStyle = colors[i % colors.length];
                 ctx.fill();
 
-                // Sector border
+                // Subtle 3D shading overlay (white/black alpha only)
+                ctx.clip();
+                const shade = ctx.createRadialGradient(
+                    centerX - radius * 0.28, centerY - radius * 0.32, radius * 0.12,
+                    centerX, centerY, radius
+                );
+                shade.addColorStop(0.00, 'rgba(255,255,255,0.22)');
+                shade.addColorStop(0.45, 'rgba(255,255,255,0.04)');
+                shade.addColorStop(0.80, 'rgba(0,0,0,0.10)');
+                shade.addColorStop(1.00, 'rgba(0,0,0,0.20)');
+                ctx.fillStyle = shade;
+                ctx.fillRect(centerX - radius - 8, centerY - radius - 8, (radius + 8) * 2, (radius + 8) * 2);
+
+                // Very light outer-edge gloss (keeps color, adds polish)
                 ctx.beginPath();
-                ctx.strokeStyle = '#fff'; 
+                ctx.arc(centerX, centerY, radius - 1.5, start, end);
                 ctx.lineWidth = 3;
-                ctx.moveTo(centerX, centerY);
-                ctx.arc(centerX, centerY, radius, start, end);
-                ctx.closePath();
+                ctx.strokeStyle = 'rgba(255,255,255,0.10)';
                 ctx.stroke();
 
-                // Compute image position (center of sector)
-                const angle = start + arc / 2;
-                const imgX = centerX + radius * 0.55 * Math.cos(angle);
-                const imgY = centerY + radius * 0.55 * Math.sin(angle);
-
-                // Draw circular-clipped icon (35x35) centered at (imgX,imgY) if loaded, otherwise fallback to emoji
-                const iconSize = 35;
-                if (wheelIconLoaded) {
-                    try {
-                        ctx.save();
-                        ctx.beginPath();
-                        ctx.arc(imgX, imgY, iconSize / 2 + 1, 0, Math.PI * 2); // +1 for slight border
-                        ctx.closePath();
-                        ctx.clip();
-
-                        // draw image centered
-                        ctx.drawImage(wheelIcon, imgX - iconSize/2, imgY - iconSize/2, iconSize, iconSize);
-
-                        ctx.restore();
-
-                        // draw subtle circular border around image
-                        ctx.beginPath();
-                        ctx.arc(imgX, imgY, iconSize / 2 + 1, 0, Math.PI * 2);
-                        ctx.closePath();
-                        ctx.lineWidth = 2;
-                        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-                        ctx.stroke();
-                    } catch (e) {
-                        // drawing image failed due to CORS or other; fallback to emoji
-                        ctx.save();
-                        ctx.translate(imgX, imgY);
-                        ctx.rotate(angle + Math.PI / 2);
-                        ctx.fillStyle = '#000';
-                        ctx.fillText('🐱', 0, 0);
-                        ctx.restore();
-                    }
-                } else {
-                    ctx.save();
-                    ctx.translate(imgX, imgY);
-                    ctx.rotate(angle + Math.PI / 2);
-                    ctx.fillStyle = '#000';
-                    ctx.fillText('🐱', 0, 0);
-                    ctx.restore();
-                }
-
-                // Optionally draw small numeric label under the icon for clarity
-                ctx.save();
-                ctx.fillStyle = '#fff';
-                ctx.font = '700 12px Orbitron, Vazirmatn, sans-serif';
-                const labelX = centerX + (radius * 0.85) * Math.cos(angle);
-                const labelY = centerY + (radius * 0.85) * Math.sin(angle);
-                ctx.textAlign = 'center';
-                ctx.fillText(String(val), labelX, labelY);
                 ctx.restore();
             });
 
-            // Center decoration
+            // ---- Clean section separation (no text / no icons) ----
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < sectorCount; i++) {
+                const a = i * arc - Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(centerX + radius * Math.cos(a), centerY + radius * Math.sin(a));
+                ctx.stroke();
+            }
+            // subtle inner shadow on separators for depth
+            ctx.strokeStyle = 'rgba(0,0,0,0.10)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < sectorCount; i++) {
+                const a = i * arc - Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX + 0.5 * Math.cos(a + 0.01), centerY + 0.5 * Math.sin(a + 0.01));
+                ctx.lineTo(centerX + (radius - 0.5) * Math.cos(a + 0.01), centerY + (radius - 0.5) * Math.sin(a + 0.01));
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            // ---- Global inner shadow (subtle depth) ----
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.clip();
+
+            const innerShadow = ctx.createRadialGradient(centerX, centerY, radius * 0.55, centerX, centerY, radius);
+            innerShadow.addColorStop(0.00, 'rgba(0,0,0,0.00)');
+            innerShadow.addColorStop(0.72, 'rgba(0,0,0,0.00)');
+            innerShadow.addColorStop(1.00, 'rgba(0,0,0,0.22)');
+            ctx.fillStyle = innerShadow;
+            ctx.fillRect(centerX - radius - 10, centerY - radius - 10, (radius + 10) * 2, (radius + 10) * 2);
+            ctx.restore();
+
+            // ---- Light glossy highlight (screen blend, very subtle) ----
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.clip();
+
+            ctx.globalCompositeOperation = 'screen';
+            const gloss = ctx.createLinearGradient(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+            gloss.addColorStop(0.00, 'rgba(255,255,255,0.00)');
+            gloss.addColorStop(0.24, 'rgba(255,255,255,0.08)');
+            gloss.addColorStop(0.35, 'rgba(255,255,255,0.18)');
+            gloss.addColorStop(0.55, 'rgba(255,255,255,0.05)');
+            gloss.addColorStop(1.00, 'rgba(255,255,255,0.00)');
+            ctx.fillStyle = gloss;
+            ctx.fillRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.restore();
+
+            // ---- Refined outer ring (beveled rim) ----
+            // Outer rim shadow
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius + 7, 0, 2 * Math.PI);
+            ctx.lineWidth = 14;
+            ctx.shadowColor = 'rgba(0,0,0,0.26)';
+            ctx.shadowBlur = 14;
+            ctx.shadowOffsetY = 6;
+            ctx.strokeStyle = 'rgba(0,0,0,0.10)';
+            ctx.stroke();
+            ctx.restore();
+
+            // Outer rim highlight / bevel
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius + 6, 0, 2 * Math.PI);
+            ctx.lineWidth = 12;
+            const rim = ctx.createRadialGradient(centerX, centerY, radius + 1, centerX, centerY, radius + 12);
+            rim.addColorStop(0.00, 'rgba(255,255,255,0.70)');
+            rim.addColorStop(0.55, 'rgba(255,255,255,0.18)');
+            rim.addColorStop(1.00, 'rgba(0,0,0,0.22)');
+            ctx.strokeStyle = rim;
+            ctx.stroke();
+            ctx.restore();
+
+            // Inner rim line (crisp edge)
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius - 0.5, 0, 2 * Math.PI);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255,255,255,0.30)';
+            ctx.stroke();
+            ctx.restore();
+
+            // ---- Center decoration (kept as-is, no text/icons) ----
             ctx.beginPath();
             ctx.fillStyle = '#fff';
-            ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI); 
+            ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
             ctx.fill();
             ctx.strokeStyle = '#ff3366';
             ctx.lineWidth = 4;
             ctx.stroke();
-            
+
             ctx.beginPath();
             ctx.fillStyle = '#ff3366';
-            ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI); 
+            ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
             ctx.fill();
+
             ctx.shadowColor = 'transparent';
         }
         drawWheel();
