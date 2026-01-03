@@ -158,7 +158,7 @@
         /* Balance with small image in front (plain image, not inside a circular button) */
         .balance {
             position:absolute;top:20px;right: 3px;
-            background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Courier New',monospace;font-size:2px;color: grey;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05);
+            background:#fff;border:1px solid #ff5a5a;border-radius:12px;padding:8px 12px;font-family:'Inter','Vazirmatn', Arial, Helvetica, sans-serif;font-size:12px;color: grey;text-shadow:0 0 2px #ffbbbb;letter-spacing:1px;z-index:101;box-shadow:0 4px 6px rgba(0,0,0,.05);
             display:flex;align-items:center;gap:8px;
             
         }
@@ -166,7 +166,8 @@
 
         /* Improved balance number typography */
         .balance #shibBalanceText {
-            font-family: 'Orbitron', 'Courier New', monospace;
+            font-family: 'Inter','Orbitron', 'Courier New', monospace;
+            font-variant-numeric: tabular-nums;
             font-size: 10px;
             font-weight: 900;
             color: grey;
@@ -914,6 +915,15 @@
         }
         #withdrawBalanceDisplay{font-weight:800}
         #withdrawAmount{font-weight:700}
+
+        /* Make numbers clearer across the app (Main / Contest / History) */
+        #shibBalanceText,
+        .contest-ticket-value,
+        .prize-value,
+        .contest-countdown{
+            font-variant-numeric: tabular-nums;
+        }
+
         .withdraw-btn:active{transform:translateY(2px)}
         .withdraw-btn:disabled{
             opacity:0.6;
@@ -1248,7 +1258,8 @@
         /* ===== Fullscreen withdrawal history page ===== */
         .withdraw-history-full {
             display:flex;flex-direction:column;padding:20px 20px;overflow-y:auto;background:#fff;
-        }
+  padding-bottom: 96px;
+}
         .withdraw-history-header {
             display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;
         }
@@ -2278,12 +2289,15 @@
               radial-gradient(900px 700px at 110% 20%, rgba(255,90,162,0.25), transparent 55%),
               linear-gradient(180deg, #060c18 0%, #050b16 100%);
   padding: 18px 16px 26px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .withdraw-history-full{
   background: transparent;
   padding: 0;
   max-width: 720px;
   margin: 0 auto;
+  padding-bottom: 96px;
 }
 .w-history-hero{
   display:flex;
@@ -2296,6 +2310,9 @@
   padding: 16px;
   box-shadow: 0 18px 55px rgba(0,0,0,0.38);
   margin-bottom: 12px;
+  position: sticky;
+  top: 12px;
+  z-index: 200;
 }
 .w-history-title{
   font-family: 'Orbitron', sans-serif;
@@ -2568,52 +2585,6 @@ html, body, button, input, textarea, select, .app, .app *{
             .method-option{ padding:11px 8px; }
         }
 
-
-
-        /* ===== Withdraw Screen - fixed bottom alert + dedicated scroll area (v6) ===== */
-        .withdraw-screen{
-            overflow:hidden !important;
-            padding:0 !important;
-        }
-        .withdraw-scroll{
-            flex:1;
-            width:100%;
-            overflow-y:auto;
-            display:flex;
-            justify-content:center;
-            padding:16px 16px 96px;
-            -webkit-overflow-scrolling: touch;
-        }
-        /* Keep the alert truly pinned to the viewport bottom, and respect safe areas */
-        .w-bottom-alert{
-            position:fixed !important;
-            left:50% !important;
-            bottom:calc(12px + env(safe-area-inset-bottom)) !important;
-            transform:translateX(-50%) translateZ(0) !important;
-        }
-
-        /* ===== Main screen: clearer numeric typography (match Withdraw) ===== */
-        #shibBalanceText,
-        #adsCount, #spinsCount,
-        #dailyPercent, #spinPercent,
-        .progress-percent,
-        #taskLinkCountDisplay{
-            font-variant-numeric: tabular-nums;
-            font-feature-settings: "tnum" 1;
-            letter-spacing:0.2px;
-            text-shadow:none;
-        }
-        .balance{
-            font-size:13px !important;
-            color:#0f172a !important;
-            border-color: rgba(255, 90, 90, 0.55) !important;
-        }
-        .balance #shibBalanceText{
-            font-size:13px !important;
-            font-weight:800 !important;
-            color:#0f172a !important;
-        }
-
 </style>
 </head>
 <body>
@@ -2726,7 +2697,6 @@ html, body, button, input, textarea, select, .app, .app *{
 </div>
 
 <div class="app-screen withdraw-screen" id="withdrawScreen">
-<div class="withdraw-scroll">
 <div class="withdraw-container">
 <div class="w-hero">
 <div class="w-hero-top">
@@ -2796,7 +2766,6 @@ html, body, button, input, textarea, select, .app, .app *{
 </div>
 </div>
 <button class="withdraw-secondary-btn w-secondary" onclick="hideWithdraw()">Back to Main</button>
-</div>
 <div class="w-bottom-alert" id="withdrawBottomAlert" role="status" aria-live="polite">
   <span class="w-alert-dot" aria-hidden="true"></span>
   Withdrawals are processed within 24 hours. Please double-check your details.
@@ -2818,6 +2787,11 @@ html, body, button, input, textarea, select, .app, .app *{
 </div>
 <div class="history-list" id="withdrawHistoryList">
 <!-- items injected here -->
+</div>
+
+<div class="w-bottom-alert" id="withdrawHistoryBottomAlert" role="status" aria-live="polite">
+  <span class="w-alert-dot" aria-hidden="true"></span>
+  تنبيه: طلبات السحب تُعالج خلال 24 ساعة. إذا كانت الحالة Pending انتظر قليلًا وراجع البيانات.
 </div>
 </div>
 </div>
