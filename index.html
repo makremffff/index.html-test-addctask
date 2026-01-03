@@ -37,7 +37,7 @@
         }
 
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;color:#111; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+        body{font-family:'Inter','Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;color:#111; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
         
         .app-screen {
             position: fixed;
@@ -881,6 +881,39 @@
             box-shadow:0 12px 30px rgba(11,134,214,0.35);
             transition:transform .1s ease, box-shadow .1s ease, opacity .1s ease;
         }
+
+        /* --- Withdraw UX tweaks (v2) --- */
+        .w-actions{
+            width:100%;
+            display:flex;
+            gap:12px;
+            margin-top:6px;
+        }
+        .w-actions .withdraw-btn{flex:1;width:auto}
+        .withdraw-btn.w-outline{
+            background:linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
+            color:#ffffff;
+            border:1px solid rgba(255,255,255,0.18);
+            box-shadow:0 12px 30px rgba(2,6,23,0.35);
+        }
+        .withdraw-btn.w-outline:hover{
+            transform:translateY(-1px);
+            background:linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.08));
+        }
+
+        /* Make numbers clearer inside Telegram / mobile */
+        #withdrawBalanceDisplay,
+        #withdrawAmount,
+        .w-meta-pill,
+        .w-chip,
+        .history-item .amount{
+            font-family:'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            font-variant-numeric: tabular-nums;
+            letter-spacing:0.2px;
+            text-shadow:none;
+        }
+        #withdrawBalanceDisplay{font-weight:800}
+        #withdrawAmount{font-weight:700}
         .withdraw-btn:active{transform:translateY(2px)}
         .withdraw-btn:disabled{
             opacity:0.6;
@@ -2460,7 +2493,7 @@
 <button aria-label="Close" class="w-icon-btn" onclick="hideWithdraw()" type="button">✕</button>
 </div>
 <div class="w-hero-title">Withdraw SHIB</div>
-<div class="w-hero-sub">Request a payout to your preferred method. Processing usually within 24 hours.</div>
+<div class="w-hero-sub">Processing within 24 hours.</div>
 </div>
 <div class="w-balance-card">
 <div class="w-balance-label">Available balance</div>
@@ -2476,7 +2509,6 @@
 <div class="w-panel">
 <div class="w-panel-head">
 <div class="w-panel-title">1) Choose method</div>
-<button class="w-link-btn" onclick="displayWithdrawalsFull()" type="button">History</button>
 </div>
 <div class="withdraw-method-toggle" id="withdrawMethodToggle">
 <label class="method-option active" id="methodBinance">
@@ -2493,7 +2525,7 @@
 </label>
 </div>
 <div class="w-hint">
-        Tip: Make sure your destination is correct. Incorrect details may delay processing.
+        Double‑check your destination details.
       </div>
 </div>
 <div class="w-panel">
@@ -2522,13 +2554,13 @@
 <button class="w-chip" data-withdraw-chip="25000" type="button">25K</button>
 <button class="w-chip" data-withdraw-chip="max" type="button">Max</button>
 </div>
-<div class="withdraw-min-note">Minimum withdrawal is 4000 SHIB</div>
+<div class="withdraw-min-note">Min: 4,000 SHIB</div>
 </div>
 </div>
-<button class="withdraw-btn w-primary" disabled="" id="withdrawRequestBtn" onclick="confirmWithdraw()">Withdraw Now</button>
-<div class="withdraw-info-bar">
-<span aria-hidden="true" class="icon">⏳</span>
-<div>Withdrawals are processed manually within 24 hours.</div>
+<div class="w-actions">
+  <button class="withdraw-btn w-primary" disabled="" id="withdrawRequestBtn" onclick="confirmWithdraw()">Withdraw</button>
+  <button class="withdraw-btn w-outline" type="button" onclick="displayWithdrawalsFull()">History</button>
+</div>
 </div>
 <button class="withdraw-secondary-btn w-secondary" onclick="hideWithdraw()">Back to Main</button>
 </div>
