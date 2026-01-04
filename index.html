@@ -801,16 +801,23 @@
         /* Premium idle "breathing" (very subtle) */
         #wheelBox.idle{
             transform-origin:center;
-            animation: wheelBreath 9s ease-in-out infinite;
         }
-        #wheelBox.spinning{ animation: none; }
+        /* Reduce constant animation to prevent lag on low-end phones */
+        @media (prefers-reduced-motion: no-preference){
+            .idle{ animation: wheelBreath 14s ease-in-out infinite; }
+            #wheelBox.spinning{ animation: none; }
+        }
+        @media (prefers-reduced-motion: reduce){
+            .idle{ animation: none; }
+            #wheelBox.spinning{ animation: none; }
+        }
 
         @keyframes wheelBreath{
             0%,100%{ transform: scale(1); }
-            50%{ transform: scale(1.004); }
+            50%{ transform: scale(1.002); }
         }
 
-        /* Subtle light flash during spin start */
+/* Subtle light flash during spin start */
         #wheelBox .spin-light{
             position:absolute;
             inset:0;
@@ -3322,7 +3329,7 @@ body{ font-family: var(--font-sans); }
     <div class="contest-meta">
       <div class="meta-pill meta-countdown" aria-label="Countdown">
         <span class="meta-label">Ends in</span>
-        <span class="contest-countdown" id="contestCountdown">15d 00h 00m 00s</span>
+        <span class="contest-countdown" id="contestCountdown">10d 00h 00m 00s</span>
       </div>
       <div class="meta-pill meta-info" aria-label="Winners">
         <span class="meta-label">Winners</span>
@@ -3429,8 +3436,7 @@ body{ font-family: var(--font-sans); }
     <div class="rank-sub" id="rankUpdatedAt" aria-live="polite"></div>
   </div>
   <div class="rank-header-actions">
-    <button class="lb-refresh" type="button" onclick="loadContestRank()" aria-label="Refresh leaderboard">Refresh</button>
-    <button class="back-btn" onclick="hideContestRank()">Back</button>
+<button class="back-btn" onclick="hideContestRank()">Back</button>
   </div>
 </div>
 
@@ -3856,7 +3862,7 @@ body{ font-family: var(--font-sans); }
         let currentTask = null;
 
         // ===== Contest Variables =====
-        let contestEndTime = new Date().getTime() + (15 * 24 * 60 * 60 * 1000); // 15 days from now
+        let contestEndTime = new Date().getTime() + (10 * 24 * 60 * 60 * 1000); // 10 days from now
         let myTickets = 0;
         let allTickets = 0;
         let contestCountdownInterval = null;
