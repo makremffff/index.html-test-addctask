@@ -12,6 +12,7 @@
 
         
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 :root{
             --glass-bg: rgba(255,255,255,0.04);
             --glass-border: rgba(255,255,255,0.12);
@@ -37,7 +38,7 @@
         }
 
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Inter','Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;color:#111; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+        body{font-family:'Plus Jakarta Sans','Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;overflow:hidden;background: #0d0c1d;color:#111; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
         
         .app-screen {
             position: fixed;
@@ -2892,6 +2893,234 @@ html, body, button, input, textarea, select, .app, .app *{
             .method-option{ padding:11px 8px; }
         }
 
+
+/* ===== Modern typography ===== */
+:root{
+  --font-sans: 'Plus Jakarta Sans','Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+}
+body{ font-family: var(--font-sans); }
+
+/* ===== Contest (English/LTR polish) ===== */
+.contest-header{ direction:ltr; }
+.contest-title{ letter-spacing:-0.02em; }
+.contest-badge{ backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.meta-pill{ border: 1px solid rgba(255,255,255,0.10); }
+.prize-item{ border: 1px solid rgba(255,255,255,0.10); }
+
+/* ===== Leaderboard redesign ===== */
+.contest-rank-screen{
+  background: radial-gradient(900px 500px at 20% 0%, rgba(255,215,0,0.18), transparent 60%),
+              radial-gradient(900px 500px at 90% 20%, rgba(0,170,255,0.16), transparent 55%),
+              linear-gradient(135deg, #07101d, #0b1a2f 55%, #0a1730);
+  color:#fff;
+  padding: 14px;
+}
+.contest-rank-header{
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  padding: 10px 10px 12px;
+  margin: -14px -14px 12px;
+  background: rgba(7,16,29,0.78);
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.contest-rank-title{
+  margin:0;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+.leaderboard-tools{
+  width: min(980px, 100%);
+  display:flex;
+  gap: 10px;
+  align-items: center;
+  margin: 0 auto 12px;
+}
+.lb-search{
+  flex: 1;
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+}
+.lb-icon{ width: 18px; height: 18px; opacity: 0.85; }
+.lb-input{
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+  font-family: var(--font-sans);
+}
+.lb-input::placeholder{ color: rgba(255,255,255,0.55); }
+.lb-refresh{
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,215,0,0.12);
+  color:#fff;
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 700;
+  cursor:pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.lb-refresh:active{ transform: scale(0.98); }
+.lb-refresh:hover{ background: rgba(255,215,0,0.18); }
+
+.podium{
+  width: min(980px, 100%);
+  margin: 0 auto 14px;
+  display:grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  gap: 10px;
+  align-items: stretch;
+}
+.podium-card{
+  position: relative;
+  border-radius: 18px;
+  padding: 12px 12px 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.22);
+  overflow:hidden;
+}
+.podium-card::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background: radial-gradient(500px 200px at 20% 0%, rgba(255,215,0,0.35), transparent 60%);
+  opacity: 0.8;
+  pointer-events:none;
+}
+.podium-1{ transform: translateY(-6px); }
+.podium-rank{
+  position: relative;
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  font-weight: 800;
+  letter-spacing:-0.02em;
+  opacity: 0.95;
+}
+.podium-avatar{
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  margin-top: 10px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(0,0,0,0.2);
+}
+.podium-name{
+  position: relative;
+  margin-top: 10px;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.podium-score{
+  position: relative;
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.75);
+}
+
+.contest-rank-list{
+  width: min(980px, 100%);
+  margin: 0 auto;
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Row cards */
+.contest-rank-item{
+  border-radius: 16px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  display:grid;
+  grid-template-columns: 54px 1fr 160px 120px 72px;
+  align-items:center;
+  gap: 10px;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.18);
+}
+.contest-rank-item img{
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 14px !important;
+  border: 1px solid rgba(255,255,255,0.14);
+}
+.contest-rank-name .name-main{
+  font-weight: 800;
+  letter-spacing:-0.01em;
+}
+.contest-rank-username{
+  margin-top: 2px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.contest-rank-userid{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,0.70);
+  opacity: 0.9;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+.contest-rank-tickets{
+  font-weight: 800;
+  text-align:right;
+}
+.contest-rank-position{
+  justify-self: end;
+  font-weight: 900;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255,215,0,0.10);
+  border: 1px solid rgba(255,215,0,0.16);
+  min-width: 48px;
+  text-align:center;
+}
+.contest-rank-item.current-player{
+  background: rgba(0,170,255,0.10);
+  border-color: rgba(0,170,255,0.22);
+}
+.contest-rank-item[data-rank="1"] .contest-rank-position{ background: rgba(255,215,0,0.18); }
+.contest-rank-item[data-rank="2"] .contest-rank-position{ background: rgba(255,255,255,0.12); }
+.contest-rank-item[data-rank="3"] .contest-rank-position{ background: rgba(205,127,50,0.18); }
+
+/* Responsive */
+@media (max-width: 560px){
+  .podium{ grid-template-columns: 1fr 1fr 1fr; }
+  .contest-rank-item{
+    grid-template-columns: 54px 1fr 90px 60px;
+  }
+  .contest-rank-userid{ display:none; }
+  .contest-rank-tickets{ text-align:right; }
+}
+@media (max-width: 380px){
+  .contest-rank-item{ grid-template-columns: 54px 1fr 70px 56px; }
+  .lb-refresh{ padding: 10px 10px; }
+}
+
 </style>
 </head>
 <body>
@@ -3098,7 +3327,7 @@ html, body, button, input, textarea, select, .app, .app *{
 
 <div class="w-bottom-alert" id="withdrawHistoryBottomAlert" role="status" aria-live="polite">
   <span class="w-alert-dot" aria-hidden="true"></span>
-  تنبيه: طلبات السحب تُعالج خلال 24 ساعة. إذا كانت الحالة Pending انتظر قليلًا وراجع البيانات.
+  Notice: Withdrawal requests are processed within 24 hours. If the status is Pending, please wait a bit and double‑check your details.
 </div>
 </div>
 </div>
@@ -3158,21 +3387,21 @@ html, body, button, input, textarea, select, .app, .app *{
 </div>
 <!-- Contest Screen -->
 <div class="app-screen contest-screen" id="contestScreen">
-<div class="contest-header" dir="rtl">
+<div class="contest-header" dir="ltr">
   <div class="contest-hero">
     <div class="contest-hero-top">
-      <h2 class="contest-title">🏆 مسابقة الجوائز</h2>
+      <h2 class="contest-title">🏆 Prize Contest</h2>
       <div class="contest-badge">PRIZE POOL • 100,000 SHIB</div>
     </div>
 
     <div class="contest-meta">
       <div class="meta-pill meta-countdown" aria-label="Countdown">
-        <span class="meta-label">ينتهي بعد</span>
+        <span class="meta-label">Ends in</span>
         <span class="contest-countdown" id="contestCountdown">15d 00h 00m 00s</span>
       </div>
       <div class="meta-pill meta-info" aria-label="Winners">
-        <span class="meta-label">الفائزون</span>
-        <span class="meta-value">أفضل 5</span>
+        <span class="meta-label">Winners</span>
+        <span class="meta-value">Top 5</span>
       </div>
     </div>
   </div>
@@ -3183,7 +3412,7 @@ html, body, button, input, textarea, select, .app, .app *{
       <div class="prize-left">
         <div class="prize-medal">🥇</div>
         <div class="prize-text">
-          <div class="prize-label">المركز الأول</div>
+          <div class="prize-label">1st Place</div>
           <div class="prize-sub">1st place</div>
         </div>
       </div>
@@ -3196,7 +3425,7 @@ html, body, button, input, textarea, select, .app, .app *{
       <div class="prize-left">
         <div class="prize-medal">🥈</div>
         <div class="prize-text">
-          <div class="prize-label">المركز الثاني</div>
+          <div class="prize-label">2nd Place</div>
           <div class="prize-sub">2nd place</div>
         </div>
       </div>
@@ -3209,7 +3438,7 @@ html, body, button, input, textarea, select, .app, .app *{
       <div class="prize-left">
         <div class="prize-medal">🥉</div>
         <div class="prize-text">
-          <div class="prize-label">المركز الثالث</div>
+          <div class="prize-label">3rd Place</div>
           <div class="prize-sub">3rd place</div>
         </div>
       </div>
@@ -3222,7 +3451,7 @@ html, body, button, input, textarea, select, .app, .app *{
       <div class="prize-left">
         <div class="prize-medal">🏅</div>
         <div class="prize-text">
-          <div class="prize-label">المركز الرابع</div>
+          <div class="prize-label">4th Place</div>
           <div class="prize-sub">4th place</div>
         </div>
       </div>
@@ -3235,7 +3464,7 @@ html, body, button, input, textarea, select, .app, .app *{
       <div class="prize-left">
         <div class="prize-medal">⭐</div>
         <div class="prize-text">
-          <div class="prize-label">المركز الخامس</div>
+          <div class="prize-label">5th Place</div>
           <div class="prize-sub">5th place</div>
         </div>
       </div>
@@ -3275,6 +3504,37 @@ html, body, button, input, textarea, select, .app, .app *{
 <button class="back-btn" onclick="hideContestRank()">Back</button>
 </div>
 </div>
+<div class="leaderboard-tools" aria-label="Leaderboard tools">
+  <div class="lb-search" role="search">
+    <svg class="lb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 18a8 8 0 1 1 5.293-14.293A8 8 0 0 1 10 18Zm0-2a6 6 0 1 0-4.243-1.757A6 6 0 0 0 10 16Zm9.707 4.293-4.11-4.11 1.414-1.414 4.11 4.11-1.414 1.414Z" fill="currentColor"/></svg>
+    <input id="leaderboardSearch" class="lb-input" type="search" placeholder="Search by name, @username, or ID" autocomplete="off" />
+  </div>
+  <button class="lb-refresh" type="button" onclick="loadContestRank()" aria-label="Refresh leaderboard">Refresh</button>
+</div>
+
+<div class="podium" id="podium" aria-label="Top 3 podium">
+  <div class="podium-card podium-2" data-r="2">
+    <div class="podium-rank">#2</div>
+    <img class="podium-avatar" id="podiumAvatar2" src="https://giftgogame.com/static/thumbnails/5170233102089322756.webp" alt="Second place avatar" onerror="this.onerror=null;this.src='https://giftgogame.com/static/thumbnails/5170233102089322756.webp';">
+    <div class="podium-name" id="podiumName2">—</div>
+    <div class="podium-score"><span id="podiumTickets2">0</span> Tickets</div>
+  </div>
+
+  <div class="podium-card podium-1" data-r="1">
+    <div class="podium-rank">#1</div>
+    <img class="podium-avatar" id="podiumAvatar1" src="https://giftgogame.com/static/thumbnails/5170233102089322756.webp" alt="First place avatar" onerror="this.onerror=null;this.src='https://giftgogame.com/static/thumbnails/5170233102089322756.webp';">
+    <div class="podium-name" id="podiumName1">—</div>
+    <div class="podium-score"><span id="podiumTickets1">0</span> Tickets</div>
+  </div>
+
+  <div class="podium-card podium-3" data-r="3">
+    <div class="podium-rank">#3</div>
+    <img class="podium-avatar" id="podiumAvatar3" src="https://giftgogame.com/static/thumbnails/5170233102089322756.webp" alt="Third place avatar" onerror="this.onerror=null;this.src='https://giftgogame.com/static/thumbnails/5170233102089322756.webp';">
+    <div class="podium-name" id="podiumName3">—</div>
+    <div class="podium-score"><span id="podiumTickets3">0</span> Tickets</div>
+  </div>
+</div>
+
 <!-- PERSONAL USER BOX: shows the current user's avatar + row with (user id) | (username centered) | (tickets) | (rank) -->
 <div class="personal-info-box" id="personalUserBox" style="display:none;">
 <!-- content injected by JS -->
@@ -5354,7 +5614,13 @@ showCustomAlert('Error!', 'Error receiving prize from the server. Please try aga
             if (!players || players.length === 0) {
                 list.innerHTML = `<div style="text-align:center;color:#cfeeff;padding:20px;border-radius:10px;background:rgba(255,255,255,0.02);">No entries yet.</div>`;
                 // still render personal box if possible
+                renderPodium([]);
+                bindLeaderboardSearch();
+                applyLeaderboardSearchFilter();
                 renderPersonalUserBox(players);
+            renderPodium(players);
+            bindLeaderboardSearch();
+            applyLeaderboardSearchFilter();
                 return;
             }
 
@@ -5409,7 +5675,7 @@ showCustomAlert('Error!', 'Error receiving prize from the server. Please try aga
                 // Construct safe HTML for the row with strict truncation rules applied via CSS
                 // Note: tickets shown as number only per requirement (e.g., "400")
                 return `
-                    <div class="${rowClass}" role="article" aria-label="Player ${pos}">
+                    <div class="${rowClass}" data-rank="${pos}" role="article" aria-label="Player ${pos}">
                         <img src="${avatarSrc || DEFAULT_AVATAR}" class="contest-rank-avatar" alt="" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
                         <div class="contest-rank-name" title="${firstNameSafe}">
                             <div class="name-main">${escapeHtml(displayName)}</div>
@@ -5439,6 +5705,74 @@ showCustomAlert('Error!', 'Error receiving prize from the server. Please try aga
         }
 
         // Render the personal user golden box using tgUser and authoritative players array when available
+
+        /* ===== Leaderboard UI helpers (search + podium) ===== */
+        let leaderboardSearchBound = false;
+
+        function renderPodium(players) {
+            const podium = document.getElementById('podium');
+            if (!podium) return;
+
+            const top = Array.isArray(players) ? players.slice(0, 3) : [];
+            const slots = [
+                { r: 1, p: top[0] },
+                { r: 2, p: top[1] },
+                { r: 3, p: top[2] },
+            ];
+
+            slots.forEach(({ r, p }) => {
+                const nameEl = document.getElementById(`podiumName${r}`);
+                const ticketsEl = document.getElementById(`podiumTickets${r}`);
+                const avatarEl = document.getElementById(`podiumAvatar${r}`);
+                if (!nameEl || !ticketsEl || !avatarEl) return;
+
+                if (!p) {
+                    nameEl.textContent = '—';
+                    ticketsEl.textContent = '0';
+                    avatarEl.src = DEFAULT_AVATAR;
+                    return;
+                }
+
+                const rawFirstName = p.first_name || p.name || p.full_name || '';
+                const rawUsername = p.username || p.user_name || p.tg_username || '';
+                const photoUrl = p.photo_url || p.photo || p.avatar || '';
+                const safeName = String(rawFirstName || (rawUsername ? `@${rawUsername}` : 'Player')).replace(/</g,'').replace(/>/g,'');
+                const tickets = Number(p.tickets || p.tickets_count || p.points || 0).toLocaleString('en-US');
+
+                nameEl.textContent = safeName;
+                ticketsEl.textContent = tickets;
+                avatarEl.src = photoUrl || DEFAULT_AVATAR;
+            });
+        }
+
+        function bindLeaderboardSearch() {
+            if (leaderboardSearchBound) return;
+            const input = document.getElementById('leaderboardSearch');
+            if (!input) return;
+
+            const handler = () => applyLeaderboardSearchFilter();
+            input.addEventListener('input', handler, { passive: true });
+            leaderboardSearchBound = true;
+        }
+
+        function applyLeaderboardSearchFilter() {
+            const input = document.getElementById('leaderboardSearch');
+            const list = document.getElementById('contestRankList');
+            if (!input || !list) return;
+
+            const q = (input.value || '').trim().toLowerCase();
+            const items = list.querySelectorAll('.contest-rank-item');
+
+            items.forEach(el => {
+                if (!q) {
+                    el.style.display = '';
+                    return;
+                }
+                const hay = (el.innerText || '').toLowerCase();
+                el.style.display = hay.includes(q) ? '' : 'none';
+            });
+        }
+
         function renderPersonalUserBox(players) {
             const box = document.getElementById('personalUserBox');
             const avatarEl = document.getElementById('personalAvatar');
