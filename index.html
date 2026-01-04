@@ -12,7 +12,6 @@
 
         
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 :root{
             --glass-bg: rgba(255,255,255,0.04);
             --glass-border: rgba(255,255,255,0.12);
@@ -38,7 +37,7 @@
         }
 
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Plus Jakarta Sans','Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;overflow:hidden;background: #0d0c1d;color:#111; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+        body{font-family:'Inter','Vazirmatn', Arial, Helvetica, sans-serif;overflow:hidden;background: #0d0c1d;color:#111; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
         
         .app-screen {
             position: fixed;
@@ -658,7 +657,6 @@
             background: rgba(255,255,255,0.10);
             border-radius: 999px;
             overflow:hidden;
-            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
         }
 
         .task-item-card{
@@ -1428,320 +1426,168 @@
         /* (Now uses an image inside the circular button; styles above) */
 
         /* ===== Contest Screen Styles (UPDATED LAYOUT) ===== */
-        .contest-screen{
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            padding: 18px 14px 96px;
-            overflow-y:auto;
-            color:#fff;
-            position:relative;
-            background:
-              radial-gradient(1200px 800px at 15% 0%, rgba(0,191,255,0.20), transparent 55%),
-              radial-gradient(1000px 700px at 110% 20%, rgba(255,90,162,0.16), transparent 55%),
-              linear-gradient(135deg, #07162f, #061029 55%, #060b1f);
+        .contest-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 14px;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #001f3f, #003366);
+            color: #fff;
+            position: relative;
         }
-
-        .contest-header{
-            width:100%;
-            max-width: 460px;
-            display:flex;
-            flex-direction:column;
-            gap:14px;
-        }
-
-        .contest-hero{
-            position:relative;
-            padding: 14px 14px 12px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.10);
-            backdrop-filter: blur(10px) saturate(130%);
-            -webkit-backdrop-filter: blur(10px) saturate(130%);
-            box-shadow: 0 18px 50px rgba(0,0,0,0.35);
-            overflow:hidden;
-        }
-        .contest-hero::before{
-            content:"";
-            position:absolute;
-            inset:-1px;
-            border-radius: 16px;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(0,242,254,0.65), rgba(122,92,255,0.55), rgba(255,90,162,0.55));
-            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events:none;
-            opacity:0.85;
-        }
-
-        .contest-hero-top{
-            display:flex;
-            align-items:flex-start;
-            justify-content:space-between;
-            gap: 10px;
-        }
-
-        .contest-title{
-            font-family:'Orbitron','Inter','Vazirmatn', sans-serif;
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: 0.4px;
-            margin: 0;
-            color: rgba(255,255,255,0.96);
-            text-shadow: 0 10px 26px rgba(0,0,0,0.40);
-        }
-
-        .contest-badge{
-            flex: 0 0 auto;
-            font-weight: 900;
-            font-size: 11px;
-            letter-spacing: 0.8px;
-            padding: 8px 10px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.12);
-            color: rgba(255,255,255,0.90);
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .contest-meta{
-            margin-top: 10px;
-            display:grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .meta-pill{
-            border-radius: 14px;
-            padding: 10px 10px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.10);
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
-            display:flex;
-            flex-direction:column;
-            gap: 6px;
-            align-items:flex-start;
-            min-width: 0;
-        }
-
-        .meta-label{
-            font-size: 12px;
-            font-weight: 800;
-            color: rgba(255,255,255,0.70);
-            letter-spacing: 0.2px;
-        }
-
-        .meta-value,
-        .contest-countdown{
-            font-size: 16px;
-            font-weight: 900;
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255,215,0,0.22);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Prize list */
-        .prize-vertical-box{
-            display:flex;
-            flex-direction:column;
-            gap: 10px;
-            padding: 12px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.10);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 18px 50px rgba(0,0,0,0.30);
-        }
-
-        .prize-item{
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            gap: 10px;
-            padding: 12px 12px;
-            border-radius: 14px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-            border: 1px solid rgba(255,255,255,0.10);
-            overflow:hidden;
-        }
-        .prize-item:hover{
-            transform: translateY(-2px);
-            box-shadow: 0 16px 34px rgba(0,0,0,0.22);
-        }
-
-        .prize-item.prize-top{
-            border-color: rgba(255,215,0,0.22);
-            box-shadow: 0 22px 55px rgba(255,215,0,0.06), 0 18px 50px rgba(0,0,0,0.28);
-            background: linear-gradient(180deg, rgba(255,215,0,0.10), rgba(255,255,255,0.03));
-        }
-        .prize-item.prize-second{
-            border-color: rgba(192,192,192,0.22);
-            background: linear-gradient(180deg, rgba(210,210,210,0.08), rgba(255,255,255,0.02));
-        }
-
-        .prize-left{
-            display:flex;
-            align-items:center;
-            gap: 10px;
-            min-width: 0;
-        }
-        .prize-medal{
-            width: 36px;
-            height: 36px;
-            border-radius: 12px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.14);
-            box-shadow: 0 10px 24px rgba(0,0,0,0.25);
-            flex: 0 0 36px;
-            font-size: 18px;
-        }
-        .prize-text{
-            display:flex;
-            flex-direction:column;
-            gap: 3px;
-            min-width: 0;
-        }
-        .prize-label{
-            font-weight: 900;
-            font-size: 14px;
-            color: rgba(255,255,255,0.95);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .prize-sub{
-            font-size: 12px;
-            font-weight: 800;
-            color: rgba(255,255,255,0.68);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .prize-amount{
-            display:flex;
-            align-items:baseline;
-            gap: 6px;
-            flex: 0 0 auto;
-            font-weight: 900;
-            font-variant-numeric: tabular-nums;
-        }
-        .prize-value{
-            font-size: 18px;
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255,215,0,0.18);
-        }
-        .prize-unit{
-            font-size: 12px;
-            color: rgba(255,255,255,0.75);
-            letter-spacing: 0.4px;
-        }
-
-        /* Tickets container */
-        .contest-tickets-container{
+        .contest-header {
+            text-align: center;
+            margin-bottom: 18px;
             width: 100%;
-            max-width: 460px;
-            margin-top: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255,255,255,0.10);
-            padding: 12px;
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            display:flex;
-            gap: 12px;
-            align-items:center;
-            justify-content:space-between;
-            box-shadow: 0 18px 50px rgba(0,0,0,0.25);
-        }
-        .contest-ticket-row{
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 14px;
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
             display:flex;
             flex-direction:column;
-            gap: 6px;
-            min-width: 0;
-        }
-        .contest-ticket-label{
-            font-size: 12px;
-            font-weight: 800;
-            color: rgba(255,255,255,0.75);
-            display:flex;
+            gap:10px;
             align-items:center;
-            gap: 6px;
         }
-        .contest-ticket-value{
-            font-size: 16px;
-            font-weight: 900;
-            color: rgba(255,255,255,0.95);
-            white-space: nowrap;
+        .contest-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            color: #00bfff;
+            font-weight: 700;
+            text-shadow: 0 0 10px #00bfff;
+            margin-bottom: 0;
+        }
+        .contest-countdown {
+            font-size: 20px;
+            color: #ffd700;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: 0 0 6px #ffd700;
+            margin-bottom: 0;
+        }
+        /* Prize distribution box (vertical, compact, no overflow) */
+        .prize-vertical-box {
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 12px;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.16);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #fff;
+            align-items:stretch;
+        }
+        .prize-item {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            font-weight:700;
+            font-size:14px;
+            white-space:nowrap;
             overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        .prize-label { color: #e6f7ff; font-weight:700; }
+        .prize-value { color: #ffd700; font-weight:900; }
+        /* ensure content doesn't overflow horizontally on small screens */
+        .prize-item .prize-label, .prize-item .prize-value {
+            max-width: 60%;
+            overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .contest-buttons-horizontal{
+        .contest-tickets-container {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 12px;
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            margin-bottom: 16px;
             display:flex;
-            gap: 10px;
-            justify-content:center;
-            margin-top: 14px;
+            gap:10px;
+            align-items:center;
+            justify-content:space-between;
         }
-
-        .contest-watch-btn, .contest-rank-btn{
-            background: linear-gradient(145deg,var(--primary-start),var(--primary-end));
-            color:#fff;
-            border:none;
-            padding: 12px 18px;
-            border-radius: 14px;
+        .contest-ticket-row {
+            display:flex;
+            flex-direction:column;
+            gap:6px;
+            align-items:flex-start;
+            min-width: 0;
+        }
+        .contest-ticket-label {
             font-size: 14px;
-            font-weight: 900;
-            cursor:pointer;
-            box-shadow: 0 6px 0 var(--primary-shadow), 0 16px 34px rgba(0,0,0,.28);
-            transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-            white-space: nowrap;
+            color: #cfeeff;
+            font-weight: 700;
+            display:flex;
+            align-items:center;
+            gap:6px;
         }
-        .contest-watch-btn.locked{opacity:0.6;cursor:not-allowed;box-shadow:none;transform:none}
-        .contest-watch-btn:hover, .contest-rank-btn:hover{transform:translateY(-2px);filter:saturate(1.05)}
-        .contest-watch-btn:active, .contest-rank-btn:active{transform:translateY(2px);box-shadow: 0 4px 0 var(--primary-shadow), 0 10px 22px rgba(0,0,0,.22);}
-
-        .contest-back-btn{
+        .contest-ticket-value {
+            font-size: 15px;
+            color: #ffd700;
+            font-weight: bold;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        .contest-buttons-horizontal {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 6px;
+        }
+        .contest-watch-btn, .contest-rank-btn {
+            background: linear-gradient(145deg,var(--primary-start),var(--primary-end));
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 0 var(--primary-shadow), 0 8px 15px rgba(0,0,0,.2);
+            transition: all .1s ease;
+        }
+        .contest-watch-btn.locked { opacity: 0.6; cursor: not-allowed; box-shadow: none; transform: none; }
+        .contest-watch-btn:hover, .contest-rank-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 0 var(--primary-shadow), 0 10px 20px rgba(0,0,0,.25);
+        }
+        .contest-back-btn {
             position: fixed;
-            bottom: 18px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 92%;
-            max-width: 420px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.14);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            color: rgba(255,255,255,0.92);
-            padding: 14px 16px;
-            border-radius: 18px;
-            font-size: 15px;
-            font-weight: 900;
+            background: linear-gradient(145deg, #6c757d, #5a6268);
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 18px 55px rgba(0,0,0,0.40);
+            box-shadow: 0 6px 0 #4e555b;
+            transition: all .1s ease;
+            width: 90%;
+            max-width: 350px;
             z-index: 1000;
         }
-        .contest-back-btn:active{
-            transform: translateX(-50%) translateY(1px);
-            filter: brightness(0.98);
+        .contest-back-btn:active {
+            transform: translateY(3px) translateX(-50%);
+            box-shadow: 0 3px 0 #4e555b;
         }
 
-        @media (max-width: 360px){
-            .contest-title{font-size:22px}
-            .contest-badge{font-size:10px}
-            .meta-value, .contest-countdown{font-size:15px}
-            .prize-value{font-size:17px}
-        }
-
-/* ===== Contest Ranking Screen ===== */
+        /* ===== Contest Ranking Screen ===== */
         .contest-rank-screen {
             display: flex;
             flex-direction: column;
@@ -2894,232 +2740,80 @@ html, body, button, input, textarea, select, .app, .app *{
         }
 
 
-/* ===== Modern typography ===== */
-:root{
-  --font-sans: 'Plus Jakarta Sans','Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
-}
-body{ font-family: var(--font-sans); }
+        /* === Leaderboard polish (layout + no-overlap) === */
+        .contest-rank-actions{
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+        .rank-refresh-btn{
+            color:#fff;
+            border:none;
+            padding:10px 14px;
+            border-radius:10px;
+            font-weight:800;
+            cursor:pointer;
+            background: linear-gradient(145deg, rgba(0,191,255,0.95), rgba(0,139,204,0.95));
+            box-shadow: 0 18px 48px rgba(10,10,10,0.45), 0 6px 0 rgba(0,120,170,0.9), inset 0 -6px 12px rgba(255,255,255,0.05);
+        }
+        .rank-refresh-btn:active{ transform: translateY(1px); box-shadow: 0 12px 28px rgba(0,0,0,0.35), 0 4px 0 rgba(0,120,170,0.9), inset 0 -6px 12px rgba(255,255,255,0.05); }
+        .contest-rank-subtitle{
+            width:100%;
+            max-width:720px;
+            margin: -4px auto 14px;
+            color: rgba(255,255,255,0.70);
+            font-size: 13px;
+            text-align: center;
+        }
 
-/* ===== Contest (English/LTR polish) ===== */
-.contest-header{ direction:ltr; }
-.contest-title{ letter-spacing:-0.02em; }
-.contest-badge{ backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-.meta-pill{ border: 1px solid rgba(255,255,255,0.10); }
-.prize-item{ border: 1px solid rgba(255,255,255,0.10); }
+        /* Prevent overlapping in ranking rows */
+        .contest-rank-item{
+            flex-wrap: nowrap !important;
+            gap: 12px !important;
+        }
+        .contest-rank-name{
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+        }
+        .contest-rank-userid{
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            max-width: 140px !important;
+            flex: 0 1 140px !important;
+            opacity: 0.85;
+        }
+        .contest-rank-tickets{
+            overflow: hidden !important;
+            text-overflow: clip !important;
+            flex: 0 0 auto !important;
+            margin-left: auto;
+            font-variant-numeric: tabular-nums;
+        }
+        .contest-rank-position{
+            order: -1;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            height: 34px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.10);
+            font-weight: 900;
+        }
 
-/* ===== Leaderboard redesign ===== */
-.contest-rank-screen{
-  background: radial-gradient(900px 500px at 20% 0%, rgba(255,215,0,0.18), transparent 60%),
-              radial-gradient(900px 500px at 90% 20%, rgba(0,170,255,0.16), transparent 55%),
-              linear-gradient(135deg, #07101d, #0b1a2f 55%, #0a1730);
-  color:#fff;
-  padding: 14px;
-}
-.contest-rank-header{
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  padding: 10px 10px 12px;
-  margin: -14px -14px 12px;
-  background: rgba(7,16,29,0.78);
-  border-bottom: 1px solid rgba(255,255,255,0.10);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.contest-rank-title{
-  margin:0;
-  font-weight: 800;
-  font-size: 18px;
-  letter-spacing: -0.02em;
-}
-.leaderboard-tools{
-  width: min(980px, 100%);
-  display:flex;
-  gap: 10px;
-  align-items: center;
-  margin: 0 auto 12px;
-}
-.lb-search{
-  flex: 1;
-  display:flex;
-  align-items:center;
-  gap: 8px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 14px;
-  padding: 10px 12px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-}
-.lb-icon{ width: 18px; height: 18px; opacity: 0.85; }
-.lb-input{
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: #fff;
-  font-size: 14px;
-  font-family: var(--font-sans);
-}
-.lb-input::placeholder{ color: rgba(255,255,255,0.55); }
-.lb-refresh{
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,215,0,0.12);
-  color:#fff;
-  border-radius: 14px;
-  padding: 10px 12px;
-  font-weight: 700;
-  cursor:pointer;
-  transition: transform .15s ease, background .15s ease;
-}
-.lb-refresh:active{ transform: scale(0.98); }
-.lb-refresh:hover{ background: rgba(255,215,0,0.18); }
-
-.podium{
-  width: min(980px, 100%);
-  margin: 0 auto 14px;
-  display:grid;
-  grid-template-columns: 1fr 1.15fr 1fr;
-  gap: 10px;
-  align-items: stretch;
-}
-.podium-card{
-  position: relative;
-  border-radius: 18px;
-  padding: 12px 12px 14px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 14px 40px rgba(0,0,0,0.22);
-  overflow:hidden;
-}
-.podium-card::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  background: radial-gradient(500px 200px at 20% 0%, rgba(255,215,0,0.35), transparent 60%);
-  opacity: 0.8;
-  pointer-events:none;
-}
-.podium-1{ transform: translateY(-6px); }
-.podium-rank{
-  position: relative;
-  display:inline-flex;
-  align-items:center;
-  gap: 8px;
-  font-weight: 800;
-  letter-spacing:-0.02em;
-  opacity: 0.95;
-}
-.podium-avatar{
-  position: relative;
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  margin-top: 10px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(0,0,0,0.2);
-}
-.podium-name{
-  position: relative;
-  margin-top: 10px;
-  font-weight: 800;
-  font-size: 14px;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.podium-score{
-  position: relative;
-  margin-top: 4px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.75);
-}
-
-.contest-rank-list{
-  width: min(980px, 100%);
-  margin: 0 auto;
-  display:flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* Row cards */
-.contest-rank-item{
-  border-radius: 16px;
-  padding: 10px 12px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.10);
-  display:grid;
-  grid-template-columns: 54px 1fr 160px 120px 72px;
-  align-items:center;
-  gap: 10px;
-  box-shadow: 0 10px 26px rgba(0,0,0,0.18);
-}
-.contest-rank-item img{
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 14px !important;
-  border: 1px solid rgba(255,255,255,0.14);
-}
-.contest-rank-name .name-main{
-  font-weight: 800;
-  letter-spacing:-0.01em;
-}
-.contest-rank-username{
-  margin-top: 2px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.65);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.contest-rank-userid{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-  font-size: 12px;
-  color: rgba(255,255,255,0.70);
-  opacity: 0.9;
-  overflow:hidden;
-  text-overflow: ellipsis;
-}
-.contest-rank-tickets{
-  font-weight: 800;
-  text-align:right;
-}
-.contest-rank-position{
-  justify-self: end;
-  font-weight: 900;
-  padding: 8px 10px;
-  border-radius: 12px;
-  background: rgba(255,215,0,0.10);
-  border: 1px solid rgba(255,215,0,0.16);
-  min-width: 48px;
-  text-align:center;
-}
-.contest-rank-item.current-player{
-  background: rgba(0,170,255,0.10);
-  border-color: rgba(0,170,255,0.22);
-}
-.contest-rank-item[data-rank="1"] .contest-rank-position{ background: rgba(255,215,0,0.18); }
-.contest-rank-item[data-rank="2"] .contest-rank-position{ background: rgba(255,255,255,0.12); }
-.contest-rank-item[data-rank="3"] .contest-rank-position{ background: rgba(205,127,50,0.18); }
-
-/* Responsive */
-@media (max-width: 560px){
-  .podium{ grid-template-columns: 1fr 1fr 1fr; }
-  .contest-rank-item{
-    grid-template-columns: 54px 1fr 90px 60px;
-  }
-  .contest-rank-userid{ display:none; }
-  .contest-rank-tickets{ text-align:right; }
-}
-@media (max-width: 380px){
-  .contest-rank-item{ grid-template-columns: 54px 1fr 70px 56px; }
-  .lb-refresh{ padding: 10px 10px; }
-}
+        @media (max-width: 560px){
+            .contest-rank-item{
+                flex-wrap: wrap !important;
+                align-items: flex-start;
+            }
+            .contest-rank-userid{ display:none !important; }
+            .contest-rank-avatar{ width:48px; height:48px; flex: 0 0 48px; }
+            .contest-rank-position{ width: 44px; }
+        }
+        @media (max-width: 380px){
+            .contest-rank-title{ font-size: 20px; }
+            .rank-refresh-btn{ padding:9px 12px; }
+        }
 
 </style>
 </head>
@@ -3327,7 +3021,7 @@ body{ font-family: var(--font-sans); }
 
 <div class="w-bottom-alert" id="withdrawHistoryBottomAlert" role="status" aria-live="polite">
   <span class="w-alert-dot" aria-hidden="true"></span>
-  Notice: Withdrawal requests are processed within 24 hours. If the status is Pending, please wait a bit and double‑check your details.
+  تنبيه: طلبات السحب تُعالج خلال 24 ساعة. إذا كانت الحالة Pending انتظر قليلًا وراجع البيانات.
 </div>
 </div>
 </div>
@@ -3387,92 +3081,17 @@ body{ font-family: var(--font-sans); }
 </div>
 <!-- Contest Screen -->
 <div class="app-screen contest-screen" id="contestScreen">
-<div class="contest-header" dir="ltr">
-  <div class="contest-hero">
-    <div class="contest-hero-top">
-      <h2 class="contest-title">🏆 Prize Contest</h2>
-      <div class="contest-badge">PRIZE POOL • 100,000 SHIB</div>
-    </div>
-
-    <div class="contest-meta">
-      <div class="meta-pill meta-countdown" aria-label="Countdown">
-        <span class="meta-label">Ends in</span>
-        <span class="contest-countdown" id="contestCountdown">15d 00h 00m 00s</span>
-      </div>
-      <div class="meta-pill meta-info" aria-label="Winners">
-        <span class="meta-label">Winners</span>
-        <span class="meta-value">Top 5</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Prize distribution -->
-  <div class="prize-vertical-box" id="prizeBox" aria-label="Prize distribution">
-    <div class="prize-item prize-top">
-      <div class="prize-left">
-        <div class="prize-medal">🥇</div>
-        <div class="prize-text">
-          <div class="prize-label">1st Place</div>
-          <div class="prize-sub">1st place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">50,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item prize-second">
-      <div class="prize-left">
-        <div class="prize-medal">🥈</div>
-        <div class="prize-text">
-          <div class="prize-label">2nd Place</div>
-          <div class="prize-sub">2nd place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">25,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item">
-      <div class="prize-left">
-        <div class="prize-medal">🥉</div>
-        <div class="prize-text">
-          <div class="prize-label">3rd Place</div>
-          <div class="prize-sub">3rd place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">10,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item">
-      <div class="prize-left">
-        <div class="prize-medal">🏅</div>
-        <div class="prize-text">
-          <div class="prize-label">4th Place</div>
-          <div class="prize-sub">4th place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">10,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item">
-      <div class="prize-left">
-        <div class="prize-medal">⭐</div>
-        <div class="prize-text">
-          <div class="prize-label">5th Place</div>
-          <div class="prize-sub">5th place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">5,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-  </div>
+<div class="contest-header">
+<h2 class="contest-title">🏆 Contest</h2>
+<div class="contest-countdown" id="contestCountdown">15d 00h 00m 00s</div>
+<!-- Prize distribution moved to a vertical boxed layout -->
+<div class="prize-vertical-box" id="prizeBox">
+<div class="prize-item"><div class="prize-label">1st Place</div><div class="prize-value">500,000 SHIB</div></div>
+<div class="prize-item"><div class="prize-label">2nd Place</div><div class="prize-value">250,000 SHIB</div></div>
+<div class="prize-item"><div class="prize-label">3rd Place</div><div class="prize-value">100,000 SHIB</div></div>
+<div class="prize-item"><div class="prize-label">4th Place</div><div class="prize-value">100,000 SHIB</div></div>
+<div class="prize-item"><div class="prize-label">5th Place</div><div class="prize-value">50,000 SHIB</div></div>
+</div>
 </div>
 <div aria-label="Contest Tickets Summary" class="contest-tickets-container" role="region">
 <div class="contest-ticket-row">
@@ -3499,42 +3118,13 @@ body{ font-family: var(--font-sans); }
 <!-- Contest Ranking Screen -->
 <div class="app-screen contest-rank-screen" id="contestRankScreen">
 <div class="contest-rank-header">
-<h2 class="contest-rank-title">🏆 Top Players</h2>
-<div>
-<button class="back-btn" onclick="hideContestRank()">Back</button>
-</div>
-</div>
-<div class="leaderboard-tools" aria-label="Leaderboard tools">
-  <div class="lb-search" role="search">
-    <svg class="lb-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 18a8 8 0 1 1 5.293-14.293A8 8 0 0 1 10 18Zm0-2a6 6 0 1 0-4.243-1.757A6 6 0 0 0 10 16Zm9.707 4.293-4.11-4.11 1.414-1.414 4.11 4.11-1.414 1.414Z" fill="currentColor"/></svg>
-    <input id="leaderboardSearch" class="lb-input" type="search" placeholder="Search by name, @username, or ID" autocomplete="off" />
-  </div>
-  <button class="lb-refresh" type="button" onclick="loadContestRank()" aria-label="Refresh leaderboard">Refresh</button>
-</div>
-
-<div class="podium" id="podium" aria-label="Top 3 podium">
-  <div class="podium-card podium-2" data-r="2">
-    <div class="podium-rank">#2</div>
-    <img class="podium-avatar" id="podiumAvatar2" src="https://giftgogame.com/static/thumbnails/5170233102089322756.webp" alt="Second place avatar" onerror="this.onerror=null;this.src='https://giftgogame.com/static/thumbnails/5170233102089322756.webp';">
-    <div class="podium-name" id="podiumName2">—</div>
-    <div class="podium-score"><span id="podiumTickets2">0</span> Tickets</div>
-  </div>
-
-  <div class="podium-card podium-1" data-r="1">
-    <div class="podium-rank">#1</div>
-    <img class="podium-avatar" id="podiumAvatar1" src="https://giftgogame.com/static/thumbnails/5170233102089322756.webp" alt="First place avatar" onerror="this.onerror=null;this.src='https://giftgogame.com/static/thumbnails/5170233102089322756.webp';">
-    <div class="podium-name" id="podiumName1">—</div>
-    <div class="podium-score"><span id="podiumTickets1">0</span> Tickets</div>
-  </div>
-
-  <div class="podium-card podium-3" data-r="3">
-    <div class="podium-rank">#3</div>
-    <img class="podium-avatar" id="podiumAvatar3" src="https://giftgogame.com/static/thumbnails/5170233102089322756.webp" alt="Third place avatar" onerror="this.onerror=null;this.src='https://giftgogame.com/static/thumbnails/5170233102089322756.webp';">
-    <div class="podium-name" id="podiumName3">—</div>
-    <div class="podium-score"><span id="podiumTickets3">0</span> Tickets</div>
+  <h2 class="contest-rank-title">🏆 Leaderboard</h2>
+  <div class="contest-rank-actions">
+    <button class="rank-refresh-btn" type="button" onclick="loadContestRank()">Refresh</button>
+    <button class="back-btn" onclick="hideContestRank()">Back</button>
   </div>
 </div>
-
+<div class="contest-rank-subtitle">Your row is highlighted. Rankings update live.</div>
 <!-- PERSONAL USER BOX: shows the current user's avatar + row with (user id) | (username centered) | (tickets) | (rank) -->
 <div class="personal-info-box" id="personalUserBox" style="display:none;">
 <!-- content injected by JS -->
@@ -5614,13 +5204,7 @@ showCustomAlert('Error!', 'Error receiving prize from the server. Please try aga
             if (!players || players.length === 0) {
                 list.innerHTML = `<div style="text-align:center;color:#cfeeff;padding:20px;border-radius:10px;background:rgba(255,255,255,0.02);">No entries yet.</div>`;
                 // still render personal box if possible
-                renderPodium([]);
-                bindLeaderboardSearch();
-                applyLeaderboardSearchFilter();
                 renderPersonalUserBox(players);
-            renderPodium(players);
-            bindLeaderboardSearch();
-            applyLeaderboardSearchFilter();
                 return;
             }
 
@@ -5675,7 +5259,7 @@ showCustomAlert('Error!', 'Error receiving prize from the server. Please try aga
                 // Construct safe HTML for the row with strict truncation rules applied via CSS
                 // Note: tickets shown as number only per requirement (e.g., "400")
                 return `
-                    <div class="${rowClass}" data-rank="${pos}" role="article" aria-label="Player ${pos}">
+                    <div class="${rowClass}" role="article" aria-label="Player ${pos}">
                         <img src="${avatarSrc || DEFAULT_AVATAR}" class="contest-rank-avatar" alt="" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
                         <div class="contest-rank-name" title="${firstNameSafe}">
                             <div class="name-main">${escapeHtml(displayName)}</div>
@@ -5705,74 +5289,6 @@ showCustomAlert('Error!', 'Error receiving prize from the server. Please try aga
         }
 
         // Render the personal user golden box using tgUser and authoritative players array when available
-
-        /* ===== Leaderboard UI helpers (search + podium) ===== */
-        let leaderboardSearchBound = false;
-
-        function renderPodium(players) {
-            const podium = document.getElementById('podium');
-            if (!podium) return;
-
-            const top = Array.isArray(players) ? players.slice(0, 3) : [];
-            const slots = [
-                { r: 1, p: top[0] },
-                { r: 2, p: top[1] },
-                { r: 3, p: top[2] },
-            ];
-
-            slots.forEach(({ r, p }) => {
-                const nameEl = document.getElementById(`podiumName${r}`);
-                const ticketsEl = document.getElementById(`podiumTickets${r}`);
-                const avatarEl = document.getElementById(`podiumAvatar${r}`);
-                if (!nameEl || !ticketsEl || !avatarEl) return;
-
-                if (!p) {
-                    nameEl.textContent = '—';
-                    ticketsEl.textContent = '0';
-                    avatarEl.src = DEFAULT_AVATAR;
-                    return;
-                }
-
-                const rawFirstName = p.first_name || p.name || p.full_name || '';
-                const rawUsername = p.username || p.user_name || p.tg_username || '';
-                const photoUrl = p.photo_url || p.photo || p.avatar || '';
-                const safeName = String(rawFirstName || (rawUsername ? `@${rawUsername}` : 'Player')).replace(/</g,'').replace(/>/g,'');
-                const tickets = Number(p.tickets || p.tickets_count || p.points || 0).toLocaleString('en-US');
-
-                nameEl.textContent = safeName;
-                ticketsEl.textContent = tickets;
-                avatarEl.src = photoUrl || DEFAULT_AVATAR;
-            });
-        }
-
-        function bindLeaderboardSearch() {
-            if (leaderboardSearchBound) return;
-            const input = document.getElementById('leaderboardSearch');
-            if (!input) return;
-
-            const handler = () => applyLeaderboardSearchFilter();
-            input.addEventListener('input', handler, { passive: true });
-            leaderboardSearchBound = true;
-        }
-
-        function applyLeaderboardSearchFilter() {
-            const input = document.getElementById('leaderboardSearch');
-            const list = document.getElementById('contestRankList');
-            if (!input || !list) return;
-
-            const q = (input.value || '').trim().toLowerCase();
-            const items = list.querySelectorAll('.contest-rank-item');
-
-            items.forEach(el => {
-                if (!q) {
-                    el.style.display = '';
-                    return;
-                }
-                const hay = (el.innerText || '').toLowerCase();
-                el.style.display = hay.includes(q) ? '' : 'none';
-            });
-        }
-
         function renderPersonalUserBox(players) {
             const box = document.getElementById('personalUserBox');
             const avatarEl = document.getElementById('personalAvatar');
