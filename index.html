@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
 <title>SHIB Ads WebApp</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
@@ -39,6 +39,17 @@
 
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Plus Jakarta Sans','Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;overflow:hidden;background: #0d0c1d;color:#111; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+
+        html, body{
+            touch-action: manipulation;
+            -ms-touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+        }
+        /* Prevent iOS zoom-on-focus */
+        @media (max-width: 768px){
+            input, select, textarea{ font-size: 16px !important; }
+        }
+
         
         .app-screen {
             position: fixed;
@@ -78,7 +89,9 @@
             align-items:center;
             justify-content:center;
             gap: 10px;
+                    transform: translateY(-15vh);
         }
+
 
         /* Bigger circle (badge) above the dots */
         .loading-badge{
@@ -96,8 +109,8 @@
             gap: 6px;
         }
         .loading-dot{
-            width: 16px;
-            height: 16px;
+            width: 6px;
+            height: 6px;
             border-radius: 999px;
             animation: dotPulse 2.25s infinite ease-in-out;
             transform: translateY(0) scale(0.45);
@@ -5673,5 +5686,20 @@ showCustomAlert('Error!', 'Error receiving prize from the server. Please try aga
             document.removeEventListener('click', handler);
         });
     </script>
+
+<script>
+/* Prevent double-tap to zoom (iOS Safari) */
+(function(){
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function (event) {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+})();
+</script>
+
 </body>
 </html>
