@@ -1,29 +1,12 @@
 <!DOCTYPE html>
 
-<html lang
-<div class="spinner"></div>
-="en">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>SHIB Ads WebApp</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-/* Circular Spinner */
-@keyframes rotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.spinner {
-  border: 8px solid rgba(255, 255, 255, 0.3);
-  border-top: 8px solid #00bfff; /* Color of spinner */
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: rotate 1.5s linear infinite;
-}
-
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap'); 
 
@@ -3072,7 +3055,7 @@ body{ font-family: var(--font-sans); }
 
 </style>
 </head>
-<body>
+<body style='background: linear-gradient(to right, #2c3e50, #4ca1af); color: white; font-family: "Inter", sans-serif; padding: 0; margin: 0;'>
 <div class="loading-screen" id="loadingScreen">
 <div class="loader">
 <span class="l">
@@ -3114,11 +3097,11 @@ body{ font-family: var(--font-sans); }
 </div>
 <div class="app-screen main-screen" id="mainScreen">
 <div class="balance" id="shibBalance">
-<img alt="shib" id="shibIcon" src="https://files.catbox.moe/19ugek.png"/>
+<img alt="shib" id="shibIcon" src="https://files.catbox.moe/19ugek.png" style="border-radius: 12px;"/>
 <span id="shibBalanceText">0 SHIB</span>
 </div>
-<button aria-label="Open Contest" class="contest-btn-under-balance" onclick="showContest()">
-<img alt="Contest" src="https://app.crybblewars.org/main/leader_button/main-icon-top.webp"/>
+<button aria-label="Open Contest" class="contest-btn-under-balance" onclick="showContest()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">
+<img alt="Contest" src="https://app.crybblewars.org/main/leader_button/main-icon-top.webp" style="border-radius: 12px;"/>
 </button>
 <div aria-hidden="false" class="progress-group-container">
 <div aria-label="Ads progress" class="daily-progress-container" role="region">
@@ -3135,23 +3118,23 @@ body{ font-family: var(--font-sans); }
 </div>
 </div>
 <div class="user-circle" onclick="circleClick()">
-<img alt="User" id="userImage" src=""/>
-<div class="placeholder" aria-label="User profile">👤</div>
+<img alt="User" id="userImage" src="" style="border-radius: 12px;"/>
+<div aria-label="User profile" class="placeholder">👤</div>
 </div>
 <div class="user-username" id="userName"></div>
 <div class="user-id" id="userId"></div>
-<div class="main-content"></div>
+<div class="main-content" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 20px;"></div>
 <div class="button-container">
-<button class="nav-button" onclick="watchAds()"><span>Watch</span></button>
-<button class="nav-button task-btn" onclick="showTask()"><span>Task</span></button>
-<button class="nav-button" onclick="showSpin()"><span>Spin</span></button>
-<button class="nav-button withdraw-btn-nav" onclick="showWithdraw()"><span>Withdraw</span></button>
-<button class="nav-button" onclick="inviteFriends()"><span>Invite</span></button>
+<button class="nav-button" onclick="watchAds()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;"><span>Watch</span></button>
+<button class="nav-button task-btn" onclick="showTask()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;"><span>Task</span></button>
+<button class="nav-button" onclick="showSpin()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;"><span>Spin</span></button>
+<button class="nav-button withdraw-btn-nav" onclick="showWithdraw()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;"><span>Withdraw</span></button>
+<button class="nav-button" onclick="inviteFriends()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;"><span>Invite</span></button>
 </div>
 </div>
 <div class="app-screen task-screen" id="taskScreen">
 <div class="task-header">
-<h2 class="task-title">Daily Tasks</h2>
+<h2 class="task-title" style="font-family: 'Orbitron', sans-serif; color: #ffffff; font-weight: 700;">Daily Tasks</h2>
 </div>
 <div class="task-content-container" id="taskContentContainer">
 <div class="task-link-container" id="taskLinkArea" style="display:none;">
@@ -3162,13 +3145,13 @@ body{ font-family: var(--font-sans); }
 <div class="task-link-progress-bar">
 <div class="task-link-progress-fill" id="taskLinkProgressFill" style="width:0%"></div>
 </div>
-<button class="task-link-button" id="taskLinkBtn" onclick="handleTaskLinkClick()">get 5 SHIB</button>
+<button class="task-link-button" id="taskLinkBtn" onclick="handleTaskLinkClick()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">get 5 SHIB</button>
 </div>
 <div id="taskListContainer">
 </div>
 <div class="no-channel-tasks" id="noChannelTasksNotice" style="display:none;">No channel tasks now.</div>
 </div>
-<button class="task-back-btn" onclick="hideTask()">Back to Main</button>
+<button class="task-back-btn" onclick="hideTask()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Back to Main</button>
 </div>
 <div class="app-screen spin-screen" id="spinScreen">
 <div class="idle" id="wheelBox">
@@ -3176,17 +3159,16 @@ body{ font-family: var(--font-sans); }
 <div aria-hidden="true" class="spin-light"></div>
 <canvas aria-label="Spin wheel" height="280" id="wheelCanvas" width="280"></canvas>
 </div>
-<button class="spin-btn" id="spinBtn" onclick="startSpin()">SPIN</button>
+<button class="spin-btn" id="spinBtn" onclick="startSpin()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">SPIN</button>
 <div class="spin-result" id="spinResult"></div>
-<button class="spin-back" onclick="hideSpin()">Back</button>
+<button class="spin-back" onclick="hideSpin()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Back</button>
 </div>
-
 <div class="app-screen withdraw-screen" id="withdrawScreen">
 <div class="withdraw-container">
 <div class="w-hero">
 <div class="w-hero-top">
 <div class="w-badge">Payout Center</div>
-<button aria-label="Close" class="w-icon-btn" onclick="hideWithdraw()" type="button">✕</button>
+<button aria-label="Close" class="w-icon-btn" onclick="hideWithdraw()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;" type="button">✕</button>
 </div>
 </div>
 <div class="w-balance-card">
@@ -3238,29 +3220,26 @@ body{ font-family: var(--font-sans); }
 <input id="withdrawAmount" min="4000" placeholder="Enter amount (SHIB)" type="number" value=""/>
 </div>
 <div aria-label="Quick amounts" class="w-chips">
-<button class="w-chip" data-withdraw-chip="4000" type="button">Min</button>
-<button class="w-chip" data-withdraw-chip="10000" type="button">10K</button>
-<button class="w-chip" data-withdraw-chip="25000" type="button">25K</button>
-<button class="w-chip" data-withdraw-chip="max" type="button">Max</button>
+<button class="w-chip" data-withdraw-chip="4000" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;" type="button">Min</button>
+<button class="w-chip" data-withdraw-chip="10000" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;" type="button">10K</button>
+<button class="w-chip" data-withdraw-chip="25000" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;" type="button">25K</button>
+<button class="w-chip" data-withdraw-chip="max" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;" type="button">Max</button>
 </div>
 </div>
 </div>
 <div class="w-actions">
-  <button class="withdraw-btn w-primary" disabled="" id="withdrawRequestBtn" onclick="confirmWithdraw()">Withdraw</button>
-  <button class="withdraw-btn w-outline" type="button" onclick="displayWithdrawalsFull()">History</button>
+<button class="withdraw-btn w-primary" disabled="" id="withdrawRequestBtn" onclick="confirmWithdraw()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Withdraw</button>
+<button class="withdraw-btn w-outline" onclick="displayWithdrawalsFull()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;" type="button">History</button>
 </div>
 </div>
-<button class="withdraw-secondary-btn w-secondary" onclick="hideWithdraw()">Back to Main</button>
-<div class="w-bottom-alert" id="withdrawBottomAlert" role="status" aria-live="polite">
-  <span class="w-alert-dot" aria-hidden="true"></span>
+<button class="withdraw-secondary-btn w-secondary" onclick="hideWithdraw()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Back to Main</button>
+<div aria-live="polite" class="w-bottom-alert" id="withdrawBottomAlert" role="status">
+<span aria-hidden="true" class="w-alert-dot"></span>
   Withdrawals are processed within 24 hours. Please double-check your details.
 </div>
 </div>
-</div>
-
 
 <!-- Fullscreen withdrawal history (opened from History button) -->
-
 <div class="app-screen withdraw-history-screen" id="withdrawHistoryScreen">
 <div class="withdraw-history-full" id="withdrawHistoryFull">
 <div class="w-history-hero">
@@ -3268,23 +3247,21 @@ body{ font-family: var(--font-sans); }
 <div class="w-history-title">Withdrawal History</div>
 <div class="w-history-sub">Track your payout requests and their status.</div>
 </div>
-<button class="back-btn w-history-back" onclick="closeWithdrawHistory()">Back</button>
+<button class="back-btn w-history-back" onclick="closeWithdrawHistory()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Back</button>
 </div>
 <div class="history-list" id="withdrawHistoryList">
 <!-- items injected here -->
 </div>
-
-<div class="w-bottom-alert" id="withdrawHistoryBottomAlert" role="status" aria-live="polite">
-  <span class="w-alert-dot" aria-hidden="true"></span>
+<div aria-live="polite" class="w-bottom-alert" id="withdrawHistoryBottomAlert" role="status">
+<span aria-hidden="true" class="w-alert-dot"></span>
   Notice: Withdrawal requests are processed within 24 hours. If the status is Pending, please wait a bit and double‑check your details.
 </div>
 </div>
 </div>
-
 <div aria-label="Invite" class="app-screen invite-screen" id="inviteScreen">
 <div class="invite-shell">
 <div class="invite-topbar">
-<button aria-label="Back" class="invite-back-icon" onclick="hideInvite()">←</button>
+<button aria-label="Back" class="invite-back-icon" onclick="hideInvite()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">←</button>
 <div class="invite-topbar-title">
 <div class="invite-topbar-kicker">Invite</div>
 <div class="invite-topbar-headline">Invite Friends</div>
@@ -3315,11 +3292,11 @@ body{ font-family: var(--font-sans); }
 <div class="invite-link-label">Your invite link</div>
 <div class="invite-link-row">
 <input class="invite-link-input" dir="ltr" id="referralLinkInput" readonly="" type="text" value="Generating link..."/>
-<button class="invite-mini-btn" onclick="copyReferralLink()">Copy</button>
+<button class="invite-mini-btn" onclick="copyReferralLink()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Copy</button>
 </div>
 <div class="invite-actions">
-<button class="invite-primary-btn" onclick="shareReferralLink()">Share</button>
-<button class="invite-ghost-btn" onclick="copyReferralLink()">Copy again</button>
+<button class="invite-primary-btn" onclick="shareReferralLink()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Share</button>
+<button class="invite-ghost-btn" onclick="copyReferralLink()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Copy again</button>
 </div>
 <div class="invite-hint">Tip: Share this link. When your friend opens the app from it, they’ll be counted as your referral.</div>
 </div>
@@ -3331,137 +3308,129 @@ body{ font-family: var(--font-sans); }
 <li>You earn 40% of the referral ad revenue.</li>
 </ul>
 </div>
-<button class="back-btn invite-back-btn" onclick="hideInvite()">Back to Home</button>
+<button class="back-btn invite-back-btn" onclick="hideInvite()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Back to Home</button>
 </div>
 </div>
 <!-- Contest Screen -->
 <div class="app-screen contest-screen" id="contestScreen">
 <div class="contest-header" dir="ltr">
-  <div class="contest-hero">
-    <div class="contest-hero-top">
-      <h2 class="contest-title">🏆 Prize Contest</h2>
-      <div class="contest-badge">PRIZE POOL • 100,000 SHIB</div>
-    </div>
-
-    <div class="contest-meta">
-      <div class="meta-pill meta-countdown" aria-label="Countdown">
-        <span class="meta-label">Ends in</span>
-        <span class="contest-countdown" id="contestCountdown">10d 00h 00m 00s</span>
-      </div>
-      <div class="meta-pill meta-info" aria-label="Winners">
-        <span class="meta-label">Winners</span>
-        <span class="meta-value">Top 5</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Prize distribution -->
-  <div class="prize-vertical-box" id="prizeBox" aria-label="Prize distribution">
-    <div class="prize-item prize-top">
-      <div class="prize-left">
-        <div class="prize-medal">🥇</div>
-        <div class="prize-text">
-          <div class="prize-label">1st Place</div>
-          <div class="prize-sub">1st place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">50,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item prize-second">
-      <div class="prize-left">
-        <div class="prize-medal">🥈</div>
-        <div class="prize-text">
-          <div class="prize-label">2nd Place</div>
-          <div class="prize-sub">2nd place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">25,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item">
-      <div class="prize-left">
-        <div class="prize-medal">🥉</div>
-        <div class="prize-text">
-          <div class="prize-label">3rd Place</div>
-          <div class="prize-sub">3rd place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">10,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item">
-      <div class="prize-left">
-        <div class="prize-medal">🏅</div>
-        <div class="prize-text">
-          <div class="prize-label">4th Place</div>
-          <div class="prize-sub">4th place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">10,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item">
-      <div class="prize-left">
-        <div class="prize-medal">⭐</div>
-        <div class="prize-text">
-          <div class="prize-label">5th Place</div>
-          <div class="prize-sub">5th place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">5,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-  </div>
+<div class="contest-hero">
+<div class="contest-hero-top">
+<h2 class="contest-title" style="font-family: 'Orbitron', sans-serif; color: #ffffff; font-weight: 700;">🏆 Prize Contest</h2>
+<div class="contest-badge">PRIZE POOL • 100,000 SHIB</div>
+</div>
+<div class="contest-meta">
+<div aria-label="Countdown" class="meta-pill meta-countdown">
+<span class="meta-label">Ends in</span>
+<span class="contest-countdown" id="contestCountdown">10d 00h 00m 00s</span>
+</div>
+<div aria-label="Winners" class="meta-pill meta-info">
+<span class="meta-label">Winners</span>
+<span class="meta-value">Top 5</span>
+</div>
+</div>
+</div>
+<!-- Prize distribution -->
+<div aria-label="Prize distribution" class="prize-vertical-box" id="prizeBox">
+<div class="prize-item prize-top">
+<div class="prize-left">
+<div class="prize-medal">🥇</div>
+<div class="prize-text">
+<div class="prize-label">1st Place</div>
+<div class="prize-sub">1st place</div>
+</div>
+</div>
+<div class="prize-amount">
+<span class="prize-value">50,000</span><span class="prize-unit">SHIB</span>
+</div>
+</div>
+<div class="prize-item prize-second">
+<div class="prize-left">
+<div class="prize-medal">🥈</div>
+<div class="prize-text">
+<div class="prize-label">2nd Place</div>
+<div class="prize-sub">2nd place</div>
+</div>
+</div>
+<div class="prize-amount">
+<span class="prize-value">25,000</span><span class="prize-unit">SHIB</span>
+</div>
+</div>
+<div class="prize-item">
+<div class="prize-left">
+<div class="prize-medal">🥉</div>
+<div class="prize-text">
+<div class="prize-label">3rd Place</div>
+<div class="prize-sub">3rd place</div>
+</div>
+</div>
+<div class="prize-amount">
+<span class="prize-value">10,000</span><span class="prize-unit">SHIB</span>
+</div>
+</div>
+<div class="prize-item">
+<div class="prize-left">
+<div class="prize-medal">🏅</div>
+<div class="prize-text">
+<div class="prize-label">4th Place</div>
+<div class="prize-sub">4th place</div>
+</div>
+</div>
+<div class="prize-amount">
+<span class="prize-value">10,000</span><span class="prize-unit">SHIB</span>
+</div>
+</div>
+<div class="prize-item">
+<div class="prize-left">
+<div class="prize-medal">⭐</div>
+<div class="prize-text">
+<div class="prize-label">5th Place</div>
+<div class="prize-sub">5th place</div>
+</div>
+</div>
+<div class="prize-amount">
+<span class="prize-value">5,000</span><span class="prize-unit">SHIB</span>
+</div>
+</div>
+</div>
 </div>
 <div aria-label="Contest Tickets Summary" class="contest-tickets-container" role="region">
 <div class="contest-ticket-row">
 <span class="contest-ticket-label">
-<img alt="ticket" class="contest-ticket-img" src="https://app.crybblewars.org/main/voucher_button/cards-icon.webp"/>
+<img alt="ticket" class="contest-ticket-img" src="https://app.crybblewars.org/main/voucher_button/cards-icon.webp" style="border-radius: 12px;"/>
                     My Tickets
                 </span>
 <span class="contest-ticket-value" id="myTickets">0</span>
 </div>
 <div class="contest-ticket-row" style="align-items:flex-end;">
 <span class="contest-ticket-label">
-<img alt="ticket" class="contest-ticket-img" src="https://app.crybblewars.org/main/voucher_button/cards-icon.webp"/>
+<img alt="ticket" class="contest-ticket-img" src="https://app.crybblewars.org/main/voucher_button/cards-icon.webp" style="border-radius: 12px;"/>
                     All Tickets
                 </span>
 <span class="contest-ticket-value" id="allTickets">0</span>
 </div>
 </div>
 <div class="contest-buttons-horizontal">
-<button class="contest-watch-btn" onclick="watchContestAd()">Watch</button>
-<button class="contest-rank-btn" onclick="showContestRank()">Ranking</button>
+<button class="contest-watch-btn" onclick="watchContestAd()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Watch</button>
+<button class="contest-rank-btn" onclick="showContestRank()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Ranking</button>
 </div>
-<button class="contest-back-btn" onclick="hideContest()">Back to Main</button>
+<button class="contest-back-btn" onclick="hideContest()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Back to Main</button>
 </div>
 <!-- Contest Ranking Screen -->
 <div class="app-screen contest-rank-screen" id="contestRankScreen">
 <div class="contest-rank-header">
-  <div class="rank-header-left">
-    <h2 class="contest-rank-title">🏆 Top Players</h2>
-    <div class="rank-sub" id="rankUpdatedAt" aria-live="polite"></div>
-  </div>
-  <div class="rank-header-actions">
-<button class="back-btn" onclick="hideContestRank()">Back</button>
-  </div>
+<div class="rank-header-left">
+<h2 class="contest-rank-title" style="font-family: 'Orbitron', sans-serif; color: #ffffff; font-weight: 700;">🏆 Top Players</h2>
+<div aria-live="polite" class="rank-sub" id="rankUpdatedAt"></div>
 </div>
-
-
+<div class="rank-header-actions">
+<button class="back-btn" onclick="hideContestRank()" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">Back</button>
+</div>
+</div>
 <!-- PERSONAL USER BOX: shows the current user's avatar + row with (user id) | (username centered) | (tickets) | (rank) -->
 <div class="personal-info-box" id="personalUserBox" style="display:none;">
 <!-- content injected by JS -->
-<img alt="avatar" class="personal-avatar" id="personalAvatar" src=""/>
+<img alt="avatar" class="personal-avatar" id="personalAvatar" src="" style="border-radius: 12px;"/>
 <div class="personal-info-row">
 <div class="personal-id">
 <div class="label">ID</div>
@@ -3490,7 +3459,7 @@ body{ font-family: var(--font-sans); }
 <div class="alert-icon" id="alertIcon"></div>
 <div class="alert-title" id="alertTitle"></div>
 <div class="alert-message" id="alertMessage"></div>
-<button class="alert-close-btn" onclick="document.getElementById('customAlert').classList.remove('visible')">OK</button>
+<button class="alert-close-btn" onclick="document.getElementById('customAlert').classList.remove('visible')" onmouseout="this.style.transform='scale(1)'" onmouseover="this.style.transform='scale(1.1)'" style="background: linear-gradient(145deg, #0b86d6, #006bb3); border: none; border-radius: 12px; padding: 12px 20px; color: white; font-size: 14px; font-weight: 900; cursor: pointer; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;">OK</button>
 </div>
 </div>
 <!-- Toast container (for top toasts). Created in HTML so CSS applies immediately -->
