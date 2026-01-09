@@ -1,4 +1,4 @@
-    // ===== AdsGram (Rewarded) Integration =====
+// ===== AdsGram (Rewarded) Integration =====
         // Docs: https://docs.adsgram.ai/publisher/reward-interstitial-integration
         // blockId: int-20679
         let AdsGramController = null;
@@ -2283,9 +2283,9 @@ showCustomAlert('Error!', 'Error receiving prize from the server. Please try aga
             playBGAudio();
             document.removeEventListener('click', handler);
         });
-    </script>
+    
 
-<script>
+
 /* Prevent double-tap to zoom (iOS Safari) */
 (function(){
   let lastTouchEnd = 0;
