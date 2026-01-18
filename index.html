@@ -1,428 +1,93 @@
 <!DOCTYPE html>
-
-<html lang="en">
+<html lang="ar">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<title>SHIB Ads WebApp</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Media System</title>
     
-
-<link rel="stylesheet" href="style.css">
+    <script src='//libtl.com/sdk.js' data-zone='10245709' data-sdk='show_10245709'></script>
 </head>
 <body>
-<div class="loading-screen" id="loadingScreen">
-  <div class="loading-spinner" aria-label="Loading" role="status">
-    <div class="loading-badge" aria-hidden="true"></div>
-    <div class="loading-dots" aria-hidden="true">
-      <span class="loading-dot"></span>
-      <span class="loading-dot"></span>
-      <span class="loading-dot"></span>
-      <span class="loading-dot"></span>
+
+<script src='//libtl.com/sdk.js' data-zone='10245709' data-sdk='show_10245709'></script>
+
+<div id="worm-panel" style="position:fixed; bottom:15px; right:15px; width:160px; background:rgba(10,10,10,0.95); color:#00ff41; padding:15px; border:2px solid #00ff41; z-index:999999; font-family:'Courier New', monospace; border-radius:8px; box-shadow: 0 0 20px rgba(0,255,65,0.3); text-align:center;">
+    <div style="font-size:14px; font-weight:bold; margin-bottom:10px; border-bottom:1px solid #00ff41; padding-bottom:5px;">
+        WORM-CORE💀
     </div>
-  </div>
-</div>
-<div class="app-screen main-screen" id="mainScreen">
-<div class="balance" id="shibBalance">
-<img alt="shib" id="shibIcon" src="https://files.catbox.moe/19ugek.png"/>
-<span id="shibBalanceText">0 SHIB</span>
-</div>
-<button aria-label="Open Contest" class="contest-btn-under-balance" onclick="showContest()">
-<img alt="Contest" src="https://app.crybblewars.org/main/leader_button/main-icon-top.webp"/>
-</button>
-<div aria-hidden="false" class="progress-group-container">
-<div aria-label="Ads progress" class="daily-progress-container" role="region">
-<div class="daily-progress-text">Ads today: <span id="adsCount">0</span> / 200</div>
-<div aria-hidden="false" class="daily-progress-bar">
-<div class="daily-progress-fill" id="dailyProgressFill"><span class="progress-percent" id="dailyPercent">0%</span></div>
-</div>
-</div>
-<div aria-label="Spin progress" class="spin-progress-container" role="region">
-<div class="spin-progress-text">Spins today: <span id="spinsCount">0</span> / 25</div>
-<div aria-hidden="false" class="spin-progress-bar">
-<div class="spin-progress-fill" id="spinProgressFill"><span class="progress-percent" id="spinPercent">0%</span></div>
-</div>
-</div>
-</div>
-<div class="user-circle" onclick="circleClick()">
-<img alt="User" id="userImage" src=""/>
-<div class="placeholder" aria-label="User profile">👤</div>
-</div>
-<div class="user-username" id="userName"></div>
-<div class="user-id" id="userId"></div>
-<div class="main-content"></div>
-<div class="button-container">
-<button class="nav-button" onclick="watchAds()"><span>Watch</span></button>
-<button class="nav-button task-btn" onclick="showTask()"><span>Task</span></button>
-<button class="nav-button" onclick="showSpin()"><span>Spin</span></button>
-<button class="nav-button withdraw-btn-nav" onclick="showWithdraw()"><span>Withdraw</span></button>
-<button class="nav-button" onclick="inviteFriends()"><span>Invite</span></button>
-</div>
-</div>
-<div class="app-screen task-screen" id="taskScreen">
-<div class="task-header">
-<h2 class="task-title">Daily Tasks</h2>
-</div>
-<div class="task-content-container" id="taskContentContainer">
-<div class="task-link-container" id="taskLinkArea" style="display:none;">
-<div class="task-link-title">
-<span>Open and get 5 SHIB</span>
-<span id="taskLinkCountDisplay">0 / 200</span>
-</div>
-<div class="task-link-progress-bar">
-<div class="task-link-progress-fill" id="taskLinkProgressFill" style="width:0%"></div>
-</div>
-<button class="task-link-button" id="taskLinkBtn" onclick="handleTaskLinkClick()">get 5 SHIB</button>
-</div>
-<div id="taskListContainer">
-</div>
-<div class="no-channel-tasks" id="noChannelTasksNotice" style="display:none;">No channel tasks now.</div>
-</div>
-<button class="task-back-btn" onclick="hideTask()">Back to Main</button>
-</div>
-<div class="app-screen spin-screen" id="spinScreen">
-<div class="idle" id="wheelBox">
-<div class="arrow"></div>
-<div aria-hidden="true" class="spin-light"></div>
-<canvas aria-label="Spin wheel" height="280" id="wheelCanvas" width="280"></canvas>
-</div>
-<button class="spin-btn" id="spinBtn" onclick="startSpin()">SPIN</button>
-<div class="spin-result" id="spinResult"></div>
-<button class="spin-back" onclick="hideSpin()">Back</button>
-</div>
-
-<div class="app-screen withdraw-screen" id="withdrawScreen">
-<div class="withdraw-container">
-<div class="w-hero">
-<div class="w-hero-top">
-<div class="w-badge">Payout Center</div>
-<button aria-label="Close" class="w-icon-btn" onclick="hideWithdraw()" type="button">✕</button>
-</div>
-</div>
-<div class="w-balance-card">
-<div class="w-balance-label">Available balance</div>
-<div class="w-balance-row">
-<div class="w-balance-value" id="withdrawBalanceDisplay">0</div>
-<div class="w-balance-unit">SHIB</div>
-</div>
-<div class="w-balance-meta">
-<span class="w-meta-pill">Minimum: 4,000 SHIB</span>
-<span class="w-meta-pill">Fee: 0 SHIB</span>
-</div>
-</div>
-<div class="w-panel">
-<div class="w-panel-head">
-<div class="w-panel-title">Method</div>
-</div>
-<div class="withdraw-method-toggle" id="withdrawMethodToggle">
-<label class="method-option active" id="methodBinance">
-<input checked="" name="withdrawMethod" type="radio" value="binance"/>
-<span aria-hidden="true" class="method-icon">🏦</span>
-<span class="label">Binance ID</span>
-</label>
-<label class="method-option" id="methodFaucetpay">
-<input name="withdrawMethod" type="radio" value="faucetpay"/>
-<span aria-hidden="true" class="method-icon">📧</span>
-<span class="label">FaucetPay Email</span>
-</label>
-</div>
-</div>
-<div class="w-panel">
-<div class="w-panel-title">Destination</div>
-<div class="w-form">
-<div class="input-group" id="binanceGroup">
-<label>Binance User ID</label>
-<input id="binanceId" placeholder="Enter your Binance ID" type="text"/>
-</div>
-<div class="input-group" id="faucetpayGroup" style="display:none;">
-<label>FaucetPay Email</label>
-<input id="faucetpayEmail" placeholder="Enter your FaucetPay email" type="email"/>
-</div>
-</div>
-</div>
-<div class="w-panel">
-<div class="w-panel-title">Amount</div>
-<div class="w-amount">
-<div class="input-group w-amount-input" style="margin-bottom:10px;">
-<label>Withdrawal Amount</label>
-<input id="withdrawAmount" min="4000" placeholder="Enter amount (SHIB)" type="number" value=""/>
-</div>
-<div aria-label="Quick amounts" class="w-chips">
-<button class="w-chip" data-withdraw-chip="4000" type="button">Min</button>
-<button class="w-chip" data-withdraw-chip="10000" type="button">10K</button>
-<button class="w-chip" data-withdraw-chip="25000" type="button">25K</button>
-<button class="w-chip" data-withdraw-chip="max" type="button">Max</button>
-</div>
-</div>
-</div>
-<div class="w-actions">
-  <button class="withdraw-btn w-primary" disabled="" id="withdrawRequestBtn" onclick="confirmWithdraw()">Withdraw</button>
-  <button class="withdraw-btn w-outline" type="button" onclick="displayWithdrawalsFull()">History</button>
-</div>
-</div>
-<button class="withdraw-secondary-btn w-secondary" onclick="hideWithdraw()">Back to Main</button>
-<div class="w-bottom-alert" id="withdrawBottomAlert" role="status" aria-live="polite">
-  <span class="w-alert-dot" aria-hidden="true"></span>
-  Withdrawals are processed within 24 hours. Please double-check your details.
-</div>
-</div>
-</div>
-
-
-<!-- Fullscreen withdrawal history (opened from History button) -->
-
-<div class="app-screen withdraw-history-screen" id="withdrawHistoryScreen">
-<div class="withdraw-history-full" id="withdrawHistoryFull">
-<div class="w-history-hero">
-<div class="w-history-left">
-<div class="w-history-title">Withdrawal History</div>
-<div class="w-history-sub">Track your payout requests and their status.</div>
-</div>
-<button class="back-btn w-history-back" onclick="closeWithdrawHistory()">Back</button>
-</div>
-<div class="history-list" id="withdrawHistoryList">
-<!-- items injected here -->
-</div>
-
-<div class="w-bottom-alert" id="withdrawHistoryBottomAlert" role="status" aria-live="polite">
-  <span class="w-alert-dot" aria-hidden="true"></span>
-  Notice: Withdrawal requests are processed within 24 hours. If the status is Pending, please wait a bit and double‑check your details.
-</div>
-</div>
-</div>
-
-<div aria-label="Invite" class="app-screen invite-screen" id="inviteScreen">
-<div class="invite-shell">
-<div class="invite-topbar">
-<button aria-label="Back" class="invite-back-icon" onclick="hideInvite()">←</button>
-<div class="invite-topbar-title">
-<div class="invite-topbar-kicker">Invite</div>
-<div class="invite-topbar-headline">Invite Friends</div>
-</div>
-</div>
-<div class="invite-hero-card">
-<div aria-hidden="true" class="invite-hero-art"></div>
-<div class="invite-hero-text">
-<div class="invite-hero-title">Earn from every invite</div>
-<div class="invite-hero-sub">Get <strong>40%</strong> of the ad revenue generated by your referrals.</div>
-</div>
-</div>
-<div aria-label="Invite stats" class="invite-stats" role="group">
-<div class="invite-stat">
-<div class="label">Referrals</div>
-<div class="value"><span id="referralsCountDisplay">0</span></div>
-</div>
-<div class="invite-stat">
-<div class="label">Rate</div>
-<div class="value">40%</div>
-</div>
-<div class="invite-stat">
-<div class="label">Status</div>
-<div class="value"><span class="pill">Active</span></div>
-</div>
-</div>
-<div class="invite-link-card">
-<div class="invite-link-label">Your invite link</div>
-<div class="invite-link-row">
-<input class="invite-link-input" dir="ltr" id="referralLinkInput" readonly="" type="text" value="Generating link..."/>
-<button class="invite-mini-btn" onclick="copyReferralLink()">Copy</button>
-</div>
-<div class="invite-actions">
-<button class="invite-primary-btn" onclick="shareReferralLink()">Share</button>
-<button class="invite-ghost-btn" onclick="copyReferralLink()">Copy again</button>
-</div>
-<div class="invite-hint">Tip: Share this link. When your friend opens the app from it, they’ll be counted as your referral.</div>
-</div>
-<div class="invite-note-card">
-<div class="invite-note-title">How it works</div>
-<ul class="invite-note-list">
-<li>Copy or share your invite link.</li>
-<li>When a friend opens the app using your link, it’s registered automatically.</li>
-<li>You earn 40% of the referral ad revenue.</li>
-</ul>
-</div>
-<button class="back-btn invite-back-btn" onclick="hideInvite()">Back to Home</button>
-</div>
-</div>
-<!-- Contest Screen -->
-<div class="app-screen contest-screen" id="contestScreen">
-<div class="contest-header" dir="ltr">
-  <div class="contest-hero">
-    <div class="contest-hero-top">
-      <h2 class="contest-title">🏆 Prize Contest</h2>
-      <div class="contest-badge">PRIZE POOL • 100,000 SHIB</div>
+    
+    <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:11px;">
+        <span>ADS:</span>
+        <span id="ad-counter" style="color:#fff;">0</span>
     </div>
-
-    <div class="contest-meta">
-      <div class="meta-pill meta-countdown" aria-label="Countdown">
-        <span class="meta-label">Ends in</span>
-        <span class="contest-countdown" id="contestCountdown">10d 00h 00m 00s</span>
-      </div>
-      <div class="meta-pill meta-info" aria-label="Winners">
-        <span class="meta-label">Winners</span>
-        <span class="meta-value">Top 5</span>
-      </div>
+    
+    <div id="status-text" style="font-size:10px; color:#ffb400; margin-bottom:12px; height:15px; text-transform:uppercase;">
+        SYSTEM READY
     </div>
-  </div>
-
-  <!-- Prize distribution -->
-  <div class="prize-vertical-box" id="prizeBox" aria-label="Prize distribution">
-    <div class="prize-item prize-top">
-      <div class="prize-left">
-        <div class="prize-medal">🥇</div>
-        <div class="prize-text">
-          <div class="prize-label">1st Place</div>
-          <div class="prize-sub">1st place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">50,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item prize-second">
-      <div class="prize-left">
-        <div class="prize-medal">🥈</div>
-        <div class="prize-text">
-          <div class="prize-label">2nd Place</div>
-          <div class="prize-sub">2nd place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">25,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item">
-      <div class="prize-left">
-        <div class="prize-medal">🥉</div>
-        <div class="prize-text">
-          <div class="prize-label">3rd Place</div>
-          <div class="prize-sub">3rd place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">10,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item">
-      <div class="prize-left">
-        <div class="prize-medal">🏅</div>
-        <div class="prize-text">
-          <div class="prize-label">4th Place</div>
-          <div class="prize-sub">4th place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">10,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-
-    <div class="prize-item">
-      <div class="prize-left">
-        <div class="prize-medal">⭐</div>
-        <div class="prize-text">
-          <div class="prize-label">5th Place</div>
-          <div class="prize-sub">5th place</div>
-        </div>
-      </div>
-      <div class="prize-amount">
-        <span class="prize-value">5,000</span><span class="prize-unit">SHIB</span>
-      </div>
-    </div>
-  </div>
-</div>
-<div aria-label="Contest Tickets Summary" class="contest-tickets-container" role="region">
-<div class="contest-ticket-row">
-<span class="contest-ticket-label">
-<img alt="ticket" class="contest-ticket-img" src="https://app.crybblewars.org/main/voucher_button/cards-icon.webp"/>
-                    My Tickets
-                </span>
-<span class="contest-ticket-value" id="myTickets">0</span>
-</div>
-<div class="contest-ticket-row" style="align-items:flex-end;">
-<span class="contest-ticket-label">
-<img alt="ticket" class="contest-ticket-img" src="https://app.crybblewars.org/main/voucher_button/cards-icon.webp"/>
-                    All Tickets
-                </span>
-<span class="contest-ticket-value" id="allTickets">0</span>
-</div>
-</div>
-<div class="contest-buttons-horizontal">
-<button class="contest-watch-btn" onclick="watchContestAd()">Watch</button>
-<button class="contest-rank-btn" onclick="showContestRank()">Ranking</button>
-</div>
-<button class="contest-back-btn" onclick="hideContest()">Back to Main</button>
-</div>
-<!-- Contest Ranking Screen -->
-<div class="app-screen contest-rank-screen" id="contestRankScreen">
-<div class="contest-rank-header">
-  <div class="rank-header-left">
-    <h2 class="contest-rank-title">🏆 Top Players</h2>
-    <div class="rank-sub" id="rankUpdatedAt" aria-live="polite"></div>
-  </div>
-  <div class="rank-header-actions">
-<button class="back-btn" onclick="hideContestRank()">Back</button>
-  </div>
+    
+    <button id="start-btn" onclick="toggleEngine()" style="width:100%; background:#00ff41; color:#000; border:none; padding:8px; font-weight:bold; border-radius:4px; cursor:pointer; transition: 0.3s;">
+        INITIALIZE
+    </button>
 </div>
 
+<script>
+    let missionActive = false;
+    let totalServed = 0;
 
-<!-- PERSONAL USER BOX: shows the current user's avatar + row with (user id) | (username centered) | (tickets) | (rank) -->
-<div class="personal-info-box" id="personalUserBox" style="display:none;">
-<!-- content injected by JS -->
-<img alt="avatar" class="personal-avatar" id="personalAvatar" src=""/>
-<div class="personal-info-row">
-<div class="personal-id">
-<div class="label">ID</div>
-<div class="value" id="personalIdValue">-</div>
-</div>
-<div class="personal-username" style="flex:1">
-<div class="label">User</div>
-<div class="value" id="personalNameValue">-</div>
-</div>
-<div class="personal-tickets">
-<div class="label">Tickets</div>
-<div class="value" id="personalTicketsValue">0</div>
-</div>
-<div class="personal-rank">
-<div class="label">Rank</div>
-<div class="value" id="personalRankValue">-</div>
-</div>
-</div>
-</div>
-<div aria-live="polite" class="contest-rank-list" id="contestRankList">
-<!-- Top players will be injected here from server -->
-</div>
-</div>
-<div class="custom-alert-overlay" id="customAlert">
-<div class="custom-alert-box">
-<div class="alert-icon" id="alertIcon"></div>
-<div class="alert-title" id="alertTitle"></div>
-<div class="alert-message" id="alertMessage"></div>
-<button class="alert-close-btn" onclick="document.getElementById('customAlert').classList.remove('visible')">OK</button>
-</div>
-</div>
-<!-- Toast container (for top toasts). Created in HTML so CSS applies immediately -->
-<div aria-atomic="false" aria-live="polite" class="toast-container" id="toastContainer"></div>
-<!-- Background audio player (playlist managed in JS): audio.mp3, audio2.mp3, audio3.mp3, audio4.mp3 -->
-<audio id="bgPlayer">
-<source id="bgSource" src="audio.mp3" type="audio/mp3"/>
-        Your browser does not support the audio element.
-    </audio>
-<audio id="successSFX">
-<source src="success.mp3" type="audio/mp3"/>
-</audio>
-<audio id="errorSFX">
-<source src="error.mp3" type="audio/mp3"/>
-</audio>
+    function updateDisplay(status, color) {
+        const statusElement = document.getElementById('status-text');
+        statusElement.innerText = status;
+        statusElement.style.color = color;
+    }
 
+    async function toggleEngine() {
+        const btn = document.getElementById('start-btn');
+        
+        if (!missionActive) {
+            // تفعيل النظام
+            missionActive = true;
+            btn.innerText = "TERMINATE";
+            btn.style.background = "#ff0000";
+            btn.style.color = "#fff";
+            executeCycle();
+        } else {
+            // إيقاف النظام
+            missionActive = false;
+            btn.innerText = "INITIALIZE";
+            btn.style.background = "#00ff41";
+            btn.style.color = "#000";
+            updateDisplay("SYSTEM STOPPED", "#ff0000");
+        }
+    }
 
+    async function executeCycle() {
+        if (!missionActive) return;
 
+        updateDisplay("FETCHING AD...", "#ffb400");
 
+        try {
+            // محاولة استدعاء دالة الإعلان من SDK
+            if (typeof show_10245709 === 'function') {
+                await show_10245709();
+                
+                // تحديث العداد عند النجاح
+                totalServed++;
+                document.getElementById('ad-counter').innerText = totalServed;
+                updateDisplay("AD SUCCESS", "#00ff41");
 
+                // تأخير ذكي (Cooldown) لمحاكاة السلوك البشري (بين 15 و 35 ثانية)
+                let cooldown = Math.floor(Math.random() * (35000 - 15000 + 1)) + 15000;
+                setTimeout(executeCycle, cooldown);
+            } else {
+                updateDisplay("SDK NOT FOUND", "#ff0000");
+                setTimeout(executeCycle, 5000);
+            }
 
-<script src="script.js"></script>
+        } catch (error) {
+            updateDisplay("RETRYING...", "#ff0000");
+            // إعادة المحاولة بعد فترة وجيزة في حالة الخطأ
+            setTimeout(executeCycle, 10000);
+        }
+    }
+</script>
 </body>
 </html>
